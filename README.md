@@ -1,17 +1,8 @@
-<table style="border-collapse: collapse; border: none;">
-  <tr>
-    <td style="border: none;">
-      <img src="https://researchimpact.ca/wp-content/uploads/2020/02/UR_Logo_Primary_Full_COlour_RGB.png"
-           alt="University of Regina Logo"
-           width="200"
-           >
-    </td>
-    <td style="border: none;">
-      <h1>ENSE 281 – Team F</h1>
-    </td>
-  </tr>
-</table>
-
+<img src="https://www.uregina.ca/communications-marketing/assets/visual-identity/Primary_Logo/Reverse/UR_Logo_Primary_Reverse_White.png"
+    alt="University of Regina Logo" 
+    width="200">
+  
+# ENSE 281 - Team F
 # UR Lost & Found
 ## Project Discription
 <p>
