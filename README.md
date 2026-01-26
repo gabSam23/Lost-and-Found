@@ -6,7 +6,7 @@
 # UR Lost & Found
 ## Project Discription
 <p>
-
+UR Lost & Found is a centralized system designed to help staff and security efficiently log, update, and search for lost items in one place. Users can record key item details such as description, categories, dates and times, and locations. The goal of the system is to provide a convenient and accessible way to search for lost items, reducing the need for individuals to visit the lost and found in person.
 </p>
 
 ## Project Members
