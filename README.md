@@ -1,5 +1,5 @@
 <img src="https://lacite.uregina.ca/sites/default/files/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png" 
-    width="200">
+    width="500">
   
 # ENSE 281 - Team F
 # UR Lost & Found
