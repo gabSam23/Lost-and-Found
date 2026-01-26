@@ -1,4 +1,4 @@
-<img src="https://researchimpact.ca/wp-content/uploads/2020/02/UR_Logo_Primary_Full_COlour_RGB.png" 
+<img src="https://lacite.uregina.ca/sites/default/files/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png" 
     width="200">
   
 # ENSE 281 - Team F
