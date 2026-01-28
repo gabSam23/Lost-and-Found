@@ -10,6 +10,12 @@ The system aims to improve service efficiency, reduce in-person inquiries, and e
 
 ---
 
+## 🎥 Prototype Demonstration
+
+Click below to watch our early prototype demo video:
+---
+<video controls src="Prototype.mp4" width="500" height="350"></video>
+
 ## Project Purpose (The “Why”)
 
 Currently, lost and found operations rely heavily on in-person visits, phone calls, and manual tracking methods. This leads to inefficiencies, delays, and frustration for both Protective Services staff and campus users.
