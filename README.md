@@ -14,7 +14,7 @@ The system aims to improve service efficiency, reduce in-person inquiries, and e
 
 Click below to watch our early prototype demo video:
 ---
-<video controls src="Prototype.mp4" width="500" height="350"></video>
+https://github.com/user-attachments/assets/5917bfb1-210f-438b-a94c-e814d3eb3857
 
 ## Project Purpose (The “Why”)
 
