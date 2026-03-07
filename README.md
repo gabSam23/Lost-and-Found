@@ -63,9 +63,9 @@ These users currently rely on physical visits, phone calls, or email inquiries. 
 - Search and tracking functionality for item records  
 
 ### Out of Scope
-- Physical storage or transportation of lost items  
+- Direct reporting of lost or found items by members of the campus community 
 - Integration with existing university enterprise systems  
-- Native mobile application development  
+- Development of a native mobile application (iOS or Android) 
 
 ---
 
