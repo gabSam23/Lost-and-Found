@@ -14,7 +14,10 @@ The system aims to improve service efficiency, reduce in-person inquiries, and e
 
 Click below to watch our early prototype demo video:
 ---
-https://github.com/user-attachments/assets/5917bfb1-210f-438b-a94c-e814d3eb3857
+
+https://github.com/user-attachments/assets/a037a91d-3bcc-4f86-8cb5-5792a118ac0c
+
+
 
 ## Project Purpose (The “Why”)
 
@@ -85,11 +88,25 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 - Project charter documentation  
 - GitHub-based project management  
 - Iterative system design and prototyping  
-- Team-based collaboration and peer review  
+- Team-based collaboration and peer review
+- Stakeholder analysis
+- Scope definition
+- Project prerequisites and system design
+- GitHub workflow
 
 ---
 
 ## Project Status
 
-🟡 **Currently in project initiation and design phase**  
-We are refining requirements, stakeholder needs, and system scope before moving into detailed design and prototyping.
+🟡 **Currently in requirement analyis and system design**  
+At this stage of the project, the team is focused on defining the foundational elements required to successfully design and develop the UR Lost & Found system. This phase includes identifying stakeholder needs, establishing project scope, and developing initial system design concepts.
+
+Key activities in this phase include:
+
+- Defining project scope and objectives  
+- Identifying stakeholders and their requirements  
+- Developing early UI prototypes and system concepts  
+- Creating UML diagrams and architectural design models  
+- Establishing project management workflows using GitHub Issues and Kanban boards  
+
+These activities provide the groundwork necessary for the upcoming development phases, where the system prototype will be implemented and tested.
