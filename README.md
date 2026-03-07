@@ -98,6 +98,18 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 
 ---
 
+## Technology Stack
+
+The prototype system is being developed using the following technologies:
+
+- **Frontend:** HTML, CSS, JavaScript
+- **Backend:** Node.js with Express
+- **Database:** PostgreSQL (via Supabase)
+- **Version Control:** Git and GitHub
+- **Project Management:** GitHub Issues and Kanban Board
+
+---
+
 ## Project Status
 
 🟡 **Currently in requirements analyis and system design**  
