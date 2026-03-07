@@ -102,11 +102,8 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 
 The prototype system is being developed using the following technologies:
 
-- **Frontend:** HTML, CSS, JavaScript
-- **Backend:** Node.js with Express
-- **Database:** PostgreSQL (via Supabase)
-- **Version Control:** Git and GitHub
-- **Project Management:** GitHub Issues and Kanban Board
+<img width="1011" height="518" alt="image" src="https://github.com/user-attachments/assets/2240b901-e647-4f5a-9da3-4412f84f24ec" />
+
 
 ---
 
