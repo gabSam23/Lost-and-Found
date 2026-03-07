@@ -102,8 +102,7 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 
 The prototype system is being developed using the following technologies:
 
-<img width="1011" height="518" alt="image" src="https://github.com/user-attachments/assets/2240b901-e647-4f5a-9da3-4412f84f24ec" />
-
+![MVC Architecture](https://github.com/user-attachments/assets/30b7b54c-8d86-4b4d-917d-0887c89d649f)
 
 ---
 
