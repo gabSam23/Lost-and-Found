@@ -91,14 +91,16 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 - Team-based collaboration and peer review
 - Stakeholder analysis
 - Scope definition
-- Project prerequisites and system design
+- Project Requirements
+- UMLs
+- MVP iterations
 - GitHub workflow
 
 ---
 
 ## Project Status
 
-🟡 **Currently in requirement analyis and system design**  
+🟡 **Currently in requirements analyis and system design**  
 At this stage of the project, the team is focused on defining the foundational elements required to successfully design and develop the UR Lost & Found system. This phase includes identifying stakeholder needs, establishing project scope, and developing initial system design concepts.
 
 Key activities in this phase include:
