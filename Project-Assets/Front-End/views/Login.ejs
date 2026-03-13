@@ -1,0 +1,33 @@
+
+
+    <h2>UR Lost & Found</h2>
+
+    <main>
+        <section>
+
+            <% if (typeof error !=="undefined" && error) { %>
+                <p>
+                    <%= error %>
+                </p>
+                <% } %>
+
+                    <form action="/login" method="POST">
+                        <div>
+                            <input type="text" id="username" name="username" placeholder="Username"
+                                value="<%= typeof username !== 'undefined' ? username : '' %>" required />
+                        </div>
+
+                        <div>
+                            <input type="password" id="password" name="password" placeholder="Password" required />
+                        </div>
+
+                        <p>* Indicates required fields</p>
+
+                        <div>
+                            <button type="submit">LOGIN</button>
+                        </div>
+                    </form>
+
+        </section>
+    </main>
+
