@@ -4,32 +4,36 @@
     <!-- Page title -->
     <section class="row">
         <div class="col-12">
-            <h2 class="mb-4 text-center">Lost and Found Storage</h2>
+            <h2 class="mb-4">Lost and Found Storage</h2>
         </div>
     </section>
 
     <!-- Show a message if one was passed in -->
     <% if (typeof message !== "undefined" && message) { %>
-        <div class="alert alert-success">
-            <%= message %>
-        </div>
+        <section class="row">
+            <div class="col-12">
+                <p><%= message %></p>
+            </div>
+        </section>
     <% } %>
 
     <!-- Show an error if one was passed in -->
     <% if (typeof error !== "undefined" && error) { %>
-        <div class="alert alert-danger">
-            <%= error %>
-        </div>
+        <section class="row">
+            <div class="col-12">
+                <p><%= error %></p>
+            </div>
+        </section>
     <% } %>
 
     <!-- Main storage table -->
-    <section class="row align-items-start mt-4">
+    <section class="row align-items-start">
         <div class="col-12">
             <div class="table-responsive">
-                <table class="table table-hover table-bordered align-middle shadow-sm">
-                    
+                <table class="table table-bordered align-middle">
+
                     <!-- Table headings -->
-                    <thead class="table-dark">
+                    <thead class="table-light">
                         <tr>
                             <th>ID</th>
                             <th>Image</th>
@@ -51,30 +55,28 @@
                                     <!-- Show image if available -->
                                     <td>
                                         <% if (item.image) { %>
-                                            <img src="<%= item.image %>" alt="Item image" width="80" class="img-thumbnail">
+                                            <img src="<%= item.image %>" alt="Item image" width="80">
                                         <% } else { %>
-                                            <span class="text-muted">No image</span>
+                                            No image
                                         <% } %>
                                     </td>
 
-                                    <td><span class="badge bg-secondary"><%= item.category %></span></td>
+                                    <td><%= item.category %></td>
                                     <td><%= item.description %></td>
-                                    <td><i class="bi bi-geo-alt"></i> <%= item.location %></td>
+                                    <td><%= item.location %></td>
                                     <td><%= item.dateLogged %></td>
 
                                     <!-- Edit and delete actions -->
                                     <td>
-                                        <div class="btn-group" role="group">
-                                            <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">
-                                                Edit
-                                            </a>
+                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">   
+                                            Edit
+                                        </a>
 
-                                            <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">
-                                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?')">
-                                                    Delete
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">    
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -82,7 +84,7 @@
                         <!-- If there are no items, show fallback text -->
                         <% } else { %>
                             <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">No items currently in storage.</td>
+                                <td colspan="7" class="text-center">No items currently in storage.</td>
                             </tr>
                         <% } %>
                     </tbody>

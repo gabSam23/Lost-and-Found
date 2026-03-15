@@ -1,32 +1,43 @@
 <%- include('layouts/header') %>
 
-<main class="container mt-5">
-    <div class="p-5 mb-4 bg-light rounded-3 shadow-sm border">
-        <div class="container-fluid py-5">
-            <h1 class="display-5 fw-bold">Welcome to UR Lost & Found</h1>
-            <p class="col-md-8 fs-4">Help connect lost items with their owners. Use the navigation menu to manage the inventory or view active reports.</p>
-            <hr class="my-4">
-            <div class="d-flex gap-3">
-                <a href="/items" class="btn btn-primary btn-lg px-4">View Inventory</a>
-                <button class="btn btn-outline-secondary btn-lg px-4">Report an Item</button>
-            </div>
+<main class="text-center mt-5">
+    <h1>Welcome to UR Lost &amp; Found</h1>
+    <br><br>
+    <h2>Inventory Management</h2>
+    <br>
+    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
+        <div class="my-card p-3 text-start">
+            <a href="/items" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/newitem.svg" style="margin-right: 20px;" alt="" width="24">Add Item to Inventory
+            </a>
+            <hr>
+            <p>Register a new item to the Lost &amp; Found inventory</p>
+        </div>
+        <div class="my-card p-3 text-start">
+            <a href="/items" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/viewinventory.svg" style="margin-right: 20px;" alt="" width="24">View Inventory
+            </a>
+            <hr>
+            <p>View current Lost &amp; Found inventory. View and edit detailed item descriptions.</p>
         </div>
     </div>
-
-    <div class="row align-items-md-stretch">
-        <div class="col-md-6">
-            <div class="h-100 p-5 text-white bg-dark rounded-3 shadow">
-                <h2>Manage Storage</h2>
-                <p>Add new items found on campus or update existing ones in the inventory system.</p>
-                <button class="btn btn-outline-light" type="button">Go to Storage</button>
-            </div>
+    <br><br>
+    <h2>Reports</h2>
+    <br>
+    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
+        <div class="my-card p-3 text-start">
+            <a href="#" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/newreport.svg" style="margin-right: 20px;" alt="" width="24">Report Lost Item
+            </a>
+            <hr>
+            <p>Report an item missing.</p>
         </div>
-        <div class="col-md-6">
-            <div class="h-100 p-5 bg-light border rounded-3 shadow-sm">
-                <h2>User Reports</h2>
-                <p>Review reports submitted by students and staff regarding their lost belongings.</p>
-                <button class="btn btn-outline-dark" type="button">View Reports</button>
-            </div>
+        <div class="my-card p-3 text-start">
+            <a href="#" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/viewreports.svg" style="margin-right: 20px;" alt="" width="24">View Reports
+            </a>
+            <hr>
+            <p>View all missing item reports and reporter details.</p>
         </div>
     </div>
 </main>
