@@ -1,0 +1,24 @@
+{
+  "name": "lost-and-found",
+  "version": "1.0.0",
+  "description": "<img src=\"https://lacite.uregina.ca/sites/default/files/ur_logo-w-1-line-tagline_horiz_full-colour_rgb.png\" width=\"500\" alt=\"University of Regina logo\">",
+  "homepage": "https://github.com/gabSam23/Lost-and-Found#readme",
+  "bugs": {
+    "url": "https://github.com/gabSam23/Lost-and-Found/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabSam23/Lost-and-Found.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1"
+  }
+}

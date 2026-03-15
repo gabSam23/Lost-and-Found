@@ -1,37 +1,35 @@
+<%- include('layouts/header') %>
+
 <main class="container mt-5">
     <!-- Page title -->
     <section class="row">
         <div class="col-12">
-            <h2 class="mb-4">Lost and Found Storage</h2>
+            <h2 class="mb-4 text-center">Lost and Found Storage</h2>
         </div>
     </section>
 
     <!-- Show a message if one was passed in -->
     <% if (typeof message !== "undefined" && message) { %>
-        <section class="row">
-            <div class="col-12">
-                <p><%= message %></p>
-            </div>
-        </section>
+        <div class="alert alert-success">
+            <%= message %>
+        </div>
     <% } %>
 
     <!-- Show an error if one was passed in -->
     <% if (typeof error !== "undefined" && error) { %>
-        <section class="row">
-            <div class="col-12">
-                <p><%= error %></p>
-            </div>
-        </section>
+        <div class="alert alert-danger">
+            <%= error %>
+        </div>
     <% } %>
 
     <!-- Main storage table -->
-    <section class="row align-items-start">
+    <section class="row align-items-start mt-4">
         <div class="col-12">
             <div class="table-responsive">
-                <table class="table table-bordered align-middle">
+                <table class="table table-hover table-bordered align-middle shadow-sm">
                     
                     <!-- Table headings -->
-                    <thead class="table-light">
+                    <thead class="table-dark">
                         <tr>
                             <th>ID</th>
                             <th>Image</th>
@@ -53,28 +51,30 @@
                                     <!-- Show image if available -->
                                     <td>
                                         <% if (item.image) { %>
-                                            <img src="<%= item.image %>" alt="Item image" width="80">
+                                            <img src="<%= item.image %>" alt="Item image" width="80" class="img-thumbnail">
                                         <% } else { %>
-                                            No image
+                                            <span class="text-muted">No image</span>
                                         <% } %>
                                     </td>
 
-                                    <td><%= item.category %></td>
+                                    <td><span class="badge bg-secondary"><%= item.category %></span></td>
                                     <td><%= item.description %></td>
-                                    <td><%= item.location %></td>
+                                    <td><i class="bi bi-geo-alt"></i> <%= item.location %></td>
                                     <td><%= item.dateLogged %></td>
 
                                     <!-- Edit and delete actions -->
                                     <td>
-                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">
-                                            Edit
-                                        </a>
+                                        <div class="btn-group" role="group">
+                                            <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">
+                                                Edit
+                                            </a>
 
-                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                Delete
-                                            </button>
-                                        </form>
+                                            <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure?')">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                             <% }) %>
@@ -82,7 +82,7 @@
                         <!-- If there are no items, show fallback text -->
                         <% } else { %>
                             <tr>
-                                <td colspan="7" class="text-center">No items currently in storage.</td>
+                                <td colspan="7" class="text-center py-4 text-muted">No items currently in storage.</td>
                             </tr>
                         <% } %>
                     </tbody>
@@ -91,3 +91,5 @@
         </div>
     </section>
 </main>
+
+<%- include('layouts/footer') %>

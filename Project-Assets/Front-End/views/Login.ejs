@@ -1,45 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
+<%- include('layouts/header') %>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
-</head>
+<main class="container mt-5">
+    <section class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">UR Lost & Found Login</h2>
 
-<body>
-
-    <h2>UR Lost & Found</h2>
-
-    <main>
-        <section>
-
-            <% if (typeof error !=="undefined" && error) { %>
-                <p>
-                    <%= error %>
-                </p>
-                <% } %>
+                    <% if (typeof error !== "undefined" && error) { %>
+                        <div class="alert alert-danger">
+                            <%= error %>
+                        </div>
+                    <% } %>
 
                     <form action="/login" method="POST">
-                        <div>
-                            <input type="text" id="username" name="username" placeholder="Username"
-                                value="<%= typeof username !== 'undefined' ? username : '' %>" required />
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address *</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="Email"
+                                value="<%= typeof email !== 'undefined' ? email : '' %>" required />
                         </div>
 
-                        <div>
-                            <input type="password" id="password" name="password" placeholder="Password" required />
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password *</label>
+                            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required />
                         </div>
 
-                        <p>* Indicates required fields</p>
+                        <p class="text-muted small">* Indicates required fields</p>
 
-                        <div>
-                            <button type="submit">LOGIN</button>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">LOGIN</button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
 
-        </section>
-    </main>
-
-</body>
-
-</html>
+<%- include('layouts/footer') %>
