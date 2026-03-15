@@ -1,0 +1,95 @@
+<!--
+Cobie Caburao
+Amr Azouz
+ENSE 281
+Lost & Found
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>UR Lost & Found</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="../public/css/style.css">
+    </head>
+
+    <body>
+        <nav class="navbar navbar-expand-lg" style="background-color: #00502E;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="Home.ejs">
+                    <img src="../public/images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white" width="auto" height="30px">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="Home.ejs" style="margin-top: 20px;">Home</a>
+                        </li>
+                        <li><hr></li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="NewItem.ejs" style="text-indent: 50px;">Add Item to Inventory</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="ViewInventory.ejs" style="text-indent: 50px;">View Inventory</a>
+                        </li>
+                        <li><hr></li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="NewReport.ejs" style="text-indent: 50px;">Report Lost Item</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="ViewReports.ejs" style="text-indent: 50px;">View Reports</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main>
+            <h1>Welcome to UR Lost &amp; Found</h1>
+            <br><br>
+            <h2>Inventory Management</h2>
+            <br>
+            <div style="display: flex; gap: 50px; justify-content: center;">
+                <div class="my-card">
+                    <a href="NewItem.ejs"><img src="../public/svg/newitem.svg" style="margin-right: 20px;">Add Item to Inventory</a>
+                    <hr>
+                    <p>Register a new item to the Lost &amp; Found inventory</p>
+                </div>
+                <div class="my-card">
+                    <a href="ViewInventory.ejs"><img src="../public/svg/viewinventory.svg" style="margin-right: 20px;">View Inventory</a>
+                    <hr>
+                    <p>View current Lost &amp; Found inventory. View and edit detailed item descriptions.</p>
+                </div>
+            </div>
+            <br><br>
+            <h2>Reports</h2>
+            <br>
+            <div style="display: flex; gap: 50px; justify-content: center;">
+                <div class="my-card">
+                    <a href="NewReport.ejs"><img src="../public/svg/newreport.svg" style="margin-right: 20px;">Report Lost Item</a>
+                    <hr>
+                    <p>Report an item missing.</p>
+                </div>
+                <div class="my-card">
+                    <a href="ViewReports.ejs"><img src="../public/svg/viewreports.svg" style="margin-right: 20px;">View Reports</a>
+                    <hr>
+                    <p>View all missing item reports and reporter details.</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="text-center mt-5 mb-3">
+            <p>2026 ENSE 281 Group I Lost &amp; Found</p>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+        <script src="js/client.js"></script>
+    </body>
+</html>
