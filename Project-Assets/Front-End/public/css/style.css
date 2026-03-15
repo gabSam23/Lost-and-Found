@@ -1,0 +1,33 @@
+.box {
+    margin: auto;
+    text-align : center;
+    width: auto;
+    padding: 20px 50px 20px 50px;
+    border-radius: 3px;
+    box-shadow: 5px 5px 5px 5px rgb(197, 197, 197);
+}
+
+label {
+    text-align: left;
+}
+
+hr {
+    border: none;
+    height: 2px;
+    background-color: black;
+    margin: 5px auto;
+  }
+
+.my-card {
+    width: 500px;
+    height: 175px;
+    background-color: #EEEEEE;
+    box-shadow: 0 5px 5px 0 rgb(197, 197, 197);
+}
+
+.my-card::before {
+  content: '';
+  display: block;
+  height: 6px;
+  background-color: #1a4a2e;
+}
