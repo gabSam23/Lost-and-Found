@@ -1,0 +1,93 @@
+<main class="container mt-5">
+    <!-- Page title -->
+    <section class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Lost and Found Storage</h2>
+        </div>
+    </section>
+
+    <!-- Show a message if one was passed in -->
+    <% if (typeof message !== "undefined" && message) { %>
+        <section class="row">
+            <div class="col-12">
+                <p><%= message %></p>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- Show an error if one was passed in -->
+    <% if (typeof error !== "undefined" && error) { %>
+        <section class="row">
+            <div class="col-12">
+                <p><%= error %></p>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- Main storage table -->
+    <section class="row align-items-start">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table table-bordered align-middle">
+                    
+                    <!-- Table headings -->
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Image</th>
+                            <th>Category</th>
+                            <th>Description</th>
+                            <th>Location</th>
+                            <th>Date Logged</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <!-- If there are items, loop through and display each one -->
+                        <% if (typeof items !== "undefined" && items.length > 0) { %>
+                            <% items.forEach(item => { %>
+                                <tr>
+                                    <td><%= item.id %></td>
+
+                                    <!-- Show image if available -->
+                                    <td>
+                                        <% if (item.image) { %>
+                                            <img src="<%= item.image %>" alt="Item image" width="80">
+                                        <% } else { %>
+                                            No image
+                                        <% } %>
+                                    </td>
+
+                                    <td><%= item.category %></td>
+                                    <td><%= item.description %></td>
+                                    <td><%= item.location %></td>
+                                    <td><%= item.dateLogged %></td>
+
+                                    <!-- Edit and delete actions -->
+                                    <td>
+                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">
+                                            Edit
+                                        </a>
+
+                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            <% }) %>
+
+                        <!-- If there are no items, show fallback text -->
+                        <% } else { %>
+                            <tr>
+                                <td colspan="7" class="text-center">No items currently in storage.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
