@@ -1,0 +1,68 @@
+<%- include('layouts/header') %>
+
+<main class="container mt-5">
+            <section class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <h2 class="text-center mb-4">Add Item to Inventory</h2>
+
+                    <div class="box log-form">
+                        <form action="/login" method="POST">
+                            <div class="form-group">
+                                <label for="Location">Location</label>
+                                <select class="form-control" id="Location">
+                                    <option>Administration - Humanities Building (AH)</option>
+                                    <option>Centre for Kinesiology, Health and Sport (CK)</option>
+                                    <option>Classroom Building (CL)</option>
+                                    <option>Campion College (CM)</option>
+                                    <option>La Cité (CT)</option>
+                                    <option>College West Building (CW)</option>
+                                    <option>Education Building (ED)</option>
+                                    <option>Kīšik Towers (KI)</option>
+                                    <option>Laboratory Building (LB)</option>
+                                    <option>Luther College (LC)</option>
+                                    <option>Dr. John Archer Library (LY)</option>
+                                    <option>Paskwāw Tower/Wakpá Tower (PA/WA)</option>
+                                    <option>Dr. William Riddell Centre (RC)</option>
+                                    <option>Research and Innovation Centre (RI)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Category">Category</label>
+                                <select class="form-control" id="Category">
+                                <option>Phone</option>
+                                <option>Laptop</option>
+                                <option>Tablet</option>
+                                <option>Headphone/Earphones</option>
+                                <option>Electronic Charger</option>
+                                <option>Keys</option>
+                                <option>Wallet</option>
+                                <option>Jewelry</option>
+                                <option>Water Bottle</option>
+                                <option>Eyewear</option>
+                                <option>Academic Supplies</option>
+                                <option>Other</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3 form-group">
+                                <label for="UploadImage" class="form-label">Upload Image(s)</label>
+                                <input class="form-control" type="file" accept=".png, .jpg, .jpeg" id="UploadImage" multiple>
+                                <p>Accepted file types: .png, .jpg, or .jpeg</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ItemDescription">Description</label>
+                                <textarea class="form-control" id="ItemDescription" rows="3" placeholder="Include key details for easier identification..."></textarea>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="submit" class="btn btn-secondary" style="align-content: right;">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+<%- include('layouts/footer') %>
