@@ -4,11 +4,24 @@
     width: auto;
     padding: 20px 50px 20px 50px;
     border-radius: 3px;
-    box-shadow: 5px 5px 5px 5px rgb(197, 197, 197);
+    box-shadow: 0 5px 5px 0 rgb(197, 197, 197);
+}
+
+.log-form {
+    width: 500px;
 }
 
 label {
     text-align: left;
+}
+
+input, select, textarea {
+    margin-bottom: 20px;
+}
+
+.btn-container {
+  display: flex;
+  justify-content: flex-end;
 }
 
 hr {
