@@ -1,0 +1,45 @@
+<%- include('layouts/header') %>
+
+<main class="text-center mt-5">
+    <h1>Welcome to UR Lost &amp; Found</h1>
+    <br><br>
+    <h2>Inventory Management</h2>
+    <br>
+    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
+        <div class="my-card p-3 text-start">
+            <a href="/items" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/newitem.svg" style="margin-right: 20px;" alt="" width="24">Add Item to Inventory
+            </a>
+            <hr>
+            <p>Register a new item to the Lost &amp; Found inventory</p>
+        </div>
+        <div class="my-card p-3 text-start">
+            <a href="/items" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/viewinventory.svg" style="margin-right: 20px;" alt="" width="24">View Inventory
+            </a>
+            <hr>
+            <p>View current Lost &amp; Found inventory. View and edit detailed item descriptions.</p>
+        </div>
+    </div>
+    <br><br>
+    <h2>Reports</h2>
+    <br>
+    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
+        <div class="my-card p-3 text-start">
+            <a href="#" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/newreport.svg" style="margin-right: 20px;" alt="" width="24">Report Lost Item
+            </a>
+            <hr>
+            <p>Report an item missing.</p>
+        </div>
+        <div class="my-card p-3 text-start">
+            <a href="#" class="text-decoration-none text-dark fw-bold">
+                <img src="/svg/viewreports.svg" style="margin-right: 20px;" alt="" width="24">View Reports
+            </a>
+            <hr>
+            <p>View all missing item reports and reporter details.</p>
+        </div>
+    </div>
+</main>
+
+<%- include('layouts/footer') %>

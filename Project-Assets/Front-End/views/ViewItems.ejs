@@ -1,3 +1,5 @@
+<%- include('layouts/header') %>
+
 <main class="container mt-5">
     <!-- Page title -->
     <section class="row">
@@ -29,7 +31,7 @@
         <div class="col-12">
             <div class="table-responsive">
                 <table class="table table-bordered align-middle">
-                    
+
                     <!-- Table headings -->
                     <thead class="table-light">
                         <tr>
@@ -66,11 +68,11 @@
 
                                     <!-- Edit and delete actions -->
                                     <td>
-                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">
+                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">   
                                             Edit
                                         </a>
 
-                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">
+                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">    
                                             <button type="submit" class="btn btn-outline-danger btn-sm">
                                                 Delete
                                             </button>
@@ -91,3 +93,5 @@
         </div>
     </section>
 </main>
+
+<%- include('layouts/footer') %>

@@ -13,27 +13,32 @@ Lost & Found
         <title>UR Lost & Found</title>
         <nav class="navbar" data-bs-theme="dark" style="background-color: #00502E; padding-top: 10px;">
             <div class="container-fluid">
-                <a class="navbar-brand" href="Home.ejs">
-                    <img src="../public/images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white" width="auto" height="50px">
-                </a>
-                <button class="navbar-toggler" style="padding: 10px 10px 15px 10px;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <img src="../public/svg/sidemenu.svg">
+                <a class="navbar-brand" href="/Home"><img src="..\..\public\images\UR_Logo_Primary_Reverse_White.png" alt="UofR_logo_white"></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        <hr>
-                        <a class="nav-link" href="NewItem.ejs" style="text-indent: 50px;">Add Item to Inventory</a>
-                        <a class="nav-link" href="ViewInventory.ejs" style="text-indent: 50px;">View Inventory</a>
-                        <hr>
-                        <a class="nav-link" href="NewReport.ejs" style="text-indent: 50px;">Report Lost Item</a>
-                        <a class="nav-link" href="ViewReports.ejs" style="text-indent: 50px;">View Reports</a>
-                    </div>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
+                            </svg>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/NewItem">Add Item to Inventory</a></li>
+                            <li><a class="dropdown-item" href="/Inventory">View Inventory</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/NewReport">Report Lost Item</a></li>
+                            <li><a class="dropdown-item" href="/Reports">View Reports</a></li>
+                        </ul>
+                    </li>
+                </ul>
                 </div>
             </div>
         </nav>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <link rel="stylesheet" href="css/style.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="/css/style.css">
     </head>
 
     <body>
