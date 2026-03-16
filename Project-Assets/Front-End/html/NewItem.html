@@ -1,0 +1,115 @@
+<!--
+Cobie Caburao
+Amr Azouz
+ENSE 281
+Lost & Found
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>UR Lost & Found</title>
+        <nav class="navbar" data-bs-theme="dark" style="background-color: #00502E; padding-top: 10px;">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/Home">
+                    <img src="../public/images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white" width="auto" height="50px">
+                </a>
+                <button class="navbar-toggler" style="padding: 10px 10px 15px 10px;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+                    <img src="../public/svg/sidemenu.svg">
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                        <hr>
+                        <a class="nav-link" href="/NewItem" style="text-indent: 50px;">Add Item to Inventory</a>
+                        <a class="nav-link" href="/ViewInventory" style="text-indent: 50px;">View Inventory</a>
+                        <hr>
+                        <a class="nav-link" href="/NewReport" style="text-indent: 50px;">Report Lost Item</a>
+                        <a class="nav-link" href="/ViewReports" style="text-indent: 50px;">View Reports</a>
+                    </div>
+                </div>
+            </div>
+        </nav>        
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="../public/css/style.css">
+    </head>
+
+    <body>
+        <main class="container mt-5">
+            <section class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <h2 class="text-center mb-4">Add Item to Inventory</h2>
+
+                    <div class="box log-form">
+                        <form action="/login" method="POST">
+                            <div class="form-group">
+                                <label for="Location">Location</label>
+                                <select class="form-control" id="Location">
+                                    <option>Administration - Humanities Building (AH)</option>
+                                    <option>Centre for Kinesiology, Health and Sport (CK)</option>
+                                    <option>Classroom Building (CL)</option>
+                                    <option>Campion College (CM)</option>
+                                    <option>La Cité (CT)</option>
+                                    <option>College West Building (CW)</option>
+                                    <option>Education Building (ED)</option>
+                                    <option>Kīšik Towers (KI)</option>
+                                    <option>Laboratory Building (LB)</option>
+                                    <option>Luther College (LC)</option>
+                                    <option>Dr. John Archer Library (LY)</option>
+                                    <option>Paskwāw Tower/Wakpá Tower (PA/WA)</option>
+                                    <option>Dr. William Riddell Centre (RC)</option>
+                                    <option>Research and Innovation Centre (RI)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Category">Category</label>
+                                <select class="form-control" id="Category">
+                                <option>Phone</option>
+                                <option>Laptop</option>
+                                <option>Tablet</option>
+                                <option>Headphone/Earphones</option>
+                                <option>Electronic Charger</option>
+                                <option>Keys</option>
+                                <option>Wallet</option>
+                                <option>Jewelry</option>
+                                <option>Water Bottle</option>
+                                <option>Eyewear</option>
+                                <option>Academic Supplies</option>
+                                <option>Other</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3 form-group">
+                                <label for="UploadImage" class="form-label">Upload Image(s)</label>
+                                <input class="form-control" type="file" accept=".png, .jpg, .jpeg" id="UploadImage" multiple>
+                                <p>Accepted file types: .png, .jpg, or .jpeg</p>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ItemDescription">Description</label>
+                                <textarea class="form-control" id="ItemDescription" rows="3" placeholder="Include key details for easier identification..."></textarea>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="submit" class="btn btn-secondary" style="align-content: right;">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="text-center mt-5 mb-3">
+            <p>2026 ENSE 281 Group I Lost &amp; Found</p>
+        </footer>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+        <script src="js/client.js"></script>
+    </body>
+</html>
