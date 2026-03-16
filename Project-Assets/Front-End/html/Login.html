@@ -7,80 +7,56 @@ Lost & Found
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UR Lost & Found</title>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>UR Lost & Found</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
-</head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+        <link rel="stylesheet" href="../public/css/style.css">
+    </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="Home.html">
-                <img src="images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white">
-            </a>
+    <body>
+        <main class="container mt-5">
+            <section class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <h2 class="text-center mb-4">UR Lost &amp; Found</h2>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+                    <div class="box">
+                        <form action="/login" method="POST">
+                            <label for="Username">Username</label>
+                            <div class="mb-3">
+                                <input type="text" id="Username" name="Username" class="form-control" placeholder="Username" required>
+                            </div>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-list" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-                            </svg>
-                        </a>
+                            <label for="Password">Password</label>
+                            <div class="mb-3">
+                                <input type="password" id="Password" name="Password" class="form-control" placeholder="Password" required>
+                            </div>
 
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Add Item to Inventory</a></li>
-                            <li><a class="dropdown-item" href="#">View Inventory</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Report Lost Item</a></li>
-                            <li><a class="dropdown-item" href="#">View Reports</a></li>
-                        </ul>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+                            <p>* Indicates required fields</p>
 
-    <main class="container mt-5">
-        <section class="row justify-content-center">
-            <div class="col-md-6 col-lg-4">
-                <h2 class="text-center mb-4">UR Lost &amp; Found</h2>
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-primary">LOGIN</button>
+                            </div>
+                        </form>
 
-                <form action="/login" method="POST">
-                    <div class="mb-3">
-                        <input type="text" id="username" name="username" class="form-control" placeholder="Username" required>
+                        <div class="text-center mt-3">
+                            <a href="#">Forgot username?</a><br>
+                            <a href="#">Forgot password?</a>
+                        </div>
                     </div>
+                </div>
+            </section>
+        </main>
 
-                    <div class="mb-3">
-                        <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
-                    </div>
+        <footer class="text-center mt-5 mb-3">
+            <p>2026 ENSE 281 Group I Lost &amp; Found</p>
+        </footer>
 
-                    <p>* Indicates required fields</p>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">LOGIN</button>
-                    </div>
-                </form>
-
-            </div>
-        </section>
-    </main>
-
-    <footer class="text-center mt-5 mb-3">
-        <p>2026 ENSE 281 Group F Lost &amp; Found</p>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-    <script src="js/client.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
+        <script src="js/client.js"></script>
+    </body>
 </html>
