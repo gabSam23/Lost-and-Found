@@ -7,56 +7,101 @@ Lost & Found
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>UR Lost & Found</title>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <link rel="stylesheet" href="../public/css/style.css">
-    </head>
+<head>
+    <!-- Basic page metadata -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <body>
-        <main class="container mt-5">
-            <section class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <h2 class="text-center mb-4">UR Lost &amp; Found</h2>
+    <!-- Browser tab title -->
+    <title>UR Lost &amp; Found - Login</title>
 
-                    <div class="box">
-                        <form action="/login" method="POST">
-                            <label for="Username">Username</label>
-                            <div class="mb-3">
-                                <input type="text" id="Username" name="Username" class="form-control" placeholder="Username" required>
-                            </div>
+    <!-- Bootstrap CSS for layout, spacing, forms, and buttons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
 
-                            <label for="Password">Password</label>
-                            <div class="mb-3">
-                                <input type="password" id="Password" name="Password" class="form-control" placeholder="Password" required>
-                            </div>
+    <!-- Custom project stylesheet -->
+    <link rel="stylesheet" href="../Public/css/style.css" />
+</head>
 
-                            <p>* Indicates required fields</p>
+<!-- login-page class applies page-specific login styling from style.css -->
 
-                            <div class="d-grid">
-                                <button type="submit" class="btn btn-primary">LOGIN</button>
-                            </div>
-                        </form>
+<body class="login-page">
 
-                        <div class="text-center mt-3">
-                            <a href="#">Forgot username?</a><br>
-                            <a href="#">Forgot password?</a>
+    <!-- Top header bar styled to match the rest of the site -->
+    <header class="portal-topbar">
+        <div class="portal-topbar-left">
+
+            <!-- Clickable logo that returns the user to the login page -->
+            <a href="Login.html" class="portal-brand" aria-label="University of Regina Home">
+                <img src="../Public/images/UR_Logo_Primary_Reverse_White.png" alt="University of Regina logo"
+                    class="portal-brand-logo" />
+            </a>
+        </div>
+    </header>
+
+    <!-- Main content area -->
+    <main class="site-main py-4 py-lg-5">
+        <div class="container">
+
+            <!-- Wrapper section used to center and space the login card -->
+            <section class="login-wrap">
+                <div class="login-card mx-auto">
+
+                    <!-- Main page heading -->
+                    <h1 class="portal-page-title">UR Lost &amp; Found</h1>
+
+                    <!-- Login form -->
+                    <form action="#" method="POST" class="row g-3">
+
+                        <!-- Username input field -->
+                        <div class="col-12">
+                            <label for="username" class="form-label">
+                                Username <span class="required-star">*</span>
+                            </label>
+                            <input type="text" id="username" name="username" class="form-control"
+                                placeholder="Enter your username" required />
                         </div>
-                    </div>
+
+                        <!-- Password input field -->
+                        <div class="col-12">
+                            <label for="password" class="form-label">
+                                Password <span class="required-star">*</span>
+                            </label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                placeholder="Enter your password" required />
+                        </div>
+
+                        <!-- Small helper note for required fields -->
+                        <div class="col-12">
+                            <p class="helper-text mb-0">Fields marked with * are required.</p>
+                        </div>
+
+                        <!-- Login button
+                 Currently uses a link to Home.html instead of submitting real login data -->
+                        <div class="col-12 d-grid">
+                            <a href="Home.html" class="btn btn-brand">Login</a>
+                        </div>
+                    </form>
                 </div>
             </section>
-        </main>
 
-        <footer class="text-center mt-5 mb-3">
-            <p>2026 ENSE 281 Group I Lost &amp; Found</p>
-        </footer>
+        </div>
+    </main>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-        <script src="js/client.js"></script>
-    </body>
+    <!-- Footer section shown at the bottom of the page -->
+    <footer class="site-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+            <p>University of Regina</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript bundle for interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>

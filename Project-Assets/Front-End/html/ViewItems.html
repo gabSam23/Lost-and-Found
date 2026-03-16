@@ -9,105 +9,148 @@ Lost & Found
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UR Lost & Found - Storage</title>
+    <!-- Basic page metadata -->
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Browser tab title -->
+    <title>UR Lost &amp; Found - Storage</title>
+
+    <!-- Bootstrap CSS for layout, spacing, buttons, table styling, and responsiveness -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/style.css">
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+
+    <!-- Bootstrap Icons for menu, settings, and user icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Custom project stylesheet -->
+    <link rel="stylesheet" href="../Public/css/style.css" />
 </head>
 
-<body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="Home.html">
-                <img src="images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white">
+<!-- portal-home-body applies the main page background and layout styling -->
+
+<body class="portal-home-body">
+
+    <!-- Top navigation/header bar -->
+    <header class="portal-topbar">
+
+        <!-- Left side of the top bar: menu icon + university logo -->
+        <div class="portal-topbar-left">
+
+            <!-- Menu button that currently links back to Home.html -->
+            <a href="Home.html" class="portal-icon-btn" aria-label="Open menu">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
             </a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
-                aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <!-- University of Regina logo / brand area -->
+            <a href="Home.html" class="portal-brand" aria-label="University of Regina Home">
+                <img src="../Public/images/UR_Logo_Primary_Reverse_White.png" alt="University of Regina logo"
+                    class="portal-brand-logo" />
+            </a>
+        </div>
+
+        <!-- Right side of the top bar: settings icon + account display -->
+        <div class="portal-topbar-right">
+
+            <!-- Settings button -->
+            <button class="portal-icon-btn" type="button" aria-label="Settings">
+                <i class="bi bi-gear-fill"></i>
             </button>
 
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                class="bi bi-list" viewBox="0 0 16 16">
-                                <path fill-rule="evenodd"
-                                    d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5" />
-                            </svg>
-                        </a>
-
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Add Item to Inventory</a></li>
-                            <li><a class="dropdown-item" href="#">View Inventory</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="#">Report Lost Item</a></li>
-                            <li><a class="dropdown-item" href="#">View Reports</a></li>
-                        </ul>
-                    </li>
-                </ul>
+            <!-- User account area showing avatar icon and label -->
+            <div class="portal-user-chip">
+                <span class="portal-user-avatar" aria-hidden="true">
+                    <i class="bi bi-person-fill"></i>
+                </span>
+                <span class="portal-user-name">Account</span>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <main class="container mt-5">
-        <section class="row">
-            <div class="col-12">
-                <h2 class="mb-4">Lost and Found Storage</h2>
-            </div>
-        </section>
+    <!-- Main page content -->
+    <main class="portal-home-main">
+        <div class="container py-4">
 
-        <section class="row align-items-start">
-            <div class="col-12">
+            <!-- Page title section -->
+            <section class="portal-page-header">
+                <h1 class="portal-page-title">Lost and Found Storage</h1>
+            </section>
+
+            <!-- Card section containing the storage/inventory table -->
+            <section class="section-card">
+
+                <!-- Makes the table horizontally scrollable on smaller screens -->
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle">
-                        <thead class="table-light">
+                    <table class="table align-middle mb-0">
+
+                        <!-- Table header row -->
+                        <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Image</th>
-                                <th>Category</th>
-                                <th>Description</th>
-                                <th>Location</th>
-                                <th>Date Logged</th>
-                                <th>Actions</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">Image</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Location</th>
+                                <th scope="col">Date Logged</th>
+                                <th scope="col">Actions</th>
                             </tr>
                         </thead>
+
+                        <!-- Table body with one sample row -->
                         <tbody>
                             <tr>
+
+                                <!-- Automatically generated item ID -->
                                 <td>Generated automatically</td>
-                                <td>image</td>
-                                <td>item</td>
-                                <td>Description</td>
-                                <td>found location</td>
+
+                                <!-- Placeholder showing accepted image format -->
+                                <td>*jpg, *jpeg</td>
+
+                                <!-- Item category placeholder -->
+                                <td></td>
+
+                                <!-- Item description placeholder -->
+                                <td></td>
+
+                                <!-- Found/storage location placeholder -->
+                                <td></td>
+
+                                <!-- Date placeholder -->
                                 <td>MM/DD/YYYY</td>
+
+                                <!-- Action buttons for modifying the item -->
                                 <td>
-                                    <button type="button" class="btn btn-outline-primary btn-sm">Edit</button>
-                                    <button type="button" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    <div class="d-flex gap-2 flex-wrap">
+
+                                        <!-- Edit button sends user to the item form page -->
+                                        <a href="NewItem.html" class="btn btn-outline-primary btn-sm">Edit</a>
+
+                                        <!-- Delete button for removing the item
+                         Currently just a visual button with no functionality attached -->
+                                        <button type="button" class="btn btn-outline-danger btn-sm">Delete</button>
+                                    </div>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </main>
 
-    <footer class="text-center mt-5 mb-3">
-        <p>2026 ENSE 281 Group F Lost &amp; Found</p>
+    <!-- Footer shown at the bottom of the page -->
+    <footer class="site-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+            <p>University of Regina</p>
+        </div>
     </footer>
 
+    <!-- Bootstrap JavaScript bundle for interactive Bootstrap components -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-    <script src="js/client.js"></script>
 </body>
 
 </html>

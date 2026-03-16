@@ -7,109 +7,124 @@ Lost & Found
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>UR Lost & Found</title>
-        <nav class="navbar" data-bs-theme="dark" style="background-color: #00502E; padding-top: 10px;">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/Home">
-                    <img src="../public/images/UR_Logo_Primary_Reverse_White.png" alt="UofR logo white" width="auto" height="50px">
-                </a>
-                <button class="navbar-toggler" style="padding: 10px 10px 15px 10px;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
-                    <img src="../public/svg/sidemenu.svg">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UR Lost &amp; Found - Log New Item</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <link rel="stylesheet" href="../Public/css/style.css" />
+</head>
+
+<body class="portal-home-body">
+
+    <!-- Same toolbar as Home page -->
+    <header class="portal-topbar">
+        <div class="portal-topbar-left">
+            <a href="Home.html" class="portal-icon-btn" aria-label="Open menu">
+                <i class="bi bi-grid-3x3-gap-fill"></i>
+            </a>
+
+            <a href="Home.html" class="portal-brand" aria-label="University of Regina Home">
+                <img src="../Public/images/UR_Logo_Primary_Reverse_White.png" alt="University of Regina logo"
+                    class="portal-brand-logo" />
+            </a>
+        </div>
+
+        <div class="portal-topbar-right">
+            <button class="portal-icon-btn" type="button" aria-label="Settings">
+                <i class="bi bi-gear-fill"></i>
+            </button>
+
+            <div class="dropdown portal-user-dropdown">
+                <button class="portal-user-chip portal-user-chip-toggle" type="button" data-bs-toggle="dropdown"
+                    aria-expanded="false" aria-label="Open account menu">
+                    <span class="portal-user-avatar" aria-hidden="true">
+                        <i class="bi bi-person-fill"></i>
+                    </span>
+                    <span class="portal-user-name">Account</span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                    <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="#">Home</a>
-                        <hr>
-                        <a class="nav-link" href="/NewItem" style="text-indent: 50px;">Add Item to Inventory</a>
-                        <a class="nav-link" href="/ViewInventory" style="text-indent: 50px;">View Inventory</a>
-                        <hr>
-                        <a class="nav-link" href="/NewReport" style="text-indent: 50px;">Report Lost Item</a>
-                        <a class="nav-link" href="/ViewReports" style="text-indent: 50px;">View Reports</a>
-                    </div>
-                </div>
+
+                <ul class="dropdown-menu dropdown-menu-end portal-signout-menu">
+                    <li><a class="dropdown-item portal-signout-link" href="Login.html">Sign Out</a></li>
+                </ul>
             </div>
-        </nav>        
+        </div>
+    </header>
 
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-        <link rel="stylesheet" href="../public/css/style.css">
-    </head>
+    <!-- Main content -->
+    <main class="portal-home-main">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+                    <section class="form-card">
+                        <h1 class="portal-page-title mb-4">Lost Item Log</h1>
 
-    <body>
-        <main class="container mt-5">
-            <section class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <h2 class="text-center mb-4">Add Item to Inventory</h2>
-
-                    <div class="box log-form">
-                        <form action="/login" method="POST">
-                            <div class="form-group">
-                                <label for="Location">Location</label>
-                                <select class="form-control" id="Location">
-                                    <option>Administration - Humanities Building (AH)</option>
-                                    <option>Centre for Kinesiology, Health and Sport (CK)</option>
-                                    <option>Classroom Building (CL)</option>
-                                    <option>Campion College (CM)</option>
-                                    <option>La Cité (CT)</option>
-                                    <option>College West Building (CW)</option>
-                                    <option>Education Building (ED)</option>
-                                    <option>Kīšik Towers (KI)</option>
-                                    <option>Laboratory Building (LB)</option>
-                                    <option>Luther College (LC)</option>
-                                    <option>Dr. John Archer Library (LY)</option>
-                                    <option>Paskwāw Tower/Wakpá Tower (PA/WA)</option>
-                                    <option>Dr. William Riddell Centre (RC)</option>
-                                    <option>Research and Innovation Centre (RI)</option>
+                        <form action="#" method="POST" class="row g-4">
+                            <div class="col-12">
+                                <label for="location" class="form-label">Location</label>
+                                <select id="location" name="location" class="form-select" required>
+                                    <option value="" selected disabled>Select location</option>
+                                    <option>Classroom Building</option>
+                                    <option>Riddell Centre</option>
+                                    <option>Library</option>
+                                    <option>Residence</option>
+                                    <option>Other</option>
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="Category">Category</label>
-                                <select class="form-control" id="Category">
-                                <option>Phone</option>
-                                <option>Laptop</option>
-                                <option>Tablet</option>
-                                <option>Headphone/Earphones</option>
-                                <option>Electronic Charger</option>
-                                <option>Keys</option>
-                                <option>Wallet</option>
-                                <option>Jewelry</option>
-                                <option>Water Bottle</option>
-                                <option>Eyewear</option>
-                                <option>Academic Supplies</option>
-                                <option>Other</option>
+                            <div class="col-12">
+                                <label for="category" class="form-label">Category</label>
+                                <select id="category" name="category" class="form-select" required>
+                                    <option value="" selected disabled>Select category</option>
+                                    <option>Accessories</option>
+                                    <option>Electronics</option>
+                                    <option>Identification</option>
+                                    <option>Clothing</option>
+                                    <option>Other</option>
                                 </select>
                             </div>
 
-                            <div class="mb-3 form-group">
-                                <label for="UploadImage" class="form-label">Upload Image(s)</label>
-                                <input class="form-control" type="file" accept=".png, .jpg, .jpeg" id="UploadImage" multiple>
-                                <p>Accepted file types: .png, .jpg, or .jpeg</p>
+                            <div class="col-12">
+                                <label for="itemImage" class="form-label">Upload Image(s)</label>
+                                <input type="file" id="itemImage" name="itemImage" class="form-control" accept="image/*"
+                                    multiple />
                             </div>
 
-                            <div class="form-group">
-                                <label for="ItemDescription">Description</label>
-                                <textarea class="form-control" id="ItemDescription" rows="3" placeholder="Include key details for easier identification..."></textarea>
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea id="description" name="description" class="form-control" rows="6"
+                                    placeholder="Write item description" required></textarea>
                             </div>
 
-                            <div class="btn-container">
-                                <button type="submit" class="btn btn-secondary" style="align-content: right;">Submit</button>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-brand">Submit</button>
                             </div>
                         </form>
-                    </div>
+                    </section>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+    </main>
 
-        <footer class="text-center mt-5 mb-3">
-            <p>2026 ENSE 281 Group I Lost &amp; Found</p>
-        </footer>
+    <!-- Footer -->
+    <footer class="site-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+            <p>University of Regina</p>
+        </div>
+    </footer>
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
-        <script src="https://code.jquery.com/jquery-4.0.0.min.js"></script>
-        <script src="js/client.js"></script>
-    </body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
 </html>

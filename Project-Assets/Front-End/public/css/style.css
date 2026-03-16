@@ -1,46 +1,480 @@
-.box {
-    margin: auto;
-    text-align : center;
-    width: auto;
-    padding: 20px 50px 20px 50px;
-    border-radius: 3px;
-    box-shadow: 0 5px 5px 0 rgb(197, 197, 197);
+/* =========================================================
+   University of Regina - UR Lost & Found
+   Pruned stylesheet for the current static HTML pages
+   Kept only the rules used by:
+   Login.html, Home.html, NewItem.html, NewReport.html,
+   ViewItems.html, and ViewReport.html
+   ========================================================= */
+
+:root {
+  --ur-green: #00502E;
+  --ur-green-dark: #003d23;
+  --text-dark: #1f2933;
+  --text-muted: #5b6570;
+  --surface: #ffffff;
+  --border: #d9e2dc;
+  --danger: #c63c32;
+  --shadow-card: 0 10px 24px rgba(15, 23, 42, 0.08);
+  --radius-lg: 20px;
 }
 
-.log-form {
-    width: 500px;
+html,
+body {
+  height: 100%;
 }
 
-label {
-    text-align: left;
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(180deg, #f8fbf9 0%, #eef5f1 100%);
+  color: var(--text-dark);
+  min-height: 100vh;
 }
 
-input, select, textarea {
-    margin-bottom: 20px;
+a {
+  color: var(--ur-green);
+  text-decoration: none;
 }
 
-.btn-container {
+a:hover {
+  color: var(--ur-green-dark);
+}
+
+.site-main {
+  min-height: calc(100vh - 170px);
+}
+
+.section-card,
+.form-card,
+.login-card,
+.list-card {
+  background: var(--surface);
+  border: 1px solid rgba(0, 80, 46, 0.08);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.page-description {
+  color: var(--text-muted);
+  max-width: 760px;
+  margin-bottom: 0;
+}
+
+.form-card,
+.login-card,
+.section-card {
+  padding: 1.6rem;
+}
+
+.form-label {
+  font-weight: 700;
+  color: var(--ur-green);
+}
+
+.form-control,
+.form-select,
+textarea.form-control {
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0.8rem 0.95rem;
+}
+
+.form-control:focus,
+.form-select:focus,
+textarea.form-control:focus {
+  border-color: rgba(0, 80, 46, 0.35);
+  box-shadow: 0 0 0 0.2rem rgba(0, 80, 46, 0.12);
+}
+
+.helper-text {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.required-star {
+  color: var(--danger);
+}
+
+.btn-brand {
+  background: var(--ur-green);
+  color: #fff;
+  border: 1px solid var(--ur-green);
+  border-radius: 12px;
+  font-weight: 700;
+  padding: 0.75rem 1.1rem;
+}
+
+.btn-brand:hover,
+.btn-brand:focus {
+  background: var(--ur-green-dark);
+  color: #fff;
+  border-color: var(--ur-green-dark);
+}
+
+.list-card {
+  overflow: hidden;
+}
+
+.list-toolbar {
+  padding: 1.2rem 1.25rem;
+  border-bottom: 1px solid rgba(0, 80, 46, 0.08);
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf9 100%);
+}
+
+.empty-state {
+  padding: 2.2rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.login-page {
+  background: radial-gradient(circle at top, rgba(255, 200, 46, 0.22), transparent 26%),
+              linear-gradient(180deg, #f6fbf8 0%, #edf5f0 100%);
+}
+
+.login-wrap {
+  min-height: calc(100vh - 84px);
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
 }
 
-hr {
-    border: none;
-    height: 2px;
-    background-color: black;
-    margin: 5px auto;
+.login-card {
+  max-width: 520px;
+  width: 100%;
+}
+
+.site-footer {
+  background: var(--ur-green);
+  color: rgba(255, 255, 255, 0.92);
+  border-top: 4px solid #FFC82E;
+}
+
+.site-footer p {
+  margin-bottom: 0;
+}
+
+.portal-home-body {
+  background: #f8f9f5;
+  color: #111111;
+  min-height: 100vh;
+}
+
+.portal-topbar {
+  min-height: 64px;
+  background: var(--ur-green);
+  border-bottom: 4px solid #FFC82E;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+}
+
+.portal-topbar-left,
+.portal-topbar-right {
+  display: flex;
+  align-items: stretch;
+}
+
+.portal-icon-btn {
+  width: 64px;
+  min-width: 64px;
+  height: 64px;
+  border: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  background: transparent;
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  text-decoration: none;
+}
+
+.portal-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.portal-brand-logo {
+  height: 48px;
+  width: auto;
+  display: block;
+}
+
+.portal-user-chip {
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.12);
+  color: #ffffff;
+}
+
+.portal-user-avatar {
+  width: 54px;
+  height: 64px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  background: #0fb46a;
+  font-size: 1.5rem;
+}
+
+.portal-user-name {
+  padding: 0 22px;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.portal-user-dropdown {
+  position: relative;
+}
+
+.portal-user-chip-toggle {
+  border: none;
+  padding: 0;
+  appearance: none;
+  cursor: pointer;
+}
+
+.portal-user-chip-toggle::after {
+  display: none;
+}
+
+.portal-user-chip-toggle:focus-visible {
+  outline: 2px solid var(--ur-yellow);
+  outline-offset: -2px;
+}
+
+.portal-signout-menu {
+  min-width: 248px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid var(--ur-yellow);
+  border-radius: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+}
+
+.portal-signout-menu[data-bs-popper] {
+  top: 100%;
+  right: 0;
+  left: auto;
+  margin-top: 0;
+}
+
+.portal-signout-link {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: #4f6070;
+  background: #ffffff;
+}
+
+.portal-signout-link:hover,
+.portal-signout-link:focus {
+  color: #26323d;
+  background: #f4f4f4;
+}
+
+
+.portal-home-main {
+  padding: 22px 0 56px;
+  background-color: #f8f9f5;
+  flex: 1;
+}
+
+.portal-page-shell {
+  width: min(1700px, calc(100% - 72px));
+  margin: 0 auto;
+}
+
+.portal-page-header {
+  margin-bottom: 46px;
+}
+
+.portal-page-title {
+  font-size: clamp(2rem, 3vw, 2.6rem);
+  font-weight: 600;
+  margin: 0;
+  color: #000000;
+}
+
+.portal-section-header {
+  margin-bottom: 26px;
+  margin-top: 40px;
+}
+
+.portal-section-header:first-of-type {
+  margin-top: 0;
+}
+
+.portal-section-title {
+  font-size: clamp(1.8rem, 2.3vw, 2.3rem);
+  font-weight: 600;
+  margin: 0;
+  color: #000000;
+}
+
+.portal-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 36px;
+}
+
+.portal-box-card {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.10);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.portal-box-card:hover {
+  background: #d3d1d1;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.10);
+}
+
+.portal-box-accent {
+  width: 154px;
+  height: 10px;
+  background: var(--ur-green);
+}
+
+.portal-box-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 78px;
+  padding: 0 18px;
+  border-bottom: 1px solid #1d1d1d;
+}
+
+.portal-box-icon {
+  font-size: 2rem;
+  color: #111111;
+  line-height: 1;
+}
+
+.portal-box-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+  color: #000000;
+}
+
+.portal-box-body {
+  padding: 20px 18px 24px;
+}
+
+.portal-box-body p {
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #111111;
+  margin: 0 0 14px;
+}
+
+.portal-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.portal-card-link:hover {
+  color: inherit;
+  text-decoration: none;
+}
+
+.portal-card-grid-two {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+}
+
+.portal-category-card {
+  min-height: 300px;
+}
+
+body.portal-home-body {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1200px) {
+  .portal-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-.my-card {
-    width: 500px;
-    height: 175px;
-    background-color: #EEEEEE;
-    box-shadow: 0 5px 5px 0 rgb(197, 197, 197);
+  .portal-card-grid-two {
+    grid-template-columns: 1fr;
+  }
 }
 
-.my-card::before {
-  content: '';
-  display: block;
-  height: 6px;
-  background-color: #1a4a2e;
+@media (max-width: 768px) {
+  .form-card,
+  .login-card,
+  .section-card {
+    padding: 1.25rem;
+  }
+
+  .portal-topbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .portal-topbar-right {
+    justify-content: flex-end;
+  }
+
+  .portal-page-shell {
+    width: min(100%, calc(100% - 28px));
+  }
+
+  .portal-card-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .portal-user-name {
+    padding: 0 14px;
+    font-size: 0.95rem;
+  }
+}
+
+
+/* ---------------------------------
+   UR-style application menu icon
+   Replaces the old 3x3 grid with the
+   2x2 square menu used in UR systems.
+   --------------------------------- */
+.portal-icon-btn .bi-grid-3x3-gap-fill {
+  position: relative;
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  font-size: 0;
+  line-height: 0;
+}
+
+.portal-icon-btn .bi-grid-3x3-gap-fill::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 7px;
+  height: 7px;
+  background: currentColor;
+  box-shadow:
+    11px 0 0 currentColor,
+    0 11px 0 currentColor,
+    11px 11px 0 currentColor;
 }

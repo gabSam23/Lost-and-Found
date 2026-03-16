@@ -1,0 +1,212 @@
+<!--
+  Cobie Caburao
+  Amr Azouz
+  ENSE 281
+  Lost & Found
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Basic page metadata -->
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- Browser tab title -->
+  <title>UR Lost &amp; Found - New Report</title>
+
+  <!-- Bootstrap CSS for layout, spacing, forms, buttons, and responsive grid -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+    crossorigin="anonymous"
+  />
+
+  <!-- Bootstrap Icons for the menu, settings, and account icons -->
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
+  />
+
+  <!-- Custom project stylesheet -->
+  <link rel="stylesheet" href="../Public/css/style.css" />
+</head>
+
+<!-- portal-home-body applies the main portal background and general page layout -->
+<body class="portal-home-body">
+
+  <!-- Top header/navigation bar -->
+  <header class="portal-topbar">
+
+    <!-- Left side of the top bar: menu icon and university logo -->
+    <div class="portal-topbar-left">
+
+      <!-- Menu button that currently links back to the home page -->
+      <a href="Home.html" class="portal-icon-btn" aria-label="Open menu">
+        <i class="bi bi-grid-3x3-gap-fill"></i>
+      </a>
+
+      <!-- University of Regina logo / brand link -->
+      <a href="Home.html" class="portal-brand" aria-label="University of Regina Home">
+        <img
+          src="../Public/images/UR_Logo_Primary_Reverse_White.png"
+          alt="University of Regina logo"
+          class="portal-brand-logo"
+        />
+      </a>
+    </div>
+
+    <!-- Right side of the top bar: settings button and user dropdown -->
+    <div class="portal-topbar-right">
+
+      <!-- Settings button -->
+      <button class="portal-icon-btn" type="button" aria-label="Settings">
+        <i class="bi bi-gear-fill"></i>
+      </button>
+
+      <!-- User account dropdown area -->
+      <div class="dropdown portal-user-dropdown">
+        <button
+          class="portal-user-chip portal-user-chip-toggle"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Open account menu"
+        >
+          <!-- User avatar icon -->
+          <span class="portal-user-avatar" aria-hidden="true">
+            <i class="bi bi-person-fill"></i>
+          </span>
+
+          <!-- Account label shown beside the avatar -->
+          <span class="portal-user-name">Account</span>
+        </button>
+
+        <!-- Dropdown menu with sign out option -->
+        <ul class="dropdown-menu dropdown-menu-end portal-signout-menu">
+          <li><a class="dropdown-item portal-signout-link" href="Login.html">Sign Out</a></li>
+        </ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main page content -->
+  <main class="portal-home-main">
+    <div class="container py-4 py-lg-5">
+
+      <!-- Page heading and short description -->
+      <section class="portal-page-header">
+        <h1 class="portal-page-title">Submit a Lost Item Report</h1>
+        <p class="page-description">
+          Collect the key details needed to match a reported missing item with inventory already in storage.
+        </p>
+      </section>
+
+      <!-- Form card containing the lost item report form -->
+      <section class="form-card">
+        <form action="#" method="POST" class="row g-3">
+
+          <!-- Reporter full name -->
+          <div class="col-md-6">
+            <label for="reporterName" class="form-label">Reporter name <span class="required-star">*</span></label>
+            <input type="text" id="reporterName" name="reporterName" class="form-control" placeholder="Full name" required />
+          </div>
+
+          <!-- Reporter email address -->
+          <div class="col-md-6">
+            <label for="reporterEmail" class="form-label">Reporter email <span class="required-star">*</span></label>
+            <input type="email" id="reporterEmail" name="reporterEmail" class="form-control" placeholder="name@example.com" required />
+          </div>
+
+          <!-- Optional phone number -->
+          <div class="col-md-6">
+            <label for="reporterPhone" class="form-label">Phone number</label>
+            <input type="tel" id="reporterPhone" name="reporterPhone" class="form-control" placeholder="Optional contact number" />
+          </div>
+
+          <!-- Name of the missing item -->
+          <div class="col-md-6">
+            <label for="itemName" class="form-label">Missing item name <span class="required-star">*</span></label>
+            <input type="text" id="itemName" name="itemName" class="form-control" placeholder="Example: Black backpack" required />
+          </div>
+
+          <!-- Item category selection -->
+          <div class="col-md-6">
+            <label for="category" class="form-label">Category <span class="required-star">*</span></label>
+            <select id="category" name="category" class="form-select" required>
+              <option value="">Choose a category</option>
+              <option>Accessories</option>
+              <option>Electronics</option>
+              <option>Identification</option>
+              <option>Clothing</option>
+              <option>Other</option>
+            </select>
+          </div>
+
+          <!-- Date the item was lost -->
+          <div class="col-md-6">
+            <label for="dateLost" class="form-label">Date lost <span class="required-star">*</span></label>
+            <input type="date" id="dateLost" name="dateLost" class="form-control" required />
+          </div>
+
+          <!-- Last known location of the missing item -->
+          <div class="col-12">
+            <label for="lostLocation" class="form-label">Last known location <span class="required-star">*</span></label>
+            <input type="text" id="lostLocation" name="lostLocation" class="form-control" placeholder="Where was the item last seen?" required />
+          </div>
+
+          <!-- Main item description -->
+          <div class="col-12">
+            <label for="description" class="form-label">Description <span class="required-star">*</span></label>
+            <textarea id="description" name="description" class="form-control" rows="4" placeholder="Provide color, brand, size, or any identifying features" required></textarea>
+          </div>
+
+          <!-- Optional distinguishing features -->
+          <div class="col-12">
+            <label for="distinguishingFeatures" class="form-label">Distinguishing features</label>
+            <textarea id="distinguishingFeatures" name="distinguishingFeatures" class="form-control" rows="3" placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."></textarea>
+          </div>
+
+          <!-- Starting status of the report -->
+          <div class="col-md-6">
+            <label for="status" class="form-label">Initial status</label>
+            <select id="status" name="status" class="form-select">
+              <option>Open</option>
+              <option>Matched</option>
+              <option>Resolved</option>
+            </select>
+          </div>
+
+          <!-- Form action buttons -->
+          <div class="col-12 d-flex flex-wrap gap-2 pt-2">
+
+            <!-- Submit button -->
+            <button type="submit" class="btn btn-brand">Submit Report</button>
+
+            <!-- Cancel button that returns to the report list page -->
+            <a href="ViewReport.html" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer area -->
+  <footer class="site-footer py-4">
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+      <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+      <p>University of Regina interface prototype</p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JavaScript bundle for dropdowns and other interactive components -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"
+  ></script>
+</body>
+</html>
