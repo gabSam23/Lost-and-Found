@@ -74,6 +74,40 @@ app.get("/NewItem", (req, res) => {
     res.render("NewItem");
 });
 
+//DATABASE CONN CHECK
+// 1. Import your database connection
+const supabase = require('./config/supabaseClient'); 
+
+// ... (your other app configurations like app.set('view engine', 'ejs') go here) ...
+
+// 2. Create the Test Route
+app.get('/test-db', async (req, res) => {
+    try {
+        // Try to fetch just 1 item from the lost_items table to prove we have access
+        const { data, error } = await supabase
+            .from('lost_items')
+            .select('*')
+            .limit(1);
+
+        // If Supabase throws an error (e.g., wrong password, bad table name)
+        if (error) {
+            console.error("Supabase Error:", error);
+            return res.status(500).json({ success: false, message: "Database connection failed!", error: error.message });
+        }
+
+        // If it works, send a success message to the browser!
+        res.json({ 
+            success: true, 
+            message: "Connection successful! 🎉", 
+            data: data 
+        });
+
+    } catch (err) {
+        console.error("Server Error:", err);
+        res.status(500).send("Something broke on the server end.");
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
