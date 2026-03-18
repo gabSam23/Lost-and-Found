@@ -70,6 +70,10 @@ app.get("/items", (req, res) => {
     res.render("ViewItems"); // Renders views/ViewItems.ejs
 });
 
+app.get("/NewItem", (req, res) => {
+    res.render("NewItem");
+});
+
 app.listen(port, () => {
     console.log(`Server is running on http://localhost:${port}`);
 });
