@@ -13,10 +13,10 @@
 
         <div class="box">
             <form action="/login" method="POST">
-                <label for="username">Username*</label>
+                <label for="email">Email*</label>
                 <div class="mb-2">
-                    <input type="text" id="username" name="username" placeholder="Username"
-                        value="<%= typeof username !== 'undefined' ? username : '' %>" required />
+                    <input type="email" id="email" name="email" placeholder="Enter your email"
+                        value="<%= typeof email !== 'undefined' ? email : '' %>" required />
                 </div>
 
                 <label for="password">Password*</label>

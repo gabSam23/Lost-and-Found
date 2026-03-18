@@ -2,6 +2,9 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 
+// Import database connection
+const supabase = require('./config/supabaseClient'); 
+
 const app = express();
 const port = 3000;
 
@@ -14,6 +17,7 @@ app.use(express.static("public"));
 
 // Configure express to access variables in req.body object when submitting forms
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 // Route for the Landing Page (Login)
 app.get("/", (req, res) => {
@@ -23,41 +27,39 @@ app.get("/", (req, res) => {
 });
 
 // A POST route for when the user submits the login form
-app.post("/login", (req, res) => {
+// Update: Made changes to link to Supabase Authentication
+app.post("/login", async (req, res) => {
+    
+    // Grab the email and password from your form
+    const submittedEmail = req.body.email; 
+    const submittedPassword = req.body.password;
 
-    // Note: You will eventually replace this fs.readFile with a Supabase query!
-    fs.readFile(__dirname + "/users.json", "utf8", (err, jsonString) => {
+    try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: submittedEmail,
+            password: submittedPassword,
+        });
 
-        if (err) {
-            console.log("Error reading file:", err);
-            // If users.json doesn't exist yet, we'll just log it and redirect for now
-            return res.redirect("/");
-
+        if (error) {
+            console.log("Supabase login error:", error.message);
+            // INSTEAD OF REDIRECTING: Re-render the page and pass the error message and email!
+            return res.render("Login", { 
+                error: "Invalid email or password. Please try again.", 
+                email: submittedEmail 
+            });
         }
 
-        try {
-            const users = JSON.parse(jsonString);
-            const submittedEmail = req.body.email;
-            const submittedPassword = req.body.password;
+        // SUCCESS!
+        console.log("Successfully logged in user:", data.user.email);
+        res.redirect("/home");
 
-            // Validating if users actually has submittedEmail and submittedPassword
-            const user = users.find(u => u.email === submittedEmail && u.password === submittedPassword);
-
-            if (user) {
-                // Redirect to the Home page on success
-                res.redirect("/home");
-
-            } else {
-                // Back to login page if invalid
-                res.redirect("/");
-            }
-
-
-        } catch (err) {
-            console.log("Error parsing JSON:", err);
-            res.redirect("/");
-        }
-    });
+    } catch (err) {
+        console.log("Server error during login:", err);
+        res.render("Login", { 
+            error: "A server error occurred. Please try again later.",
+            email: submittedEmail
+        });
+    }
 });
 
 // Route for the Home Page
@@ -74,13 +76,7 @@ app.get("/NewItem", (req, res) => {
     res.render("NewItem");
 });
 
-//DATABASE CONN CHECK
-// 1. Import your database connection
-const supabase = require('./config/supabaseClient'); 
-
-// ... (your other app configurations like app.set('view engine', 'ejs') go here) ...
-
-// 2. Create the Test Route
+// Create the Test Route
 app.get('/test-db', async (req, res) => {
     try {
         // Try to fetch just 1 item from the lost_items table to prove we have access
@@ -95,10 +91,10 @@ app.get('/test-db', async (req, res) => {
             return res.status(500).json({ success: false, message: "Database connection failed!", error: error.message });
         }
 
-        // If it works, send a success message to the browser!
+        // If it works, send a success message to the browser
         res.json({ 
             success: true, 
-            message: "Connection successful! 🎉", 
+            message: "Connection successful!", 
             data: data 
         });
 
