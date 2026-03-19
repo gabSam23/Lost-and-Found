@@ -1,8 +1,32 @@
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-        <script src="/js/client.js"></script>
-    </body>
-    <footer class="text-center mt-5 py-3 border-top">
-        <p>&copy; 2026 ENSE 281 Group F Lost & Found</p>
-    </footer>
+ <!--Amr Azouz
+    Cobie Caburao--> 
+  
+  <!-- Footer section shown at the bottom of every page -->
+  <footer class="site-footer py-4">
+
+    <!-- Bootstrap container used for spacing and responsive layout -->
+    <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+
+      <!-- Static project/course text shown on the left -->
+      <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+
+      <!-- Dynamic footer text:
+           - uses footerText if passed in from the page
+           - otherwise defaults to 'University of Regina' -->
+      <p><%= footerText || 'University of Regina' %></p>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JavaScript bundle.
+       Needed for interactive Bootstrap features like dropdown menus. -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- Closing body tag -->
+</body>
+
+<!-- Closing html tag -->
 </html>

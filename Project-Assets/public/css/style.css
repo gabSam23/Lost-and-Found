@@ -9,6 +9,7 @@
 :root {
   --ur-green: #00502E;
   --ur-green-dark: #003d23;
+  --ur-yellow: #FFC82E;
   --text-dark: #1f2933;
   --text-muted: #5b6570;
   --surface: #ffffff;
@@ -477,4 +478,15 @@ body.portal-home-body {
     11px 0 0 currentColor,
     0 11px 0 currentColor,
     11px 11px 0 currentColor;
+}
+
+
+/* Extra styles for the Express + EJS version */
+.alert-inline {
+  border-radius: 12px;
+}
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }

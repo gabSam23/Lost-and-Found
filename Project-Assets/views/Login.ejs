@@ -1,37 +1,137 @@
-<% showNavbar = false %>
-<%- include("layouts/header", {showNavbar}) %>
+<!--Amr Azouz
+    Cobie Caburao
+-->
 
-<main class="text-center mt-5">
-    <h2>UR Lost & Found Login</h2>
+<!DOCTYPE html>
+<html lang="en">
 
-    <section>
-        <% if (typeof error !== "undefined" && error) { %>
-            <p class="text-danger">
-                <%= error %>
-            </p>
-        <% } %>
+<head>
+    <!-- Character encoding for the page -->
+    <meta charset="UTF-8" />
 
-        <div class="box">
-            <form action="/login" method="POST">
-                <label for="email">Email*</label>
-                <div class="mb-2">
-                    <input type="email" id="email" name="email" placeholder="Enter your email"
-                        value="<%= typeof email !== 'undefined' ? email : '' %>" required />
-                </div>
+    <!-- Makes Internet Explorer use the latest rendering engine -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-                <label for="password">Password*</label>
-                <div class="mb-2">
-                    <input type="password" id="password" name="password" placeholder="Password" required />      
-                </div>
+    <!-- Makes the page responsive on phones, tablets, and desktops -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-                <p>* Indicates required fields</p>
+    <!-- Dynamic page title passed in from app.js -->
+    <title>
+        <%= pageTitle %>
+    </title>
 
-                <div>
-                    <button type="submit" class="btn btn-primary">LOGIN</button>
-                </div>
-            </form>
+    <!-- Bootstrap CSS for layout, spacing, buttons, forms, etc. -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous" />
+
+    <!-- Bootstrap Icons for icon support -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+    <!-- Custom stylesheet from the public/css folder -->
+    <link rel="stylesheet" href="/css/style.css" />
+</head>
+
+<!-- Body class used for login page-specific styling -->
+<body class="login-page">
+
+    <!-- Top navigation/header bar -->
+    <header class="portal-topbar">
+        <div class="portal-topbar-left">
+
+            <!-- Logo links back to the login/root page -->
+            <a href="/" class="portal-brand" aria-label="University of Regina Home">
+                <img src="/images/UR_Logo_Primary_Reverse_White.png" alt="University of Regina logo"
+                    class="portal-brand-logo" />
+            </a>
         </div>
-    </section>
-</main>
+    </header>
 
-<%- include('layouts/footer') %>
+    <!-- Main content area of the page -->
+    <main class="site-main py-4 py-lg-5">
+        <div class="container">
+
+            <!-- Wrapper used to center the login card -->
+            <section class="login-wrap">
+                <div class="login-card mx-auto">
+
+                    <!-- Main heading shown on the login page -->
+                    <h1 class="portal-page-title">UR Lost &amp; Found</h1>
+
+                    <!-- Show login error message only if errorMessage exists -->
+                    <% if (errorMessage) { %>
+                        <div class="alert alert-danger alert-inline mt-4" role="alert">
+                            <%= errorMessage %>
+                        </div>
+                    <% } %>
+
+                    <!-- Show logout success message only if logoutMessage exists -->
+                    <% if (logoutMessage) { %>
+                        <div class="alert alert-success alert-inline mt-4" role="alert">
+                            <%= logoutMessage %>
+                        </div>
+                    <% } %>
+
+                    <!-- Login form sends data to POST /login -->
+                    <form action="/login" method="POST" class="row g-3 mt-1">
+
+                        <!-- Username input -->
+                        <div class="col-12">
+                            <label for="username" class="form-label">
+                                Username <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                class="form-control"
+                                placeholder="Enter your username"
+                                required
+                            />
+                        </div>
+
+                        <!-- Password input -->
+                        <div class="col-12">
+                            <label for="password" class="form-label">
+                                Password <span class="required-star">*</span>
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="form-control"
+                                placeholder="Enter your password"
+                                required
+                            />
+                        </div>
+
+                        <!-- Small helper text for the user -->
+                        <div class="col-12">
+                            <p class="helper-text mb-0">Fields marked with * are required.</p>
+                            <p class="helper-text mb-0">Demo login: admin / admin123</p>
+                        </div>
+
+                        <!-- Login submit button -->
+                        <div class="col-12 d-grid">
+                            <button type="submit" class="btn btn-brand">Login</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer section shown at the bottom of the page -->
+    <footer class="site-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <p>2026 ENSE 281 Group F - UR Lost &amp; Found</p>
+            <p>University of Regina</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JavaScript bundle for interactive components -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

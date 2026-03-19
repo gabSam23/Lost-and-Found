@@ -1,0 +1,169 @@
+<!--Amr Azouz
+    Cobie Caburao
+-->
+
+<!-- Include the shared header file from views/layouts/header.ejs.
+     pageTitle sets the browser tab title.
+     currentUser shows the logged-in user's name in the top bar.
+     bodyClass applies styling for this page. -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
+
+    <!-- Main content area for the report form page -->
+    <main class="portal-home-main">
+        <div class="container py-4 py-lg-5">
+
+            <!-- Page heading section -->
+            <section class="portal-page-header">
+
+                <!-- Dynamic title:
+                 - shows edit title if the user is editing an existing report
+                 - shows submit title if the user is creating a new report -->
+                <h1 class="portal-page-title">
+                    <%= isEdit ? 'Edit Lost Item Report' : 'Submit a Lost Item Report' %>
+                </h1>
+
+                <!-- Short explanation of what this form is for -->
+                <p class="page-description">
+                    Collect the key details needed to match a reported missing item with inventory already in storage.
+                </p>
+            </section>
+
+            <!-- Card container for the report form -->
+            <section class="form-card">
+
+                <!-- Form action changes depending on mode:
+                 - edit mode submits to /reports/:id
+                 - new mode submits to /reports -->
+                <form action="<%= isEdit ? '/reports/' + report.id : '/reports' %>" method="POST" class="row g-3">
+
+                    <!-- Reporter full name -->
+                    <div class="col-md-6">
+                        <label for="reporterName" class="form-label">
+                            Reporter name <span class="required-star">*</span>
+                        </label>
+                        <input type="text" id="reporterName" name="reporterName" class="form-control"
+                            placeholder="Full name" value="<%= report.reporterName || '' %>" required />
+                    </div>
+
+                    <!-- Reporter email address -->
+                    <div class="col-md-6">
+                        <label for="reporterEmail" class="form-label">
+                            Reporter email <span class="required-star">*</span>
+                        </label>
+                        <input type="email" id="reporterEmail" name="reporterEmail" class="form-control"
+                            placeholder="name@example.com" value="<%= report.reporterEmail || '' %>" required />
+                    </div>
+
+                    <!-- Optional reporter phone number -->
+                    <div class="col-md-6">
+                        <label for="reporterPhone" class="form-label">Phone number</label>
+                        <input type="tel" id="reporterPhone" name="reporterPhone" class="form-control"
+                            placeholder="Optional contact number" value="<%= report.reporterPhone || '' %>" />
+                    </div>
+
+                    <!-- Name of the missing item -->
+                    <div class="col-md-6">
+                        <label for="itemName" class="form-label">
+                            Missing item name <span class="required-star">*</span>
+                        </label>
+                        <input type="text" id="itemName" name="itemName" class="form-control"
+                            placeholder="Example: Black backpack" value="<%= report.itemName || '' %>" required />
+                    </div>
+
+                    <!-- Category dropdown -->
+                    <div class="col-md-6">
+                        <label for="category" class="form-label">
+                            Category <span class="required-star">*</span>
+                        </label>
+
+                        <select id="category" name="category" class="form-select" required>
+                            <option value="">Choose a category</option>
+
+                            <!-- Each option checks whether it matches the current report category.
+                             If it does, that option is pre-selected in edit mode. -->
+                            <option value="Accessories" <%=report.category==='Accessories' ? 'selected' : '' %>>
+                                Accessories
+                            </option>
+                            <option value="Electronics" <%=report.category==='Electronics' ? 'selected' : '' %>>
+                                Electronics
+                            </option>
+                            <option value="Identification" <%=report.category==='Identification' ? 'selected' : '' %>>
+                                Identification
+                            </option>
+                            <option value="Clothing" <%=report.category==='Clothing' ? 'selected' : '' %>>
+                                Clothing
+                            </option>
+                            <option value="Other" <%=report.category==='Other' ? 'selected' : '' %>>
+                                Other
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Date the item was lost -->
+                    <div class="col-md-6">
+                        <label for="dateLost" class="form-label">
+                            Date lost <span class="required-star">*</span>
+                        </label>
+                        <input type="date" id="dateLost" name="dateLost" class="form-control"
+                            value="<%= report.dateLost || '' %>" required />
+                    </div>
+
+                    <!-- Last known location where the item was seen -->
+                    <div class="col-12">
+                        <label for="lostLocation" class="form-label">
+                            Last known location <span class="required-star">*</span>
+                        </label>
+                        <input type="text" id="lostLocation" name="lostLocation" class="form-control"
+                            placeholder="Where was the item last seen?" value="<%= report.lostLocation || '' %>"
+                            required />
+                    </div>
+
+                    <!-- Main description of the item -->
+                    <div class="col-12">
+                        <label for="description" class="form-label">
+                            Description <span class="required-star">*</span>
+                        </label>
+                        <textarea id="description" name="description" class="form-control" rows="4"
+                            placeholder="Provide color, brand, size, or any identifying features"
+                            required><%= report.description || '' %></textarea>
+                    </div>
+
+                    <!-- Optional extra identifying details -->
+                    <div class="col-12">
+                        <label for="distinguishingFeatures" class="form-label">Distinguishing features</label>
+                        <textarea id="distinguishingFeatures" name="distinguishingFeatures" class="form-control"
+                            rows="3"
+                            placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."><%= report.distinguishingFeatures || '' %></textarea>
+                    </div>
+
+                    <!-- Current report status -->
+                    <div class="col-md-6">
+                        <label for="status" class="form-label">Initial status</label>
+
+                        <select id="status" name="status" class="form-select">
+                            <!-- Pre-select the saved status if editing -->
+                            <option value="Open" <%=report.status==='Open' ? 'selected' : '' %>>Open</option>
+                            <option value="Matched" <%=report.status==='Matched' ? 'selected' : '' %>>Matched</option>
+                            <option value="Resolved" <%=report.status==='Resolved' ? 'selected' : '' %>>Resolved
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Form action buttons -->
+                    <div class="col-12 d-flex flex-wrap gap-2 pt-2">
+
+                        <!-- Submit button text changes depending on mode -->
+                        <button type="submit" class="btn btn-brand">
+                            <%= isEdit ? 'Update Report' : 'Submit Report' %>
+                        </button>
+
+                        <!-- Cancel button returns the user to the reports list without saving -->
+                        <a href="/reports" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </main>
+
+    <!-- Include the shared footer file from views/layouts/footer.ejs -->
+    <%- include("layouts/footer", { footerText: "University of Regina" }) %>

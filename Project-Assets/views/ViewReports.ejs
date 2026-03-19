@@ -1,0 +1,161 @@
+<!--Amr Azouz
+    Cobie Caburao-->
+
+<!-- Include the shared header layout from views/layouts/header.ejs.
+     pageTitle sets the browser tab title.
+     currentUser displays the logged-in user's name in the top bar.
+     bodyClass applies page-specific styling to the body. -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
+
+    <!-- Main content area for the reports list page -->
+    <main class="portal-home-main">
+        <div class="container py-4 py-lg-5">
+
+            <!-- Page heading section -->
+            <section class="portal-page-header mb-4">
+                <h1 class="portal-page-title">UR Lost &amp; Found</h1>
+                <p class="page-description">
+                    Review submitted lost item reports and manage report records.
+                </p>
+            </section>
+
+            <!-- Card container that holds the report list -->
+            <div class="list-card">
+
+                <!-- Toolbar/header area above the table -->
+                <div
+                    class="list-toolbar d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+
+                    <!-- Left side: section title and description -->
+                    <div>
+                        <h2 class="h5 mb-1">Lost Item Reports</h2>
+                        <p class="text-muted mb-0">
+                            View, edit, and delete submitted lost item reports.
+                        </p>
+                    </div>
+
+                    <!-- Right side: badge showing number of reports -->
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge text-bg-light border px-3 py-2">
+                            <%= reports.length %> record(s)
+                        </span>
+                    </div>
+                </div>
+
+                <!-- If there are no reports, show an empty-state message -->
+                <% if (reports.length===0) { %>
+                    <div class="empty-state">No reports have been submitted yet.</div>
+
+                    <!-- Otherwise, show the reports table -->
+                    <% } else { %>
+                        <div class="table-responsive p-3">
+
+                            <!-- Bootstrap table used to display all reports -->
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <!-- Table column headings -->
+                                        <th>Report ID</th>
+                                        <th>Item</th>
+                                        <th>Category</th>
+                                        <th>Reporter</th>
+                                        <th>Last Known Location</th>
+                                        <th>Date Lost</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <!-- Loop through each report in the reports array -->
+                                    <% reports.forEach(function(report) { %>
+                                        <tr>
+
+                                            <!-- Unique report ID -->
+                                            <td>
+                                                <%= report.id %>
+                                            </td>
+
+                                            <!-- Name of the missing item -->
+                                            <td>
+                                                <%= report.itemName %>
+                                            </td>
+
+                                            <!-- Report category -->
+                                            <td>
+                                                <%= report.category %>
+                                            </td>
+
+                                            <!-- Reporter details -->
+                                            <td>
+                                                <!-- Reporter name in bold -->
+                                                <strong>
+                                                    <%= report.reporterName %>
+                                                </strong><br />
+
+                                                <!-- Reporter email -->
+                                                <small>
+                                                    <%= report.reporterEmail %>
+                                                </small>
+
+                                                <!-- Only show phone number if one exists -->
+                                                <% if (report.reporterPhone) { %>
+                                                    <br />
+                                                    <small>
+                                                        <%= report.reporterPhone %>
+                                                    </small>
+                                                    <% } %>
+                                            </td>
+
+                                            <!-- Last known location of the missing item -->
+                                            <td>
+                                                <%= report.lostLocation %>
+                                            </td>
+
+                                            <!-- Date the item was lost -->
+                                            <td>
+                                                <%= report.dateLost %>
+                                            </td>
+
+                                            <!-- Current report status shown as a badge -->
+                                            <td>
+                                                <span class="badge text-bg-light border">
+                                                    <%= report.status %>
+                                                </span>
+                                            </td>
+
+                                            <!-- Action buttons -->
+                                            <td>
+                                                <div class="table-actions d-flex gap-2">
+
+                                                    <!-- Edit button opens the edit form for this specific report -->
+                                                    <a href="/reports/<%= report.id %>/edit"
+                                                        class="btn btn-outline-primary btn-sm">
+                                                        Edit
+                                                    </a>
+
+                                                    <!-- Delete form sends a POST request to delete this report -->
+                                                    <form action="/reports/<%= report.id %>/delete" method="POST"
+                                                        class="m-0">
+
+                                                        <!-- Confirmation popup appears before deleting -->
+                                                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                            onclick="return confirm('Are you sure you want to delete this report?');">
+                                                            Delete
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+            </div>
+        </div>
+    </main>
+
+    <!-- Include the shared footer layout from views/layouts/footer.ejs.
+     footerText changes the text shown on the right side of the footer. -->
+    <%- include("layouts/footer", { footerText: "University of Regina interface prototype" }) %>

@@ -1,97 +1,106 @@
-<%- include('layouts/header') %>
+<!--Amr Azouz
+    Cobie Caburao-->
 
-<main class="container mt-5">
-    <!-- Page title -->
-    <section class="row">
-        <div class="col-12">
-            <h2 class="mb-4">Lost and Found Storage</h2>
-        </div>
-    </section>
+<!-- Include the shared header layout from views/layouts/header.ejs.
+     pageTitle controls the browser tab title.
+     currentUser displays the logged-in user's name in the top bar.
+     bodyClass applies page-specific body styling. -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
 
-    <!-- Show a message if one was passed in -->
-    <% if (typeof message !== "undefined" && message) { %>
-        <section class="row">
-            <div class="col-12">
-                <p><%= message %></p>
-            </div>
-        </section>
-    <% } %>
+    <!-- Main content area for the inventory/storage page -->
+    <main class="portal-home-main">
+        <div class="container py-4">
 
-    <!-- Show an error if one was passed in -->
-    <% if (typeof error !== "undefined" && error) { %>
-        <section class="row">
-            <div class="col-12">
-                <p><%= error %></p>
-            </div>
-        </section>
-    <% } %>
+            <!-- Page heading -->
+            <section class="portal-page-header">
+                <h1 class="portal-page-title">Lost and Found Storage</h1>
+            </section>
 
-    <!-- Main storage table -->
-    <section class="row align-items-start">
-        <div class="col-12">
-            <div class="table-responsive">
-                <table class="table table-bordered align-middle">
+            <!-- Card section that holds either the empty-state message or the items table -->
+            <section class="section-card">
 
-                    <!-- Table headings -->
-                    <thead class="table-light">
-                        <tr>
-                            <th>ID</th>
-                            <th>Image</th>
-                            <th>Category</th>
-                            <th>Description</th>
-                            <th>Location</th>
-                            <th>Date Logged</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
+                <!-- If there are no items in the array, show a message instead of the table -->
+                <% if (items.length===0) { %>
+                    <div class="empty-state">No items have been logged yet.</div>
 
-                    <tbody>
-                        <!-- If there are items, loop through and display each one -->
-                        <% if (typeof items !== "undefined" && items.length > 0) { %>
-                            <% items.forEach(item => { %>
-                                <tr>
-                                    <td><%= item.id %></td>
+                    <!-- Otherwise, show the table of items -->
+                    <% } else { %>
+                        <div class="table-responsive">
 
-                                    <!-- Show image if available -->
-                                    <td>
-                                        <% if (item.image) { %>
-                                            <img src="<%= item.image %>" alt="Item image" width="80">
-                                        <% } else { %>
-                                            No image
-                                        <% } %>
-                                    </td>
+                            <!-- Bootstrap table for displaying all logged items -->
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <!-- Table column headers -->
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Image</th>
+                                        <th scope="col">Category</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Location</th>
+                                        <th scope="col">Date Logged</th>
+                                        <th scope="col">Actions</th>
+                                    </tr>
+                                </thead>
 
-                                    <td><%= item.category %></td>
-                                    <td><%= item.description %></td>
-                                    <td><%= item.location %></td>
-                                    <td><%= item.dateLogged %></td>
+                                <tbody>
+                                    <!-- Loop through each item in the items array -->
+                                    <% items.forEach(function(item) { %>
+                                        <tr>
 
-                                    <!-- Edit and delete actions -->
-                                    <td>
-                                        <a href="/storage/edit/<%= item.id %>" class="btn btn-outline-primary btn-sm">   
-                                            Edit
-                                        </a>
+                                            <!-- Display the item's unique ID -->
+                                            <td>
+                                                <%= item.id %>
+                                            </td>
 
-                                        <form action="/storage/delete/<%= item.id %>" method="POST" class="d-inline">    
-                                            <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                Delete
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            <% }) %>
+                                            <!-- Display the image label, or fallback text if no image exists -->
+                                            <td>
+                                                <%= item.imageLabel || 'No image uploaded' %>
+                                            </td>
 
-                        <!-- If there are no items, show fallback text -->
-                        <% } else { %>
-                            <tr>
-                                <td colspan="7" class="text-center">No items currently in storage.</td>
-                            </tr>
+                                            <!-- Display the item category -->
+                                            <td>
+                                                <%= item.category %>
+                                            </td>
+
+                                            <!-- Display the item description -->
+                                            <td>
+                                                <%= item.description %>
+                                            </td>
+
+                                            <!-- Display the location where the item was found/logged -->
+                                            <td>
+                                                <%= item.location %>
+                                            </td>
+
+                                            <!-- Display the date the item was logged -->
+                                            <td>
+                                                <%= item.dateLogged %>
+                                            </td>
+
+                                            <!-- Action buttons for editing or deleting the item -->
+                                            <td>
+                                                <div class="table-actions">
+
+                                                    <!-- Edit button goes to the edit page for this item -->
+                                                    <a href="/items/<%= item.id %>/edit"
+                                                        class="btn btn-outline-primary btn-sm">Edit</a>
+
+                                                    <!-- Delete form submits a POST request to delete this item -->
+                                                    <form action="/items/<%= item.id %>/delete" method="POST">
+                                                        <button type="submit"
+                                                            class="btn btn-outline-danger btn-sm">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
                         <% } %>
-                    </tbody>
-                </table>
-            </div>
+            </section>
         </div>
-    </section>
-</main>
+    </main>
 
-<%- include('layouts/footer') %>
+    <!-- Include the shared footer layout from views/layouts/footer.ejs -->
+    <%- include("layouts/footer", { footerText: "University of Regina" }) %>

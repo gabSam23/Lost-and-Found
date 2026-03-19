@@ -1,68 +1,112 @@
-<%- include('layouts/header') %>
+<!--Amr Azouz
+    Cobie Caburao
+-->
 
-<main class="container mt-5">
-            <section class="row justify-content-center">
-                <div class="col-md-6 col-lg-4">
-                    <h2 class="text-center mb-4">Add Item to Inventory</h2>
+<!-- Include the shared header file from views/layouts/header.ejs.
+     pageTitle controls the browser tab title.
+     currentUser shows the logged-in user's name in the top bar.
+     bodyClass applies page-specific styling to the body. -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
 
-                    <div class="box log-form">
-                        <form action="/login" method="POST">
-                            <div class="form-group">
-                                <label for="Location">Location</label>
-                                <select class="form-control" id="Location">
-                                    <option>Administration - Humanities Building (AH)</option>
-                                    <option>Centre for Kinesiology, Health and Sport (CK)</option>
-                                    <option>Classroom Building (CL)</option>
-                                    <option>Campion College (CM)</option>
-                                    <option>La Cité (CT)</option>
-                                    <option>College West Building (CW)</option>
-                                    <option>Education Building (ED)</option>
-                                    <option>Kīšik Towers (KI)</option>
-                                    <option>Laboratory Building (LB)</option>
-                                    <option>Luther College (LC)</option>
-                                    <option>Dr. John Archer Library (LY)</option>
-                                    <option>Paskwāw Tower/Wakpá Tower (PA/WA)</option>
-                                    <option>Dr. William Riddell Centre (RC)</option>
-                                    <option>Research and Innovation Centre (RI)</option>
+    <!-- Main content area for the page -->
+    <main class="portal-home-main">
+        <div class="container">
+
+            <!-- Center the form horizontally on the page -->
+            <div class="row justify-content-center">
+
+                <!-- Responsive column width for the form card -->
+                <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+
+                    <!-- Card that contains the new/edit item form -->
+                    <section class="form-card">
+
+                        <!-- Page title changes depending on whether the user is editing or adding an item -->
+                        <h1 class="portal-page-title mb-4">
+                            <%= isEdit ? 'Edit Lost Item' : 'Lost Item Log' %>
+                        </h1>
+
+                        <!-- Form action changes based on mode:
+                         - Edit mode submits to /items/:id
+                         - New item mode submits to /items -->
+                        <form action="<%= isEdit ? '/items/' + item.id : '/items' %>" method="POST" class="row g-4">
+
+                            <!-- Location dropdown field -->
+                            <div class="col-12">
+                                <label for="location" class="form-label">Location</label>
+
+                                <select id="location" name="location" class="form-select" required>
+                                    <!-- Default placeholder option -->
+                                    <option value="" disabled <%=!item.location ? 'selected' : '' %>>
+                                        Select location
+                                    </option>
+
+                                    <!-- Loop through each location option and mark it as selected if it matches the item's current value -->
+                                    <% ['Classroom Building', 'Riddell Centre' , 'Library' , 'Residence' , 'Other'
+                                        ].forEach(function(option) { %>
+                                        <option value="<%= option %>" <%=item.location===option ? 'selected' : '' %>>
+                                            <%= option %>
+                                        </option>
+                                        <% }) %>
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="Category">Category</label>
-                                <select class="form-control" id="Category">
-                                <option>Phone</option>
-                                <option>Laptop</option>
-                                <option>Tablet</option>
-                                <option>Headphone/Earphones</option>
-                                <option>Electronic Charger</option>
-                                <option>Keys</option>
-                                <option>Wallet</option>
-                                <option>Jewelry</option>
-                                <option>Water Bottle</option>
-                                <option>Eyewear</option>
-                                <option>Academic Supplies</option>
-                                <option>Other</option>
+                            <!-- Category dropdown field -->
+                            <div class="col-12">
+                                <label for="category" class="form-label">Category</label>
+
+                                <select id="category" name="category" class="form-select" required>
+                                    <!-- Default placeholder option -->
+                                    <option value="" disabled <%=!item.category ? 'selected' : '' %>>
+                                        Select category
+                                    </option>
+
+                                    <!-- Loop through each category option and mark it as selected if it matches the item's current value -->
+                                    <% ['Accessories', 'Electronics' , 'Identification' , 'Clothing' , 'Other'
+                                        ].forEach(function(option) { %>
+                                        <option value="<%= option %>" <%=item.category===option ? 'selected' : '' %>>
+                                            <%= option %>
+                                        </option>
+                                        <% }) %>
                                 </select>
                             </div>
 
-                            <div class="mb-3 form-group">
-                                <label for="UploadImage" class="form-label">Upload Image(s)</label>
-                                <input class="form-control" type="file" accept=".png, .jpg, .jpeg" id="UploadImage" multiple>
-                                <p>Accepted file types: .png, .jpg, or .jpeg</p>
+                            <!-- File input for uploading item images
+                             This currently only displays the field and does not save uploaded files in the current backend -->
+                            <div class="col-12">
+                                <label for="itemImage" class="form-label">Upload Image(s)</label>
+                                <input type="file" id="itemImage" name="itemImage" class="form-control" accept="image/*"
+                                    multiple />
+                                <p class="helper-text mt-2 mb-0">
+                                    Image upload is still a prototype field in this version.
+                                </p>
                             </div>
 
-                            <div class="form-group">
-                                <label for="ItemDescription">Description</label>
-                                <textarea class="form-control" id="ItemDescription" rows="3" placeholder="Include key details for easier identification..."></textarea>
+                            <!-- Description text area for the item -->
+                            <div class="col-12">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea id="description" name="description" class="form-control" rows="6"
+                                    placeholder="Write item description"
+                                    required><%= item.description || '' %></textarea>
                             </div>
 
-                            <div class="btn-container">
-                                <button type="submit" class="btn btn-secondary" style="align-content: right;">Submit</button>
+                            <!-- Action buttons -->
+                            <div class="col-12 d-flex justify-content-end gap-2">
+
+                                <!-- Cancel button returns the user to the inventory page without saving -->
+                                <a href="/items" class="btn btn-outline-secondary">Cancel</a>
+
+                                <!-- Submit button text changes depending on whether this is edit mode or create mode -->
+                                <button type="submit" class="btn btn-brand">
+                                    <%= isEdit ? 'Update Item' : 'Submit' %>
+                                </button>
                             </div>
                         </form>
-                    </div>
+                    </section>
                 </div>
-            </section>
-        </main>
+            </div>
+        </div>
+    </main>
 
-<%- include('layouts/footer') %>
+    <!-- Include the shared footer file from views/layouts/footer.ejs -->
+    <%- include("layouts/footer", { footerText: "University of Regina" }) %>

@@ -1,45 +1,128 @@
-<%- include("layouts/header") %>
+<!--Amr Azouz
+    Cobie Caburao
+-->
 
-<main class="text-center mt-5">
-    <h1>Welcome to UR Lost &amp; Found</h1>
-    <br><br>
-    <h2>Inventory Management</h2>
-    <br>
-    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
-        <div class="my-card p-3 text-start">
-            <a href="/NewItem" class="text-decoration-none text-dark fw-bold">
-                <img src="/svg/newitem.svg" style="margin-right: 20px;" alt="" width="24">Add Item to Inventory
+<!-- Include the shared header layout.
+     Pass in:
+     - pageTitle: sets the page title in the browser tab
+     - currentUser: shows the logged-in user's name in the header
+     - bodyClass: applies page-specific styling to the body -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
+
+<!-- Main content area for the home page -->
+<main class="portal-home-main">
+
+    <!-- Outer wrapper that controls spacing and page layout -->
+    <div class="portal-page-shell">
+
+        <!-- Main page heading -->
+        <section class="portal-page-header">
+            <h1 class="portal-page-title">Welcome to UR Lost &amp; Found</h1>
+        </section>
+
+        <!-- Section heading for the inventory/item area -->
+        <section class="portal-section-header">
+            <h2 class="portal-section-title">Registering Lost Item</h2>
+        </section>
+
+        <!-- Two-card grid for item-related actions -->
+        <section class="portal-card-grid portal-card-grid-two">
+
+            <!-- Card link that sends the user to the form for adding a new found item -->
+            <a href="/items/new" class="portal-box-card portal-category-card portal-card-link">
+
+                <!-- Small decorative accent bar on the card -->
+                <div class="portal-box-accent"></div>
+
+                <!-- Card header with icon and title -->
+                <div class="portal-box-header">
+                    <i class="bi bi-box-seam portal-box-icon"></i>
+                    <h3 class="portal-box-title">Add Item</h3>
+                </div>
+
+                <!-- Card body description -->
+                <div class="portal-box-body">
+                    <p>
+                        Create a new item record for property that has been found and added
+                        to the system inventory.
+                    </p>
+                </div>
             </a>
-            <hr>
-            <p>Register a new item to the Lost &amp; Found inventory</p>
-        </div>
-        <div class="my-card p-3 text-start">
-            <a href="/ViewInventory" class="text-decoration-none text-dark fw-bold">
-                <img src="/svg/viewinventory.svg" style="margin-right: 20px;" alt="" width="24">View Inventory
+
+            <!-- Card link that sends the user to the inventory list page -->
+            <a href="/items" class="portal-box-card portal-category-card portal-card-link">
+
+                <!-- Small decorative accent bar on the card -->
+                <div class="portal-box-accent"></div>
+
+                <!-- Card header with icon and title -->
+                <div class="portal-box-header">
+                    <i class="bi bi-clipboard-data portal-box-icon"></i>
+                    <h3 class="portal-box-title">View Inventory</h3>
+                </div>
+
+                <!-- Card body description -->
+                <div class="portal-box-body">
+                    <p>
+                        View, edit, and delete items currently stored in the inventory.
+                    </p>
+                </div>
             </a>
-            <hr>
-            <p>View current Lost &amp; Found inventory. View and edit detailed item descriptions.</p>
-        </div>
-    </div>
-    <br><br>
-    <h2>Reports</h2>
-    <br>
-    <div style="display: flex; gap: 50px; justify-content: center; flex-wrap: wrap;">
-        <div class="my-card p-3 text-start">
-            <a href="#" class="text-decoration-none text-dark fw-bold">
-                <img src="/svg/newreport.svg" style="margin-right: 20px;" alt="" width="24">Report Lost Item
+        </section>
+
+        <!-- Section heading for the reports area -->
+        <section class="portal-section-header">
+            <h2 class="portal-section-title">Reports</h2>
+        </section>
+
+        <!-- Two-card grid for report-related actions -->
+        <section class="portal-card-grid portal-card-grid-two">
+
+            <!-- Card link that sends the user to the new lost-item report form -->
+            <a href="/reports/new" class="portal-box-card portal-category-card portal-card-link">
+
+                <!-- Small decorative accent bar on the card -->
+                <div class="portal-box-accent"></div>
+
+                <!-- Card header with icon and title -->
+                <div class="portal-box-header">
+                    <i class="bi bi-file-earmark-text portal-box-icon"></i>
+                    <h3 class="portal-box-title">Report Lost Item</h3>
+                </div>
+
+                <!-- Card body description -->
+                <div class="portal-box-body">
+                    <p>
+                        Submit a lost item report for property that has gone missing so it
+                        can be recorded and matched against found inventory.
+                    </p>
+                </div>
             </a>
-            <hr>
-            <p>Report an item missing.</p>
-        </div>
-        <div class="my-card p-3 text-start">
-            <a href="#" class="text-decoration-none text-dark fw-bold">
-                <img src="/svg/viewreports.svg" style="margin-right: 20px;" alt="" width="24">View Reports
+
+            <!-- Card link that sends the user to the page showing submitted reports -->
+            <a href="/reports" class="portal-box-card portal-category-card portal-card-link">
+
+                <!-- Small decorative accent bar on the card -->
+                <div class="portal-box-accent"></div>
+
+                <!-- Card header with icon and title -->
+                <div class="portal-box-header">
+                    <i class="bi bi-journal-text portal-box-icon"></i>
+                    <h3 class="portal-box-title">View Report</h3>
+                </div>
+
+                <!-- Card body description -->
+                <div class="portal-box-body">
+                    <p>
+                        View submitted lost item reports and review report details for items
+                        currently being searched for in the system.
+                    </p>
+                </div>
             </a>
-            <hr>
-            <p>View all missing item reports and reporter details.</p>
-        </div>
+        </section>
     </div>
 </main>
 
-<%- include('layouts/footer') %>
+<!-- Include the shared footer layout.
+     Pass in footerText to control the text shown in the footer -->
+<%- include("layouts/footer", { footerText: "University of Regina" }) %>
