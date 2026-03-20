@@ -74,17 +74,17 @@
                     <!-- Login form sends data to POST /login -->
                     <form action="/login" method="POST" class="row g-3 mt-1">
 
-                        <!-- Username input -->
+                        <!-- Email input -->
                         <div class="col-12">
-                            <label for="username" class="form-label">
-                                Username <span class="required-star">*</span>
+                            <label for="email" class="form-label">
+                                Email <span class="required-star">*</span>
                             </label>
                             <input
-                                type="text"
-                                id="username"
-                                name="username"
+                                type="email"
+                                id="email"
+                                name="email"
                                 class="form-control"
-                                placeholder="Enter your username"
+                                placeholder="Enter your email"
                                 required
                             />
                         </div>
@@ -107,7 +107,6 @@
                         <!-- Small helper text for the user -->
                         <div class="col-12">
                             <p class="helper-text mb-0">Fields marked with * are required.</p>
-                            <p class="helper-text mb-0">Demo login: admin / admin123</p>
                         </div>
 
                         <!-- Login submit button -->

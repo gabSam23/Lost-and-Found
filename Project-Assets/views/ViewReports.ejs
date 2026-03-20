@@ -78,7 +78,7 @@
 
                                             <!-- Name of the missing item -->
                                             <td>
-                                                <%= report.itemName %>
+                                                <%= report.missing_item_name %>
                                             </td>
 
                                             <!-- Report category -->
@@ -90,42 +90,42 @@
                                             <td>
                                                 <!-- Reporter name in bold -->
                                                 <strong>
-                                                    <%= report.reporterName %>
+                                                    <%= report.reporter_name %>
                                                 </strong><br />
 
                                                 <!-- Reporter email -->
                                                 <small>
-                                                    <%= report.reporterEmail %>
+                                                    <%= report.reporter_email %>
                                                 </small>
 
                                                 <!-- Only show phone number if one exists -->
-                                                <% if (report.reporterPhone) { %>
+                                                <% if (report.phone_number) { %>
                                                     <br />
                                                     <small>
-                                                        <%= report.reporterPhone %>
+                                                        <%= report.phone_number %>
                                                     </small>
                                                     <% } %>
                                             </td>
 
                                             <!-- Last known location of the missing item -->
                                             <td>
-                                                <%= report.lostLocation %>
+                                                <%= report.last_known_location %>
                                             </td>
 
                                             <!-- Date the item was lost -->
                                             <td>
-                                                <%= report.dateLost %>
+                                                <%= new Date(report.date_lost).toLocaleDateString() %>
                                             </td>
 
                                             <!-- Current report status shown as a badge -->
                                             <td>
-                                                <span class="badge text-bg-light border">
+                                                <span class="status-badge status-<%= report.status.toLowerCase() %>">
                                                     <%= report.status %>
                                                 </span>
                                             </td>
 
                                             <!-- Action buttons -->
-                                            <td>
+                                            <td class="actions-cell">
                                                 <div class="table-actions d-flex gap-2">
 
                                                     <!-- Edit button opens the edit form for this specific report -->
@@ -151,6 +151,24 @@
                                 </tbody>
                             </table>
                         </div>
+
+                        <!-- Pagination Controls -->
+                        <% if (totalPages > 1) { %>
+                            <div class="pagination-container">
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <% for(let i = 1; i <= totalPages; i++) { %>
+                                            <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                                                <a class="page-link" href="/reports?page=<%= i %>&user=<%= currentUser %>">
+                                                    <%= i %>
+                                                </a>
+                                            </li>
+                                        <% } %>
+                                    </ul>
+                                </nav>
+                            </div>
+                        <% } %>
+
                         <% } %>
             </div>
         </div>

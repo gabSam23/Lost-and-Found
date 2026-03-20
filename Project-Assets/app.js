@@ -1,20 +1,23 @@
 const express = require("express"); // Imports Express so we can create the web server
 const fs = require("fs"); // Lets us read and write files
 const path = require("path"); // Helps build file/folder paths safely
+const session = require("express-session"); // For secure session management
+const multer = require("multer"); // For handling file uploads
+const supabase = require("./config/supabaseClient"); // Import Supabase client
 
 const app = express(); // Creates the Express app
 const port = process.env.PORT || 3000; // Uses the environment port if available, otherwise 3000
+
+// Multer configuration for memory storage
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 // Build absolute paths to important folders/files in the project
 const viewsPath = path.join(__dirname, "views");
 const publicPath = path.join(__dirname, "public");
 const dataPath = path.join(__dirname, "data");
-const usersFile = path.join(dataPath, "users.json");
-const itemsFile = path.join(dataPath, "items.json");
-const reportsFile = path.join(dataPath, "reports.json");
 
 // Tell Express to use EJS as the template engine
-// This means res.render("Login") will load views/Login.ejs
 app.set("view engine", "ejs");
 app.set("views", viewsPath);
 
@@ -22,143 +25,175 @@ app.set("views", viewsPath);
 app.use(express.static(publicPath));
 
 // Allows Express to read form data sent through POST requests
-// Example: req.body.username or req.body.password
 app.use(express.urlencoded({ extended: true }));
 
+// Configure Session middleware
+app.use(session({
+    secret: 'ur-lost-and-found-secret-key', // In production, use a secure env variable
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } // Set to true if using HTTPS
+}));
 
-//Ensure JSON file exists for now, the Backend thing you gotta manage
-function ensureDataFile(filePath, defaultValue) {
-    if (!fs.existsSync(filePath)) {
-        fs.writeFileSync(filePath, JSON.stringify(defaultValue, null, 2));
+/**
+ * Authentication Middleware
+ * Protects routes by checking if a user is logged in via session.
+ */
+function isAuthenticated(req, res, next) {
+    if (req.session.user) {
+        return next();
     }
+    res.redirect("/?error=auth");
 }
 
-//Reads a JSON file 
-function loadJson(filePath, defaultValue = []) {
-    try {
-        if (!fs.existsSync(filePath)) {
-            return defaultValue;
-        }
-
-        const raw = fs.readFileSync(filePath, "utf8");
-
-        // If the file is empty, return the default value
-        return raw.trim() ? JSON.parse(raw) : defaultValue;
-    } catch (error) {
-        console.error(`Failed to load ${filePath}:`, error.message);
-        return defaultValue;
-    }
-}
-
-//Saves javascript on JSON
-function saveJson(filePath, data) {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-}
-
-//Creates Unique ID
-function createId(prefix) {
-    return `${prefix}-${Date.now()}`;
-}
-
-// If the data folder does not exist, create it
-if (!fs.existsSync(dataPath)) {
-    fs.mkdirSync(dataPath, { recursive: true });
-}
-
-// Make sure the JSON files exist before the server starts
-// users.json starts with one default admin account
-ensureDataFile(usersFile, [
-    {
-        username: "admin",
-        password: "admin123"
-    }
-]);
-
-// items.json and reports.json start empty
-ensureDataFile(itemsFile, []);
-ensureDataFile(reportsFile, []);
 
 //Shows Login page and error/logout messages
 app.get("/", (req, res) => {
+    let errorMessage = "";
+    if (req.query.error === "1") errorMessage = "Invalid username or password.";
+    if (req.query.error === "auth") errorMessage = "Please log in to access that page.";
+
     res.render("Login", {
         pageTitle: "UR Lost & Found - Login",
-        errorMessage: req.query.error ? "Invalid username or password." : "",
+        errorMessage,
         logoutMessage: req.query.logout ? "You have been signed out." : ""
     });
 });
 
 
-//Reads username, then checks JSON and handles errors and login passing
-app.post("/login", (req, res) => {
-    const users = loadJson(usersFile, []);
-    const submittedUsername = (req.body.username || "").trim();
+//Reads email, then checks Supabase and handles errors and login passing
+app.post("/login", async (req, res) => {
+    const submittedEmail = (req.body.email || "").trim();
     const submittedPassword = req.body.password || "";
 
-    // Search for a user with matching username and password
-    const user = users.find(
-        (entry) =>
-            entry.username === submittedUsername &&
-            entry.password === submittedPassword
-    );
+    // Sign in with Supabase Auth
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: submittedEmail,
+        password: submittedPassword
+    });
 
-    // If no matching user was found, send them back to login with an error
-    if (!user) {
+    // If login is not successful, send them back to login with an error
+    if (authError || !authData.user) {
+        console.error("Login error:", authError ? authError.message : "No user data");
         return res.redirect("/?error=1");
     }
 
+    // Try to get the username from the profiles table
+    const { data: profile } = await supabase
+        .from("profiles")
+        .select("username")
+        .eq("id", authData.user.id)
+        .single();
+
+    // Store user data in session
+    req.session.user = {
+        id: authData.user.id,
+        email: authData.user.email,
+        username: profile ? profile.username : submittedEmail.split("@")[0]
+    };
+
     // If login is successful, send them to the home page
-    // The username is passed in the URL query string
-    return res.redirect(`/home?user=${encodeURIComponent(user.username)}`);
+    return res.redirect("/home");
 });
 
 
 //Logout handling
 app.get("/logout", (req, res) => {
+    req.session.destroy();
     res.redirect("/?logout=1");
 });
 
 //Renders homepage
-app.get("/home", (req, res) => {
+app.get("/home", isAuthenticated, (req, res) => {
     res.render("Home", {
         pageTitle: "UR Lost & Found - Home",
-        currentUser: req.query.user || "Account"
+        currentUser: req.session.user.username
     });
 });
 
-//Gets items
-app.get("/items", (req, res) => {
-    const items = loadJson(itemsFile, []);
+//Gets items from Supabase with pagination
+app.get("/items", isAuthenticated, async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    // Get total count
+    const { count } = await supabase
+        .from("lost_items")
+        .select("*", { count: 'exact', head: true });
+
+    // Get paginated data
+    const { data: items, error } = await supabase
+        .from("lost_items")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(start, end);
+
+    if (error) {
+        console.error("Error fetching items:", error.message);
+    }
+
+    const totalPages = Math.ceil((count || 0) / limit);
+
     res.render("ViewItems", {
         pageTitle: "UR Lost & Found - Storage",
-        currentUser: req.query.user || "Account",
-        items
+        currentUser: req.session.user.username,
+        items: items || [],
+        currentPage: page,
+        totalPages
     });
 });
 
 //Shows form for creating a new item
-app.get("/items/new", (req, res) => {
+app.get("/items/new", isAuthenticated, (req, res) => {
     res.render("NewItem", {
         pageTitle: "UR Lost & Found - Log New Item",
-        currentUser: req.query.user || "Account",
+        currentUser: req.session.user.username,
         isEdit: false,
         item: {}
     });
 });
 
-//Saves Data in JSON
-app.post("/items", (req, res) => {
-    const items = loadJson(itemsFile, []);
+//Saves Data in Supabase with Image Upload
+app.post("/items", isAuthenticated, upload.single("itemImage"), async (req, res) => {
+    let imageUrl = null;
 
-    items.push({
-        id: createId("ITEM"),
-        location: req.body.location,
-        category: req.body.category,
-        description: req.body.description,
-        imageLabel: "No image uploaded",
-        dateLogged: new Date().toISOString().slice(0, 10)
-    });
+    if (req.file) {
+        const fileName = `${Date.now()}-${req.file.originalname}`;
+        const { data, error } = await supabase.storage
+            .from("item-images")
+            .upload(fileName, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            });
 
-    saveJson(itemsFile, items);
+        if (error) {
+            console.error("Error uploading image:", error.message);
+        } else {
+            const { data: publicUrlData } = supabase.storage
+                .from("item-images")
+                .getPublicUrl(fileName);
+            imageUrl = publicUrlData.publicUrl;
+        }
+    }
+
+    const { error } = await supabase
+        .from("lost_items")
+        .insert([
+            {
+                location: req.body.location,
+                category: req.body.category,
+                description: req.body.description,
+                image_url: imageUrl,
+                owner_id: req.session.user.id
+            }
+        ]);
+
+    if (error) {
+        console.error("Error inserting item:", error.message);
+    }
+
     res.redirect("/items");
 });
 
@@ -167,144 +202,213 @@ app.post("/items", (req, res) => {
  * Finds the item with the matching ID
  * and opens the same NewItem.ejs page in edit mode.
  */
-app.get("/items/:id/edit", (req, res) => {
-    const items = loadJson(itemsFile, []);
-    const item = items.find((entry) => entry.id === req.params.id);
+app.get("/items/:id/edit", isAuthenticated, async (req, res) => {
+    const { data: item, error } = await supabase
+        .from("lost_items")
+        .select("*")
+        .eq("id", req.params.id)
+        .single();
 
-    // If the item does not exist, return to the item list
-    if (!item) {
+    // If the item does not exist or error, return to the item list
+    if (error || !item) {
+        console.error("Error fetching item for edit:", error ? error.message : "Not found");
         return res.redirect("/items");
     }
 
     res.render("NewItem", {
         pageTitle: "UR Lost & Found - Edit Item",
-        currentUser: req.query.user || "Account",
+        currentUser: req.session.user.username,
         isEdit: true,
         item
     });
 });
 
-//Updates existing item after form submission
-app.post("/items/:id", (req, res) => {
-    const items = loadJson(itemsFile, []);
-    const itemIndex = items.findIndex((entry) => entry.id === req.params.id);
+//Updates existing item in Supabase after form submission
+app.post("/items/:id", isAuthenticated, upload.single("itemImage"), async (req, res) => {
+    let imageUrl = null;
 
-    // If no matching item is found, go back to the items page
-    if (itemIndex === -1) {
-        return res.redirect("/items");
+    if (req.file) {
+        const fileName = `${Date.now()}-${req.file.originalname}`;
+        const { data, error } = await supabase.storage
+            .from("item-images")
+            .upload(fileName, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            });
+
+        if (error) {
+            console.error("Error uploading image:", error.message);
+        } else {
+            const { data: publicUrlData } = supabase.storage
+                .from("item-images")
+                .getPublicUrl(fileName);
+            imageUrl = publicUrlData.publicUrl;
+        }
     }
 
-    items[itemIndex] = {
-        ...items[itemIndex], // keep the existing fields like id/dateLogged
+    const updateData = {
         location: req.body.location,
         category: req.body.category,
         description: req.body.description
     };
 
-    saveJson(itemsFile, items);
+    if (imageUrl) {
+        updateData.image_url = imageUrl;
+    }
+
+    const { error } = await supabase
+        .from("lost_items")
+        .update(updateData)
+        .eq("id", req.params.id);
+
+    if (error) {
+        console.error("Error updating item:", error.message);
+    }
+
     res.redirect("/items");
 });
 
-//Deletes item by removing it from the Array
-app.post("/items/:id/delete", (req, res) => {
-    const items = loadJson(itemsFile, []);
-    const updatedItems = items.filter((entry) => entry.id !== req.params.id);
-    saveJson(itemsFile, updatedItems);
+//Deletes item from Supabase
+app.post("/items/:id/delete", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("lost_items")
+        .delete()
+        .eq("id", req.params.id);
+
+    if (error) {
+        console.error("Error deleting item:", error.message);
+    }
+
     res.redirect("/items");
 });
 
-//Loads all the data and displays in in ViewReports
-app.get("/reports", (req, res) => {
-    const reports = loadJson(reportsFile, []);
+//Loads all the data and displays in in ViewReports with pagination
+app.get("/reports", isAuthenticated, async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const start = (page - 1) * limit;
+    const end = start + limit - 1;
+
+    // Get total count
+    const { count } = await supabase
+        .from("item_reports")
+        .select("*", { count: 'exact', head: true });
+
+    const { data: reports, error } = await supabase
+        .from("item_reports")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(start, end);
+
+    if (error) {
+        console.error("Error fetching reports:", error.message);
+    }
+
+    const totalPages = Math.ceil((count || 0) / limit);
+
     res.render("ViewReports", {
         pageTitle: "UR Lost & Found - Reports",
-        currentUser: req.query.user || "Account",
-        reports
+        currentUser: req.session.user.username,
+        reports: reports || [],
+        currentPage: page,
+        totalPages
     });
 });
 
 //Shows form for creating new report
-app.get("/reports/new", (req, res) => {
+app.get("/reports/new", isAuthenticated, (req, res) => {
     res.render("NewReport", {
         pageTitle: "UR Lost & Found - New Report",
-        currentUser: req.query.user || "Account",
+        currentUser: req.session.user.username,
         isEdit: false,
         report: {}
     });
 });
 
-//Handles report submission
-app.post("/reports", (req, res) => {
-    const reports = loadJson(reportsFile, []);
+//Handles report submission to Supabase
+app.post("/reports", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("item_reports")
+        .insert([
+            {
+                reporter_name: req.body.reporterName,
+                reporter_email: req.body.reporterEmail,
+                phone_number: req.body.reporterPhone,
+                missing_item_name: req.body.itemName,
+                category: req.body.category,
+                date_lost: req.body.dateLost,
+                last_known_location: req.body.lostLocation,
+                description: req.body.description,
+                distinguishing_features: req.body.distinguishingFeatures,
+                status: req.body.status || "Open",
+                owner_id: req.session.user.id // Associate with logged in user
+            }
+        ]);
 
-    reports.push({
-        id: createId("REPORT"),
-        reporterName: req.body.reporterName,
-        reporterEmail: req.body.reporterEmail,
-        reporterPhone: req.body.reporterPhone,
-        itemName: req.body.itemName,
-        category: req.body.category,
-        dateLost: req.body.dateLost,
-        lostLocation: req.body.lostLocation,
-        description: req.body.description,
-        distinguishingFeatures: req.body.distinguishingFeatures,
-        status: req.body.status || "Open",
-        createdAt: new Date().toISOString()
-    });
+    if (error) {
+        console.error("Error inserting report:", error.message);
+    }
 
-    saveJson(reportsFile, reports);
     res.redirect("/reports");
 });
 
 //Finds report with matching ID and opens NewReport.ejs in edit mode
-app.get("/reports/:id/edit", (req, res) => {
-    const reports = loadJson(reportsFile, []);
-    const report = reports.find((entry) => entry.id === req.params.id);
+app.get("/reports/:id/edit", isAuthenticated, async (req, res) => {
+    const { data: report, error } = await supabase
+        .from("item_reports")
+        .select("*")
+        .eq("id", req.params.id)
+        .single();
 
-    if (!report) {
+    if (error || !report) {
+        console.error("Error fetching report for edit:", error ? error.message : "Not found");
         return res.redirect("/reports");
     }
 
     res.render("NewReport", {
         pageTitle: "UR Lost & Found - Edit Report",
-        currentUser: req.query.user || "Account",
+        currentUser: req.session.user.username,
         isEdit: true,
         report
     });
 });
 
-//Updates existing report after form submission
-app.post("/reports/:id", (req, res) => {
-    const reports = loadJson(reportsFile, []);
-    const reportIndex = reports.findIndex((entry) => entry.id === req.params.id);
+//Updates existing report in Supabase after form submission
+app.post("/reports/:id", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("item_reports")
+        .update({
+            reporter_name: req.body.reporterName,
+            reporter_email: req.body.reporterEmail,
+            phone_number: req.body.reporterPhone,
+            missing_item_name: req.body.itemName,
+            category: req.body.category,
+            date_lost: req.body.dateLost,
+            last_known_location: req.body.lostLocation,
+            description: req.body.description,
+            distinguishing_features: req.body.distinguishingFeatures,
+            status: req.body.status || "Open"
+        })
+        .eq("id", req.params.id);
 
-    if (reportIndex === -1) {
-        return res.redirect("/reports");
+    if (error) {
+        console.error("Error updating report:", error.message);
     }
 
-    reports[reportIndex] = {
-        ...reports[reportIndex],
-        reporterName: req.body.reporterName,
-        reporterEmail: req.body.reporterEmail,
-        reporterPhone: req.body.reporterPhone,
-        itemName: req.body.itemName,
-        category: req.body.category,
-        dateLost: req.body.dateLost,
-        lostLocation: req.body.lostLocation,
-        description: req.body.description,
-        distinguishingFeatures: req.body.distinguishingFeatures,
-        status: req.body.status || "Open"
-    };
-
-    saveJson(reportsFile, reports);
     res.redirect("/reports");
 });
 
-//Deletes report by removing it from the Array
-app.post("/reports/:id/delete", (req, res) => {
-    const reports = loadJson(reportsFile, []);
-    const updatedReports = reports.filter((entry) => entry.id !== req.params.id);
-    saveJson(reportsFile, updatedReports);
+//Deletes report from Supabase
+app.post("/reports/:id/delete", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("item_reports")
+        .delete()
+        .eq("id", req.params.id);
+
+    if (error) {
+        console.error("Error deleting report:", error.message);
+    }
+
     res.redirect("/reports");
 });
 

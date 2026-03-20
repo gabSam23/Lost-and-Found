@@ -29,7 +29,7 @@
                         <!-- Form action changes based on mode:
                          - Edit mode submits to /items/:id
                          - New item mode submits to /items -->
-                        <form action="<%= isEdit ? '/items/' + item.id : '/items' %>" method="POST" class="row g-4">
+                        <form action="<%= isEdit ? '/items/' + item.id : '/items' %>" method="POST" enctype="multipart/form-data" class="row g-4">
 
                             <!-- Location dropdown field -->
                             <div class="col-12">
@@ -71,15 +71,18 @@
                                 </select>
                             </div>
 
-                            <!-- File input for uploading item images
-                             This currently only displays the field and does not save uploaded files in the current backend -->
+                            <!-- File input for uploading item images -->
                             <div class="col-12">
-                                <label for="itemImage" class="form-label">Upload Image(s)</label>
-                                <input type="file" id="itemImage" name="itemImage" class="form-control" accept="image/*"
-                                    multiple />
-                                <p class="helper-text mt-2 mb-0">
-                                    Image upload is still a prototype field in this version.
-                                </p>
+                                <label for="itemImage" class="form-label">Upload Image</label>
+                                <input type="file" id="itemImage" name="itemImage" class="form-control" accept="image/*" />
+                                <% if (isEdit && item.image_url) { %>
+                                    <div class="mt-2">
+                                        <p class="helper-text mb-1">Current Image:</p>
+                                        <div class="item-thumbnail-container">
+                                            <img src="<%= item.image_url %>" class="item-thumbnail" alt="Item Image" />
+                                        </div>
+                                    </div>
+                                <% } %>
                             </div>
 
                             <!-- Description text area for the item -->

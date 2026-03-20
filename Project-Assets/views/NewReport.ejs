@@ -42,7 +42,7 @@
                             Reporter name <span class="required-star">*</span>
                         </label>
                         <input type="text" id="reporterName" name="reporterName" class="form-control"
-                            placeholder="Full name" value="<%= report.reporterName || '' %>" required />
+                            placeholder="Full name" value="<%= report.reporter_name || '' %>" required />
                     </div>
 
                     <!-- Reporter email address -->
@@ -51,14 +51,14 @@
                             Reporter email <span class="required-star">*</span>
                         </label>
                         <input type="email" id="reporterEmail" name="reporterEmail" class="form-control"
-                            placeholder="name@example.com" value="<%= report.reporterEmail || '' %>" required />
+                            placeholder="name@example.com" value="<%= report.reporter_email || '' %>" required />
                     </div>
 
                     <!-- Optional reporter phone number -->
                     <div class="col-md-6">
                         <label for="reporterPhone" class="form-label">Phone number</label>
                         <input type="tel" id="reporterPhone" name="reporterPhone" class="form-control"
-                            placeholder="Optional contact number" value="<%= report.reporterPhone || '' %>" />
+                            placeholder="Optional contact number" value="<%= report.phone_number || '' %>" />
                     </div>
 
                     <!-- Name of the missing item -->
@@ -67,7 +67,7 @@
                             Missing item name <span class="required-star">*</span>
                         </label>
                         <input type="text" id="itemName" name="itemName" class="form-control"
-                            placeholder="Example: Black backpack" value="<%= report.itemName || '' %>" required />
+                            placeholder="Example: Black backpack" value="<%= report.missing_item_name || '' %>" required />
                     </div>
 
                     <!-- Category dropdown -->
@@ -105,7 +105,7 @@
                             Date lost <span class="required-star">*</span>
                         </label>
                         <input type="date" id="dateLost" name="dateLost" class="form-control"
-                            value="<%= report.dateLost || '' %>" required />
+                            value="<%= report.date_lost || '' %>" required />
                     </div>
 
                     <!-- Last known location where the item was seen -->
@@ -114,7 +114,7 @@
                             Last known location <span class="required-star">*</span>
                         </label>
                         <input type="text" id="lostLocation" name="lostLocation" class="form-control"
-                            placeholder="Where was the item last seen?" value="<%= report.lostLocation || '' %>"
+                            placeholder="Where was the item last seen?" value="<%= report.last_known_location || '' %>"
                             required />
                     </div>
 
@@ -133,7 +133,7 @@
                         <label for="distinguishingFeatures" class="form-label">Distinguishing features</label>
                         <textarea id="distinguishingFeatures" name="distinguishingFeatures" class="form-control"
                             rows="3"
-                            placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."><%= report.distinguishingFeatures || '' %></textarea>
+                            placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."><%= report.distinguishing_features || '' %></textarea>
                     </div>
 
                     <!-- Current report status -->
