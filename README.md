@@ -108,15 +108,15 @@ The prototype system is being developed using the following technologies:
 
 ## Project Status
 
-🟡 **Currently in requirements analyis and system design**  
-At this stage of the project, the team is focused on defining the foundational elements required to successfully design and develop the UR Lost & Found system. This phase includes identifying stakeholder needs, establishing project scope, and developing initial system design concepts.
+🟡 **Currently in the final implementation and MVP delivery**  
+At this stage of the project, the team has completed the core system design and is focused on finalizing, refining, and delivering a functional MVP of the UR Lost & Found system. This phase emphasizes demonstrating a working product, documenting the development journey, and preparing final deliverables.
 
 Key activities in this phase include:
 
-- Defining project scope and objectives  
-- Identifying stakeholders and their requirements  
-- Developing early UI prototypes and system concepts  
-- Creating UML diagrams and architectural design models  
-- Establishing project management workflows using GitHub Issues and Kanban boards  
+- Finalizing and testing the MVP features 
+- Debugging and improving system functionality
+- Preparing final project documentation and final report
+- Organizing GitHub repository (README, Kanban updates)
+- Preparing and practicing the final presentation and demo  
 
 These activities provide the groundwork necessary for the upcoming development phases, where the system prototype will be implemented and tested.
