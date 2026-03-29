@@ -16,6 +16,283 @@ const upload = multer({ storage: storage });
 const viewsPath = path.join(__dirname, "views");
 const publicPath = path.join(__dirname, "public");
 const dataPath = path.join(__dirname, "data");
+// Path to the older custom locations JSON file
+const legacyCustomLocationsPath = path.join(dataPath, "customLocations.json");
+
+// Path to the older custom categories JSON file
+const legacyCustomCategoriesPath = path.join(dataPath, "customCategories.json");
+
+// Path to the main shared locations JSON file
+const locationsPath = path.join(dataPath, "locations.json");
+
+// Path to the main shared categories JSON file
+const categoriesPath = path.join(dataPath, "categories.json");
+
+// Default locations used to seed the locations file if needed
+const DEFAULT_LOCATIONS = [
+    "Classroom Building",
+    "Riddell Centre",
+    "Library",
+    "Residence"
+];
+
+// Default categories used to seed the categories file if needed
+const DEFAULT_CATEGORIES = [
+    "Accessories",
+    "Electronics",
+    "Identification",
+    "Clothing"
+];
+
+// Cleans a list of options by:
+// 1) making sure values are trimmed
+// 2) removing empty values
+// 3) removing duplicates without caring about uppercase/lowercase
+function normalizeOptionList(values) {
+    const cleaned = [];
+
+    (Array.isArray(values) ? values : []).forEach((value) => {
+        const normalizedValue = (value || "").trim();
+
+        if (
+            normalizedValue &&
+            !cleaned.some(
+                (existingValue) =>
+                    existingValue.toLowerCase() === normalizedValue.toLowerCase()
+            )
+        ) {
+            cleaned.push(normalizedValue);
+        }
+    });
+
+    return cleaned;
+}
+
+// Reads an old legacy JSON file if it exists
+// Returns an empty array if the file does not exist or cannot be read
+function readLegacyArray(filePath) {
+    if (!fs.existsSync(filePath)) {
+        return [];
+    }
+
+    try {
+        const fileData = fs.readFileSync(filePath, "utf8");
+        const parsedData = JSON.parse(fileData);
+        return normalizeOptionList(parsedData);
+    } catch (error) {
+        return [];
+    }
+}
+
+// Makes sure the option file exists and contains valid JSON
+// If the file does not exist, create it using defaults + legacy values
+// If the file exists but is invalid, reset it using default values
+function ensureOptionFile(filePath, defaultValues, legacyPath) {
+    if (!fs.existsSync(filePath)) {
+        const seededValues = normalizeOptionList([
+            ...defaultValues,
+            ...readLegacyArray(legacyPath)
+        ]);
+
+        fs.writeFileSync(
+            filePath,
+            JSON.stringify(seededValues, null, 2),
+            "utf8"
+        );
+        return;
+    }
+
+    try {
+        const fileData = fs.readFileSync(filePath, "utf8");
+        const parsedData = JSON.parse(fileData);
+
+        // Make sure the JSON file contains an array
+        if (!Array.isArray(parsedData)) {
+            throw new Error("Invalid option file format");
+        }
+
+        const normalizedValues = normalizeOptionList(parsedData);
+
+        // Rewrite the file only if cleanup changed the contents
+        if (JSON.stringify(parsedData) !== JSON.stringify(normalizedValues)) {
+            fs.writeFileSync(
+                filePath,
+                JSON.stringify(normalizedValues, null, 2),
+                "utf8"
+            );
+        }
+    } catch (error) {
+        fs.writeFileSync(
+            filePath,
+            JSON.stringify(normalizeOptionList(defaultValues), null, 2),
+            "utf8"
+        );
+    }
+}
+
+// Reads the main option file safely
+// First ensures the file exists and is valid
+function readOptionFile(filePath, defaultValues, legacyPath) {
+    ensureOptionFile(filePath, defaultValues, legacyPath);
+
+    try {
+        const fileData = fs.readFileSync(filePath, "utf8");
+        const parsedData = JSON.parse(fileData);
+        return normalizeOptionList(parsedData);
+    } catch (error) {
+        console.error("Error reading option file:", error.message);
+        return normalizeOptionList(defaultValues);
+    }
+}
+
+// Writes a cleaned option list into a JSON file
+function writeOptionFile(filePath, values) {
+    fs.writeFileSync(
+        filePath,
+        JSON.stringify(normalizeOptionList(values), null, 2),
+        "utf8"
+    );
+}
+
+// Adds a new option only if it is not empty and not already in the file
+function addOption(filePath, defaultValues, legacyPath, value) {
+    const cleanedValue = (value || "").trim();
+
+    // Stop if the new value is empty
+    if (!cleanedValue) return;
+
+    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
+
+    // Stop if the value already exists (case-insensitive)
+    if (
+        existingValues.some(
+            (existingValue) =>
+                existingValue.toLowerCase() === cleanedValue.toLowerCase()
+        )
+    ) {
+        return;
+    }
+
+    // Add the new value and save the file again
+    existingValues.push(cleanedValue);
+    writeOptionFile(filePath, existingValues);
+}
+
+// Edits an existing option
+// Returns true if the edit worked, otherwise false
+function editOption(filePath, defaultValues, legacyPath, oldValue, newValue) {
+    const cleanedOldValue = (oldValue || "").trim();
+    const cleanedNewValue = (newValue || "").trim();
+
+    // Stop if either value is empty
+    if (!cleanedOldValue || !cleanedNewValue) {
+        return false;
+    }
+
+    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
+
+    // Find the existing value that should be changed
+    const oldIndex = existingValues.findIndex(
+        (existingValue) =>
+            existingValue.toLowerCase() === cleanedOldValue.toLowerCase()
+    );
+
+    // Stop if the old value was not found
+    if (oldIndex === -1) {
+        return false;
+    }
+
+    // Stop if the new value already exists somewhere else in the list
+    const duplicateIndex = existingValues.findIndex(
+        (existingValue, index) =>
+            index !== oldIndex &&
+            existingValue.toLowerCase() === cleanedNewValue.toLowerCase()
+    );
+
+    if (duplicateIndex !== -1) {
+        return false;
+    }
+
+    // Replace the old value with the new value and save
+    existingValues[oldIndex] = cleanedNewValue;
+    writeOptionFile(filePath, existingValues);
+    return true;
+}
+
+// Deletes an option from the JSON file
+// Returns true if something was deleted, otherwise false
+function deleteOption(filePath, defaultValues, legacyPath, value) {
+    const cleanedValue = (value || "").trim();
+
+    // Stop if the value is empty
+    if (!cleanedValue) return false;
+
+    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
+
+    // Remove the matching value from the list
+    const filteredValues = existingValues.filter(
+        (existingValue) =>
+            existingValue.toLowerCase() !== cleanedValue.toLowerCase()
+    );
+
+    // If the length did not change, nothing was deleted
+    if (filteredValues.length === existingValues.length) {
+        return false;
+    }
+
+    // Save the updated list
+    writeOptionFile(filePath, filteredValues);
+    return true;
+}
+
+// Returns the saved list of location options
+function getLocationOptions() {
+    return readOptionFile(
+        locationsPath,
+        DEFAULT_LOCATIONS,
+        legacyCustomLocationsPath
+    );
+}
+
+// Returns the saved list of category options
+function getCategoryOptions() {
+    return readOptionFile(
+        categoriesPath,
+        DEFAULT_CATEGORIES,
+        legacyCustomCategoriesPath
+    );
+}
+
+// Builds the final location value from the submitted form
+function getSubmittedLocation(req) {
+    const selectedLocation = String(req.body.location || "").trim();
+    const otherLocation = String(req.body.otherLocation || "").trim();
+
+    // If the user selected "Other", save it as:
+    // Other - whatever they typed
+    if (selectedLocation === "__other__") {
+        return otherLocation ? `Other - ${otherLocation}` : "";
+    }
+
+    // Otherwise return the selected location from the dropdown
+    return selectedLocation;
+}
+
+// Builds the final category value from the submitted form
+function getSubmittedCategory(req) {
+    const selectedCategory = String(req.body.category || "").trim();
+    const otherCategory = String(req.body.otherCategory || "").trim();
+
+    // If the user selected "Other", save it as:
+    // Other - whatever they typed
+    if (selectedCategory === "__other__") {
+        return otherCategory ? `Other - ${otherCategory}` : "";
+    }
+
+    // Otherwise return the selected category from the dropdown
+    return selectedCategory;
+}
+
 
 // Tell Express to use EJS as the template engine
 app.set("view engine", "ejs");
@@ -45,6 +322,107 @@ function isAuthenticated(req, res, next) {
     }
     res.redirect("/?error=auth");
 }
+// Updates an existing saved location option
+app.post("/options/location/edit", isAuthenticated, async (req, res) => {
+    // Read the old and new location values from the submitted form
+    const oldValue = (req.body.oldValue || "").trim();
+    const newValue = (req.body.newValue || "").trim();
+
+    // Update the location inside the shared JSON options file
+    const changed = editOption(
+        locationsPath,
+        DEFAULT_LOCATIONS,
+        legacyCustomLocationsPath,
+        oldValue,
+        newValue
+    );
+
+    // If the location name actually changed, also update existing records in Supabase
+    if (changed && oldValue.toLowerCase() !== newValue.toLowerCase()) {
+        // Update matching locations in lost items
+        await supabase
+            .from("lost_items")
+            .update({ location: newValue })
+            .eq("location", oldValue);
+
+        // Update matching locations in item reports
+        await supabase
+            .from("item_reports")
+            .update({ last_known_location: newValue })
+            .eq("last_known_location", oldValue);
+    }
+
+    // Send the user back to the page they came from
+    res.redirect(req.body.redirectTo || "/items/new");
+});
+
+// Deletes a saved location option
+app.post("/options/location/delete", isAuthenticated, (req, res) => {
+    // Read the location value that should be deleted
+    const value = (req.body.value || "").trim();
+
+    // Remove the location from the shared JSON options file
+    deleteOption(
+        locationsPath,
+        DEFAULT_LOCATIONS,
+        legacyCustomLocationsPath,
+        value
+    );
+
+    // Send the user back to the page they came from
+    res.redirect(req.body.redirectTo || "/items/new");
+});
+
+// Updates an existing saved category option
+app.post("/options/category/edit", isAuthenticated, async (req, res) => {
+    // Read the old and new category values from the submitted form
+    const oldValue = (req.body.oldValue || "").trim();
+    const newValue = (req.body.newValue || "").trim();
+
+    // Update the category inside the shared JSON options file
+    const changed = editOption(
+        categoriesPath,
+        DEFAULT_CATEGORIES,
+        legacyCustomCategoriesPath,
+        oldValue,
+        newValue
+    );
+
+    // If the category name actually changed, also update existing records in Supabase
+    if (changed && oldValue.toLowerCase() !== newValue.toLowerCase()) {
+        // Update matching categories in lost items
+        await supabase
+            .from("lost_items")
+            .update({ category: newValue })
+            .eq("category", oldValue);
+
+        // Update matching categories in item reports
+        await supabase
+            .from("item_reports")
+            .update({ category: newValue })
+            .eq("category", oldValue);
+    }
+
+    // Send the user back to the page they came from
+    res.redirect(req.body.redirectTo || "/items/new");
+});
+
+// Deletes a saved category option
+app.post("/options/category/delete", isAuthenticated, (req, res) => {
+    // Read the category value that should be deleted
+    const value = (req.body.value || "").trim();
+
+    // Remove the category from the shared JSON options file
+    deleteOption(
+        categoriesPath,
+        DEFAULT_CATEGORIES,
+        legacyCustomCategoriesPath,
+        value
+    );
+
+    // Send the user back to the page they came from
+    res.redirect(req.body.redirectTo || "/items/new");
+});
 
 
 //Shows Login page and error/logout messages
@@ -96,6 +474,55 @@ app.post("/login", async (req, res) => {
     return res.redirect("/home");
 });
 
+// Shows the page for managing saved locations
+app.get("/admin/locations", isAuthenticated, (req, res) => {
+    res.render("CustomizeLocations", {
+        pageTitle: "UR Lost & Found - Customize Locations",
+        currentUser: req.session.user.username,
+        locationOptions: getLocationOptions()
+    });
+});
+
+// Shows the page for managing saved categories
+app.get("/admin/categories", isAuthenticated, (req, res) => {
+    res.render("CustomizeCategories", {
+        pageTitle: "UR Lost & Found - Customize Categories",
+        currentUser: req.session.user.username,
+        categoryOptions: getCategoryOptions()
+    });
+});
+
+// Adds a new saved location from the locations admin page
+app.post("/admin/locations/add", isAuthenticated, (req, res) => {
+    const newLocation = (req.body.newLocation || "").trim();
+
+    // Save the location into the shared locations list
+    addOption(
+        locationsPath,
+        DEFAULT_LOCATIONS,
+        legacyCustomLocationsPath,
+        newLocation
+    );
+
+    // Go back to the locations admin page
+    res.redirect("/admin/locations");
+});
+
+// Adds a new saved category from the categories admin page
+app.post("/admin/categories/add", isAuthenticated, (req, res) => {
+    const newCategory = (req.body.newCategory || "").trim();
+
+    // Save the category into the shared categories list
+    addOption(
+        categoriesPath,
+        DEFAULT_CATEGORIES,
+        legacyCustomCategoriesPath,
+        newCategory
+    );
+
+    // Go back to the categories admin page
+    res.redirect("/admin/categories");
+});
 
 //Logout handling
 app.get("/logout", (req, res) => {
@@ -151,7 +578,9 @@ app.get("/items/new", isAuthenticated, (req, res) => {
         pageTitle: "UR Lost & Found - Log New Item",
         currentUser: req.session.user.username,
         isEdit: false,
-        item: {}
+        item: {},
+        locationOptions: getLocationOptions(),
+        categoryOptions: getCategoryOptions()
     });
 });
 
@@ -178,12 +607,21 @@ app.post("/items", isAuthenticated, upload.single("itemImage"), async (req, res)
         }
     }
 
+const finalLocation = getSubmittedLocation(req);
+const finalCategory = getSubmittedCategory(req);
+
+const updateData = {
+    location: finalLocation,
+    category: finalCategory,
+    description: req.body.description
+};
+
     const { error } = await supabase
         .from("lost_items")
         .insert([
             {
-                location: req.body.location,
-                category: req.body.category,
+                location: finalLocation,
+                category: finalCategory,
                 description: req.body.description,
                 image_url: imageUrl,
                 owner_id: req.session.user.id
@@ -215,12 +653,14 @@ app.get("/items/:id/edit", isAuthenticated, async (req, res) => {
         return res.redirect("/items");
     }
 
-    res.render("NewItem", {
-        pageTitle: "UR Lost & Found - Edit Item",
-        currentUser: req.session.user.username,
-        isEdit: true,
-        item
-    });
+res.render("NewItem", {
+    pageTitle: "UR Lost & Found - Edit Item",
+    currentUser: req.session.user.username,
+    isEdit: true,
+    item,
+    locationOptions: getLocationOptions(),
+    categoryOptions: getCategoryOptions()
+});
 });
 
 //Updates existing item in Supabase after form submission
@@ -246,11 +686,14 @@ app.post("/items/:id", isAuthenticated, upload.single("itemImage"), async (req, 
         }
     }
 
-    const updateData = {
-        location: req.body.location,
-        category: req.body.category,
-        description: req.body.description
-    };
+const finalLocation = getSubmittedLocation(req);
+const finalCategory = getSubmittedCategory(req);
+
+const updateData = {
+    location: finalLocation,
+    category: finalCategory,
+    description: req.body.description
+};
 
     if (imageUrl) {
         updateData.image_url = imageUrl;
@@ -321,12 +764,17 @@ app.get("/reports/new", isAuthenticated, (req, res) => {
         pageTitle: "UR Lost & Found - New Report",
         currentUser: req.session.user.username,
         isEdit: false,
-        report: {}
+        report: {},
+        locationOptions: getLocationOptions(),
+        categoryOptions: getCategoryOptions()
     });
 });
 
 //Handles report submission to Supabase
 app.post("/reports", isAuthenticated, async (req, res) => {
+    const finalCategory = getSubmittedCategory(req);
+    const finalLocation = getSubmittedLocation(req);
+
     const { error } = await supabase
         .from("item_reports")
         .insert([
@@ -335,13 +783,13 @@ app.post("/reports", isAuthenticated, async (req, res) => {
                 reporter_email: req.body.reporterEmail,
                 phone_number: req.body.reporterPhone,
                 missing_item_name: req.body.itemName,
-                category: req.body.category,
+                category: finalCategory,
                 date_lost: req.body.dateLost,
-                last_known_location: req.body.lostLocation,
+                last_known_location: finalLocation,
                 description: req.body.description,
                 distinguishing_features: req.body.distinguishingFeatures,
                 status: req.body.status || "Open",
-                owner_id: req.session.user.id // Associate with logged in user
+                owner_id: req.session.user.id
             }
         ]);
 
@@ -369,12 +817,17 @@ app.get("/reports/:id/edit", isAuthenticated, async (req, res) => {
         pageTitle: "UR Lost & Found - Edit Report",
         currentUser: req.session.user.username,
         isEdit: true,
-        report
+        report,
+        locationOptions: getLocationOptions(),
+        categoryOptions: getCategoryOptions()
     });
 });
 
 //Updates existing report in Supabase after form submission
 app.post("/reports/:id", isAuthenticated, async (req, res) => {
+    const finalCategory = getSubmittedCategory(req);
+    const finalLocation = getSubmittedLocation(req);
+
     const { error } = await supabase
         .from("item_reports")
         .update({
@@ -382,9 +835,9 @@ app.post("/reports/:id", isAuthenticated, async (req, res) => {
             reporter_email: req.body.reporterEmail,
             phone_number: req.body.reporterPhone,
             missing_item_name: req.body.itemName,
-            category: req.body.category,
+            category: finalCategory,
             date_lost: req.body.dateLost,
-            last_known_location: req.body.lostLocation,
+            last_known_location: finalLocation,
             description: req.body.description,
             distinguishing_features: req.body.distinguishingFeatures,
             status: req.body.status || "Open"

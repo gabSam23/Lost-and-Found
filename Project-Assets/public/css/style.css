@@ -581,3 +581,82 @@ body.portal-home-body {
   background-color: #d1e7dd; /* Subtle Green */
   color: #212529;
 }
+
+.editable-dropdown {
+  position: relative;
+}
+
+.editable-dropdown-toggle {
+  cursor: pointer;
+}
+
+.editable-dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #ced4da;
+  border-radius: 0.375rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  z-index: 1050;
+  padding: 0.85rem;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.editable-dropdown.open .editable-dropdown-menu {
+  display: block;
+}
+
+.editable-dropdown-custom {
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.editable-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid #f1f3f5;
+}
+
+.editable-dropdown-item:first-child {
+  border-top: none;
+}
+
+.editable-dropdown-option {
+  border: none;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  flex-grow: 1;
+}
+
+.editable-dropdown-option:hover {
+  text-decoration: underline;
+}
+
+.editable-dropdown-empty {
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+/* NewReport grouped form sections */
+.report-form-section {
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 1rem;
+  padding: 1.25rem;
+}
+
+.report-form-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #00502E;
+}

@@ -2,114 +2,180 @@
     Cobie Caburao
 -->
 
-<!-- Include the shared header file from views/layouts/header.ejs.
-     pageTitle controls the browser tab title.
-     currentUser shows the logged-in user's name in the top bar.
-     bodyClass applies page-specific styling to the body. -->
+<!-- Shared page header -->
 <%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
 
-    <!-- Main content area for the page -->
-    <main class="portal-home-main">
-        <div class="container">
+    <% const safeLocationOptions=Array.isArray(locationOptions) ? locationOptions : []; const
+        currentLocation=item.location || "" ; const isOtherLocation=currentLocation &&
+        !safeLocationOptions.includes(currentLocation); const otherLocationText=isOtherLocation ?
+        currentLocation.replace(/^Other\s*-\s*/i, "" ) : "" ; const safeCategoryOptions=Array.isArray(categoryOptions) ?
+        categoryOptions : []; const currentCategory=item.category || "" ; const isOtherCategory=currentCategory &&
+        !safeCategoryOptions.includes(currentCategory); const otherCategoryText=isOtherCategory ?
+        currentCategory.replace(/^Other\s*-\s*/i, "" ) : "" ; %>
 
-            <!-- Center the form horizontally on the page -->
-            <div class="row justify-content-center">
+        <main class="portal-home-main">
+            <div class="container py-4 py-lg-5">
+                <div class="row justify-content-center">
+                    <div class="col-12 col-md-10 col-lg-8 col-xl-7">
 
-                <!-- Responsive column width for the form card -->
-                <div class="col-12 col-md-10 col-lg-7 col-xl-6">
+                        <!-- Main form card -->
+                        <section class="form-card">
 
-                    <!-- Card that contains the new/edit item form -->
-                    <section class="form-card">
+                            <!-- Page title changes depending on create/edit mode -->
+                            <h1 class="portal-page-title mb-4">
+                                <%= isEdit ? "Edit Lost Item" : "Lost Item Log" %>
+                            </h1>
 
-                        <!-- Page title changes depending on whether the user is editing or adding an item -->
-                        <h1 class="portal-page-title mb-4">
-                            <%= isEdit ? 'Edit Lost Item' : 'Lost Item Log' %>
-                        </h1>
+                            <!-- Main item form -->
+                            <form action="<%= isEdit ? '/items/' + item.id : '/items' %>" method="POST"
+                                enctype="multipart/form-data" class="row g-4">
+                                <!-- Location dropdown -->
+                                <div class="col-12">
+                                    <label for="location" class="form-label">
+                                        Location <span class="required-star">*</span>
+                                    </label>
 
-                        <!-- Form action changes based on mode:
-                         - Edit mode submits to /items/:id
-                         - New item mode submits to /items -->
-                        <form action="<%= isEdit ? '/items/' + item.id : '/items' %>" method="POST" enctype="multipart/form-data" class="row g-4">
-
-                            <!-- Location dropdown field -->
-                            <div class="col-12">
-                                <label for="location" class="form-label">Location</label>
-
-                                <select id="location" name="location" class="form-select" required>
-                                    <!-- Default placeholder option -->
-                                    <option value="" disabled <%=!item.location ? 'selected' : '' %>>
-                                        Select location
-                                    </option>
-
-                                    <!-- Loop through each location option and mark it as selected if it matches the item's current value -->
-                                    <% ['Classroom Building', 'Riddell Centre' , 'Library' , 'Residence' , 'Other'
-                                        ].forEach(function(option) { %>
-                                        <option value="<%= option %>" <%=item.location===option ? 'selected' : '' %>>
-                                            <%= option %>
+                                    <select id="location" name="location" class="form-select" required>
+                                        <option value="" disabled <%=!currentLocation ? "selected" : "" %>>
+                                            Select location
                                         </option>
-                                        <% }) %>
-                                </select>
-                            </div>
 
-                            <!-- Category dropdown field -->
-                            <div class="col-12">
-                                <label for="category" class="form-label">Category</label>
-
-                                <select id="category" name="category" class="form-select" required>
-                                    <!-- Default placeholder option -->
-                                    <option value="" disabled <%=!item.category ? 'selected' : '' %>>
-                                        Select category
-                                    </option>
-
-                                    <!-- Loop through each category option and mark it as selected if it matches the item's current value -->
-                                    <% ['Accessories', 'Electronics' , 'Identification' , 'Clothing' , 'Other'
-                                        ].forEach(function(option) { %>
-                                        <option value="<%= option %>" <%=item.category===option ? 'selected' : '' %>>
-                                            <%= option %>
+                                        <option value="__other__" <%=isOtherLocation ? "selected" : "" %>>
+                                            Other
                                         </option>
-                                        <% }) %>
-                                </select>
-                            </div>
 
-                            <!-- File input for uploading item images -->
-                            <div class="col-12">
-                                <label for="itemImage" class="form-label">Upload Image</label>
-                                <input type="file" id="itemImage" name="itemImage" class="form-control" accept="image/*" />
-                                <% if (isEdit && item.image_url) { %>
-                                    <div class="mt-2">
-                                        <p class="helper-text mb-1">Current Image:</p>
-                                        <div class="item-thumbnail-container">
-                                            <img src="<%= item.image_url %>" class="item-thumbnail" alt="Item Image" />
-                                        </div>
+                                        <% safeLocationOptions.forEach(function(option) { %>
+                                            <option value="<%= option %>" <%=currentLocation===option ? "selected" : ""
+                                                %>>
+                                                <%= option %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+
+                                    <!-- Show text input only when Other is selected -->
+                                    <div id="otherLocationWrapper" class="mt-3"
+                                        style="<%= isOtherLocation ? '' : 'display:none;' %>">
+                                        <label for="otherLocation" class="form-label">Other Location</label>
+                                        <input type="text" id="otherLocation" name="otherLocation" class="form-control"
+                                            placeholder="Enter the location" value="<%= otherLocationText %>"
+                                            <%=isOtherLocation ? "required" : "" %>
+                                        />
                                     </div>
-                                <% } %>
-                            </div>
+                                </div>
 
-                            <!-- Description text area for the item -->
-                            <div class="col-12">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea id="description" name="description" class="form-control" rows="6"
-                                    placeholder="Write item description"
-                                    required><%= item.description || '' %></textarea>
-                            </div>
+                                <!-- Category dropdown -->
+                                <div class="col-12">
+                                    <label for="category" class="form-label">
+                                        Category <span class="required-star">*</span>
+                                    </label>
 
-                            <!-- Action buttons -->
-                            <div class="col-12 d-flex justify-content-end gap-2">
+                                    <select id="category" name="category" class="form-select" required>
+                                        <option value="" disabled <%=!currentCategory ? "selected" : "" %>>
+                                            Select category
+                                        </option>
 
-                                <!-- Cancel button returns the user to the inventory page without saving -->
-                                <a href="/items" class="btn btn-outline-secondary">Cancel</a>
+                                        <option value="__other__" <%=isOtherCategory ? "selected" : "" %>>
+                                            Other
+                                        </option>
 
-                                <!-- Submit button text changes depending on whether this is edit mode or create mode -->
-                                <button type="submit" class="btn btn-brand">
-                                    <%= isEdit ? 'Update Item' : 'Submit' %>
-                                </button>
-                            </div>
-                        </form>
-                    </section>
+                                        <% safeCategoryOptions.forEach(function(option) { %>
+                                            <option value="<%= option %>" <%=currentCategory===option ? "selected" : ""
+                                                %>>
+                                                <%= option %>
+                                            </option>
+                                            <% }) %>
+                                    </select>
+
+                                    <!-- Show text input only when Other is selected -->
+                                    <div id="otherCategoryWrapper" class="mt-3"
+                                        style="<%= isOtherCategory ? '' : 'display:none;' %>">
+                                        <label for="otherCategory" class="form-label">Other Category</label>
+                                        <input type="text" id="otherCategory" name="otherCategory" class="form-control"
+                                            placeholder="Enter the category" value="<%= otherCategoryText %>"
+                                            <%=isOtherCategory ? "required" : "" %>
+                                        />
+                                    </div>
+                                </div>
+
+                                <!-- Optional image upload -->
+                                <div class="col-12">
+                                    <label for="itemImage" class="form-label">Upload Image</label>
+                                    <input type="file" id="itemImage" name="itemImage" class="form-control"
+                                        accept="image/*" />
+
+                                    <% if (isEdit && item.image_url) { %>
+                                        <div class="mt-2">
+                                            <p class="helper-text mb-1">Current Image:</p>
+                                            <div class="item-thumbnail-container">
+                                                <img src="<%= item.image_url %>" class="item-thumbnail"
+                                                    alt="Item Image" />
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                </div>
+
+                                <!-- Description -->
+                                <div class="col-12">
+                                    <label for="description" class="form-label">
+                                        Description <span class="required-star">*</span>
+                                    </label>
+                                    <textarea id="description" name="description" class="form-control" rows="6"
+                                        placeholder="Write item description"
+                                        required><%= item.description || '' %></textarea>
+                                </div>
+
+                                <!-- Form buttons -->
+                                <div class="col-12 d-flex justify-content-end gap-2">
+                                    <a href="/items" class="btn btn-outline-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-brand">
+                                        <%= isEdit ? "Update Item" : "Submit" %>
+                                    </button>
+                                </div>
+                            </form>
+                        </section>
+                    </div>
                 </div>
             </div>
-        </div>
-    </main>
+        </main>
 
-    <!-- Include the shared footer file from views/layouts/footer.ejs -->
-    <%- include("layouts/footer", { footerText: "University of Regina" }) %>
+        <script>
+            // Toggle the "Other" textboxes on and off
+            (function () {
+                const locationSelect = document.getElementById("location");
+                const otherLocationWrapper = document.getElementById("otherLocationWrapper");
+                const otherLocationInput = document.getElementById("otherLocation");
+
+                const categorySelect = document.getElementById("category");
+                const otherCategoryWrapper = document.getElementById("otherCategoryWrapper");
+                const otherCategoryInput = document.getElementById("otherCategory");
+
+                function toggleOtherLocation() {
+                    const usingOther = locationSelect.value === "__other__";
+                    otherLocationWrapper.style.display = usingOther ? "" : "none";
+                    otherLocationInput.required = usingOther;
+
+                    if (!usingOther) {
+                        otherLocationInput.value = "";
+                    }
+                }
+
+                function toggleOtherCategory() {
+                    const usingOther = categorySelect.value === "__other__";
+                    otherCategoryWrapper.style.display = usingOther ? "" : "none";
+                    otherCategoryInput.required = usingOther;
+
+                    if (!usingOther) {
+                        otherCategoryInput.value = "";
+                    }
+                }
+
+                locationSelect.addEventListener("change", toggleOtherLocation);
+                categorySelect.addEventListener("change", toggleOtherCategory);
+
+                toggleOtherLocation();
+                toggleOtherCategory();
+            })();
+        </script>
+
+        <!-- Shared page footer -->
+        <%- include("layouts/footer", { footerText: "University of Regina" }) %>

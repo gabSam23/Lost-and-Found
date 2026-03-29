@@ -1,0 +1,135 @@
+<!--Amr Azouz
+    Cobie Caburao
+-->
+
+<!-- Shared page header -->
+<%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
+
+    <main class="portal-home-main">
+        <div class="container py-4 py-lg-5">
+
+            <!-- Page title -->
+            <section class="portal-page-header mb-4">
+                <h1 class="portal-page-title">Customize Categories</h1>
+                <p class="page-description">
+                    Manage the saved category options used in item logging and lost item reports.
+                </p>
+            </section>
+
+            <!-- Main content card -->
+            <section class="list-card p-3">
+
+                <!-- Section heading -->
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                    <div>
+                        <h2 class="h5 mb-1">Saved Categories</h2>
+                        <p class="text-muted mb-0">
+                            Add, edit, or remove category options.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Form for adding a new category -->
+                <form action="/admin/categories/add" method="POST" class="row g-2 mb-4">
+                    <div class="col-md-8">
+                        <input type="text" name="newCategory" class="form-control" placeholder="Enter a new category"
+                            required />
+                    </div>
+
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-brand">Add Category</button>
+                    </div>
+                </form>
+
+                <!-- Empty state if no categories exist -->
+                <% if (!categoryOptions || categoryOptions.length===0) { %>
+                    <div class="empty-state">No saved categories yet.</div>
+                    <% } else { %>
+
+                        <!-- Table of saved categories -->
+                        <div class="table-responsive">
+                            <table class="table align-middle mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>Category</th>
+                                        <th class="text-end">Actions</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <% categoryOptions.forEach(function(option) { %>
+                                        <tr>
+                                            <td>
+                                                <%= option %>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex justify-content-end gap-2">
+                                                    <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                        onclick="editCategoryOption('<%- JSON.stringify(option).slice(1, -1) %>')">
+                                                        Edit
+                                                    </button>
+
+                                                    <button type="button" class="btn btn-outline-danger btn-sm"
+                                                        onclick="deleteCategoryOption('<%- JSON.stringify(option).slice(1, -1) %>')">
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <% } %>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- Hidden form used to edit an existing category -->
+    <form id="editCategoryOptionForm" method="POST" action="/options/category/edit" class="d-none">
+        <input type="hidden" name="oldValue" id="editCategoryOldValue">
+        <input type="hidden" name="newValue" id="editCategoryNewValue">
+        <input type="hidden" name="redirectTo" value="/admin/categories">
+    </form>
+
+    <!-- Hidden form used to delete an existing category -->
+    <form id="deleteCategoryOptionForm" method="POST" action="/options/category/delete" class="d-none">
+        <input type="hidden" name="value" id="deleteCategoryValue">
+        <input type="hidden" name="redirectTo" value="/admin/categories">
+    </form>
+
+    <script>
+        // Opens a prompt so the user can rename a saved category
+        function editCategoryOption(oldValue) {
+            const newValue = window.prompt("Edit category", oldValue);
+
+            // Stop if the user cancels or leaves it empty
+            if (!newValue || !newValue.trim()) {
+                return;
+            }
+
+            // Fill the hidden form fields
+            document.getElementById("editCategoryOldValue").value = oldValue;
+            document.getElementById("editCategoryNewValue").value = newValue.trim();
+
+            // Submit the edit form
+            document.getElementById("editCategoryOptionForm").submit();
+        }
+
+        // Asks for confirmation, then deletes the selected category
+        function deleteCategoryOption(value) {
+            if (!window.confirm("Delete this category?")) {
+                return;
+            }
+
+            // Fill the hidden delete form field
+            document.getElementById("deleteCategoryValue").value = value;
+
+            // Submit the delete form
+            document.getElementById("deleteCategoryOptionForm").submit();
+        }
+    </script>
+
+    <!-- Shared page footer -->
+    <%- include("layouts/footer", { footerText: "University of Regina" }) %>

@@ -2,168 +2,321 @@
     Cobie Caburao
 -->
 
-<!-- Include the shared header file from views/layouts/header.ejs.
-     pageTitle sets the browser tab title.
-     currentUser shows the logged-in user's name in the top bar.
-     bodyClass applies styling for this page. -->
 <%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
 
-    <!-- Main content area for the report form page -->
-    <main class="portal-home-main">
-        <div class="container py-4 py-lg-5">
+<%
+    // Shared saved location options
+    const safeLocationOptions = Array.isArray(locationOptions) ? locationOptions : [];
 
-            <!-- Page heading section -->
-            <section class="portal-page-header">
+    // Current saved location for edit mode
+    const currentLocation = report.last_known_location || "";
 
-                <!-- Dynamic title:
-                 - shows edit title if the user is editing an existing report
-                 - shows submit title if the user is creating a new report -->
-                <h1 class="portal-page-title">
-                    <%= isEdit ? 'Edit Lost Item Report' : 'Submit a Lost Item Report' %>
-                </h1>
+    // Treat any value not in the saved list as an "Other" value
+    const isOtherLocation =
+        currentLocation && !safeLocationOptions.includes(currentLocation);
 
-                <!-- Short explanation of what this form is for -->
-                <p class="page-description">
-                    Collect the key details needed to match a reported missing item with inventory already in storage.
-                </p>
-            </section>
+    // Remove the "Other - " prefix when pre-filling the Other textbox
+    const otherLocationText = isOtherLocation
+        ? currentLocation.replace(/^Other\s*-\s*/i, "")
+        : "";
 
-            <!-- Card container for the report form -->
-            <section class="form-card">
+    // Shared saved category options
+    const safeCategoryOptions = Array.isArray(categoryOptions) ? categoryOptions : [];
 
-                <!-- Form action changes depending on mode:
-                 - edit mode submits to /reports/:id
-                 - new mode submits to /reports -->
-                <form action="<%= isEdit ? '/reports/' + report.id : '/reports' %>" method="POST" class="row g-3">
+    // Current saved category for edit mode
+    const currentCategory = report.category || "";
 
-                    <!-- Reporter full name -->
-                    <div class="col-md-6">
-                        <label for="reporterName" class="form-label">
-                            Reporter name <span class="required-star">*</span>
-                        </label>
-                        <input type="text" id="reporterName" name="reporterName" class="form-control"
-                            placeholder="Full name" value="<%= report.reporter_name || '' %>" required />
-                    </div>
+    // Treat any value not in the saved list as an "Other" value
+    const isOtherCategory =
+        currentCategory && !safeCategoryOptions.includes(currentCategory);
 
-                    <!-- Reporter email address -->
-                    <div class="col-md-6">
-                        <label for="reporterEmail" class="form-label">
-                            Reporter email <span class="required-star">*</span>
-                        </label>
-                        <input type="email" id="reporterEmail" name="reporterEmail" class="form-control"
-                            placeholder="name@example.com" value="<%= report.reporter_email || '' %>" required />
-                    </div>
+    // Remove the "Other - " prefix when pre-filling the Other textbox
+    const otherCategoryText = isOtherCategory
+        ? currentCategory.replace(/^Other\s*-\s*/i, "")
+        : "";
+%>
 
-                    <!-- Optional reporter phone number -->
-                    <div class="col-md-6">
-                        <label for="reporterPhone" class="form-label">Phone number</label>
-                        <input type="tel" id="reporterPhone" name="reporterPhone" class="form-control"
-                            placeholder="Optional contact number" value="<%= report.phone_number || '' %>" />
-                    </div>
+        <main class="portal-home-main">
+            <div class="container py-4 py-lg-5">
+                <section class="portal-page-header">
+                    <h1 class="portal-page-title">
+                        <%= isEdit ? 'Edit Lost Item Report' : 'Submit a Lost Item Report' %>
+                    </h1>
+                    <p class="page-description">
+                        Collect the key details needed to match a reported missing item with inventory already in
+                        storage.
+                    </p>
+                </section>
 
-                    <!-- Name of the missing item -->
-                    <div class="col-md-6">
-                        <label for="itemName" class="form-label">
-                            Missing item name <span class="required-star">*</span>
-                        </label>
-                        <input type="text" id="itemName" name="itemName" class="form-control"
-                            placeholder="Example: Black backpack" value="<%= report.missing_item_name || '' %>" required />
-                    </div>
+                <section class="form-card">
+<form action="<%= isEdit ? '/reports/' + report.id : '/reports' %>" method="POST" class="row g-4">
 
-                    <!-- Category dropdown -->
-                    <div class="col-md-6">
-                        <label for="category" class="form-label">
-                            Category <span class="required-star">*</span>
-                        </label>
+    <!-- REPORTER INFO SECTION -->
+    <div class="col-12">
+        <div class="report-form-section">
+            <h2 class="report-form-section-title">Reporter Information</h2>
 
-                        <select id="category" name="category" class="form-select" required>
-                            <option value="">Choose a category</option>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="reporterName" class="form-label">
+                        Reporter name <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="reporterName"
+                        name="reporterName"
+                        class="form-control"
+                        placeholder="Full name"
+                        value="<%= report.reporter_name || '' %>"
+                        required
+                    />
+                </div>
 
-                            <!-- Each option checks whether it matches the current report category.
-                             If it does, that option is pre-selected in edit mode. -->
-                            <option value="Accessories" <%=report.category==='Accessories' ? 'selected' : '' %>>
-                                Accessories
-                            </option>
-                            <option value="Electronics" <%=report.category==='Electronics' ? 'selected' : '' %>>
-                                Electronics
-                            </option>
-                            <option value="Identification" <%=report.category==='Identification' ? 'selected' : '' %>>
-                                Identification
-                            </option>
-                            <option value="Clothing" <%=report.category==='Clothing' ? 'selected' : '' %>>
-                                Clothing
-                            </option>
-                            <option value="Other" <%=report.category==='Other' ? 'selected' : '' %>>
-                                Other
-                            </option>
-                        </select>
-                    </div>
+                <div class="col-md-6">
+                    <label for="reporterEmail" class="form-label">
+                        Reporter email <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="email"
+                        id="reporterEmail"
+                        name="reporterEmail"
+                        class="form-control"
+                        placeholder="name@example.com"
+                        value="<%= report.reporter_email || '' %>"
+                        required
+                    />
+                </div>
 
-                    <!-- Date the item was lost -->
-                    <div class="col-md-6">
-                        <label for="dateLost" class="form-label">
-                            Date lost <span class="required-star">*</span>
-                        </label>
-                        <input type="date" id="dateLost" name="dateLost" class="form-control"
-                            value="<%= report.date_lost || '' %>" required />
-                    </div>
-
-                    <!-- Last known location where the item was seen -->
-                    <div class="col-12">
-                        <label for="lostLocation" class="form-label">
-                            Last known location <span class="required-star">*</span>
-                        </label>
-                        <input type="text" id="lostLocation" name="lostLocation" class="form-control"
-                            placeholder="Where was the item last seen?" value="<%= report.last_known_location || '' %>"
-                            required />
-                    </div>
-
-                    <!-- Main description of the item -->
-                    <div class="col-12">
-                        <label for="description" class="form-label">
-                            Description <span class="required-star">*</span>
-                        </label>
-                        <textarea id="description" name="description" class="form-control" rows="4"
-                            placeholder="Provide color, brand, size, or any identifying features"
-                            required><%= report.description || '' %></textarea>
-                    </div>
-
-                    <!-- Optional extra identifying details -->
-                    <div class="col-12">
-                        <label for="distinguishingFeatures" class="form-label">Distinguishing features</label>
-                        <textarea id="distinguishingFeatures" name="distinguishingFeatures" class="form-control"
-                            rows="3"
-                            placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."><%= report.distinguishing_features || '' %></textarea>
-                    </div>
-
-                    <!-- Current report status -->
-                    <div class="col-md-6">
-                        <label for="status" class="form-label">Initial status</label>
-
-                        <select id="status" name="status" class="form-select">
-                            <!-- Pre-select the saved status if editing -->
-                            <option value="Open" <%=report.status==='Open' ? 'selected' : '' %>>Open</option>
-                            <option value="Matched" <%=report.status==='Matched' ? 'selected' : '' %>>Matched</option>
-                            <option value="Resolved" <%=report.status==='Resolved' ? 'selected' : '' %>>Resolved
-                            </option>
-                        </select>
-                    </div>
-
-                    <!-- Form action buttons -->
-                    <div class="col-12 d-flex flex-wrap gap-2 pt-2">
-
-                        <!-- Submit button text changes depending on mode -->
-                        <button type="submit" class="btn btn-brand">
-                            <%= isEdit ? 'Update Report' : 'Submit Report' %>
-                        </button>
-
-                        <!-- Cancel button returns the user to the reports list without saving -->
-                        <a href="/reports" class="btn btn-outline-secondary">Cancel</a>
-                    </div>
-                </form>
-            </section>
+                <div class="col-md-6">
+                    <label for="reporterPhone" class="form-label">Phone number</label>
+                    <input
+                        type="tel"
+                        id="reporterPhone"
+                        name="reporterPhone"
+                        class="form-control"
+                        placeholder="Optional contact number"
+                        value="<%= report.phone_number || '' %>"
+                    />
+                </div>
+            </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Include the shared footer file from views/layouts/footer.ejs -->
-    <%- include("layouts/footer", { footerText: "University of Regina" }) %>
+    <!-- ITEM INFO SECTION -->
+    <div class="col-12">
+        <div class="report-form-section">
+            <h2 class="report-form-section-title">Item Information</h2>
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="itemName" class="form-label">
+                        Missing item name <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="text"
+                        id="itemName"
+                        name="itemName"
+                        class="form-control"
+                        placeholder="Example: Black backpack"
+                        value="<%= report.missing_item_name || '' %>"
+                        required
+                    />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="dateLost" class="form-label">
+                        Date lost <span class="required-star">*</span>
+                    </label>
+                    <input
+                        type="date"
+                        id="dateLost"
+                        name="dateLost"
+                        class="form-control"
+                        value="<%= report.date_lost || '' %>"
+                        required
+                    />
+                </div>
+
+<!-- Category dropdown -->
+<div class="col-md-6">
+    <label for="category" class="form-label">
+        Category <span class="required-star">*</span>
+    </label>
+
+    <select id="category" name="category" class="form-select" required>
+        <option value="" disabled <%= !currentCategory ? "selected" : "" %>>
+            Choose a category
+        </option>
+
+        <!-- Other option stays near the top -->
+        <option value="__other__" <%= isOtherCategory ? "selected" : "" %>>
+            Other
+        </option>
+
+        <!-- Saved category options -->
+        <% safeCategoryOptions.forEach(function(option) { %>
+            <option value="<%= option %>" <%= currentCategory === option ? "selected" : "" %>>
+                <%= option %>
+            </option>
+        <% }) %>
+    </select>
+
+    <!-- Textbox only shown when Other is selected -->
+    <div
+        id="otherCategoryWrapper"
+        class="mt-3"
+        style="<%= isOtherCategory ? "" : "display:none;" %>"
+    >
+        <label for="otherCategory" class="form-label">Other Category</label>
+        <input
+            type="text"
+            id="otherCategory"
+            name="otherCategory"
+            class="form-control"
+            placeholder="Enter the category"
+            value="<%= otherCategoryText %>"
+            <%= isOtherCategory ? "required" : "" %>
+        />
+    </div>
+</div>
+
+<!-- Last known location dropdown -->
+<div class="col-md-6">
+    <label for="location" class="form-label">
+        Last known location <span class="required-star">*</span>
+    </label>
+
+    <select id="location" name="location" class="form-select" required>
+        <option value="" disabled <%= !currentLocation ? "selected" : "" %>>
+            Choose a location
+        </option>
+
+        <!-- Other option stays near the top -->
+        <option value="__other__" <%= isOtherLocation ? "selected" : "" %>>
+            Other
+        </option>
+
+        <!-- Saved location options -->
+        <% safeLocationOptions.forEach(function(option) { %>
+            <option value="<%= option %>" <%= currentLocation === option ? "selected" : "" %>>
+                <%= option %>
+            </option>
+        <% }) %>
+    </select>
+
+    <!-- Textbox only shown when Other is selected -->
+    <div
+        id="otherLocationWrapper"
+        class="mt-3"
+        style="<%= isOtherLocation ? "" : "display:none;" %>"
+    >
+        <label for="otherLocation" class="form-label">Other Location</label>
+        <input
+            type="text"
+            id="otherLocation"
+            name="otherLocation"
+            class="form-control"
+            placeholder="Enter the location"
+            value="<%= otherLocationText %>"
+            <%= isOtherLocation ? "required" : "" %>
+        />
+    </div>
+</div>
+
+                <div class="col-12">
+                    <label for="description" class="form-label">
+                        Description <span class="required-star">*</span>
+                    </label>
+                    <textarea
+                        id="description"
+                        name="description"
+                        class="form-control"
+                        rows="4"
+                        placeholder="Provide color, brand, size, or any identifying features"
+                        required
+                    ><%= report.description || '' %></textarea>
+                </div>
+
+                <div class="col-12">
+                    <label for="distinguishingFeatures" class="form-label">Distinguishing features</label>
+                    <textarea
+                        id="distinguishingFeatures"
+                        name="distinguishingFeatures"
+                        class="form-control"
+                        rows="3"
+                        placeholder="Example: sticker on the lid, initials, scratches, keychain, etc."
+                    ><%= report.distinguishing_features || '' %></textarea>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Initial status</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="Open" <%= report.status === 'Open' ? 'selected' : '' %>>Open</option>
+                        <option value="Matched" <%= report.status === 'Matched' ? 'selected' : '' %>>Matched</option>
+                        <option value="Resolved" <%= report.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="col-12 d-flex flex-wrap gap-2 pt-1">
+        <button type="submit" class="btn btn-brand">
+            <%= isEdit ? 'Update Report' : 'Submit Report' %>
+        </button>
+        <a href="/reports" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+</form>
+                </section>
+            </div>
+        </main>
+
+<script>
+    // Runs after the page loads
+    (function () {
+        const locationSelect = document.getElementById("location");
+        const otherLocationWrapper = document.getElementById("otherLocationWrapper");
+        const otherLocationInput = document.getElementById("otherLocation");
+
+        const categorySelect = document.getElementById("category");
+        const otherCategoryWrapper = document.getElementById("otherCategoryWrapper");
+        const otherCategoryInput = document.getElementById("otherCategory");
+
+        // Shows or hides the "Other Location" textbox
+        function toggleOtherLocation() {
+            const usingOther = locationSelect.value === "__other__";
+
+            otherLocationWrapper.style.display = usingOther ? "" : "none";
+            otherLocationInput.required = usingOther;
+
+            // Clear old text if user switches away from Other
+            if (!usingOther) {
+                otherLocationInput.value = "";
+            }
+        }
+
+        // Shows or hides the "Other Category" textbox
+        function toggleOtherCategory() {
+            const usingOther = categorySelect.value === "__other__";
+
+            otherCategoryWrapper.style.display = usingOther ? "" : "none";
+            otherCategoryInput.required = usingOther;
+
+            // Clear old text if user switches away from Other
+            if (!usingOther) {
+                otherCategoryInput.value = "";
+            }
+        }
+
+        // React when dropdown values change
+        locationSelect.addEventListener("change", toggleOtherLocation);
+        categorySelect.addEventListener("change", toggleOtherCategory);
+
+        // Initialize correct state on page load
+        toggleOtherLocation();
+        toggleOtherCategory();
+    })();
+</script>
+
+        <%- include("layouts/footer", { footerText: "University of Regina" }) %>

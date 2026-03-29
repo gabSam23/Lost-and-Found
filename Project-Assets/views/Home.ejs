@@ -3,10 +3,9 @@
 -->
 
 <!-- Include the shared header layout.
-     Pass in:
-     - pageTitle: sets the page title in the browser tab
-     - currentUser: shows the logged-in user's name in the header
-     - bodyClass: applies page-specific styling to the body -->
+     pageTitle sets the browser tab title.
+     currentUser shows the logged-in user's name in the header.
+     bodyClass applies page-specific styling to the body. -->
 <%- include("layouts/header", { pageTitle, currentUser, bodyClass: "portal-home-body" }) %>
 
 <!-- Main content area for the home page -->
@@ -30,17 +29,13 @@
 
             <!-- Card link that sends the user to the form for adding a new found item -->
             <a href="/items/new" class="portal-box-card portal-category-card portal-card-link">
-
-                <!-- Small decorative accent bar on the card -->
                 <div class="portal-box-accent"></div>
 
-                <!-- Card header with icon and title -->
                 <div class="portal-box-header">
                     <i class="bi bi-box-seam portal-box-icon"></i>
                     <h3 class="portal-box-title">Add Item</h3>
                 </div>
 
-                <!-- Card body description -->
                 <div class="portal-box-body">
                     <p>
                         Create a new item record for property that has been found and added
@@ -51,17 +46,13 @@
 
             <!-- Card link that sends the user to the inventory list page -->
             <a href="/items" class="portal-box-card portal-category-card portal-card-link">
-
-                <!-- Small decorative accent bar on the card -->
                 <div class="portal-box-accent"></div>
 
-                <!-- Card header with icon and title -->
                 <div class="portal-box-header">
                     <i class="bi bi-clipboard-data portal-box-icon"></i>
                     <h3 class="portal-box-title">View Inventory</h3>
                 </div>
 
-                <!-- Card body description -->
                 <div class="portal-box-body">
                     <p>
                         View, edit, and delete items currently stored in the inventory.
@@ -80,17 +71,13 @@
 
             <!-- Card link that sends the user to the new lost-item report form -->
             <a href="/reports/new" class="portal-box-card portal-category-card portal-card-link">
-
-                <!-- Small decorative accent bar on the card -->
                 <div class="portal-box-accent"></div>
 
-                <!-- Card header with icon and title -->
                 <div class="portal-box-header">
                     <i class="bi bi-file-earmark-text portal-box-icon"></i>
                     <h3 class="portal-box-title">Report Lost Item</h3>
                 </div>
 
-                <!-- Card body description -->
                 <div class="portal-box-body">
                     <p>
                         Submit a lost item report for property that has gone missing so it
@@ -101,17 +88,13 @@
 
             <!-- Card link that sends the user to the page showing submitted reports -->
             <a href="/reports" class="portal-box-card portal-category-card portal-card-link">
-
-                <!-- Small decorative accent bar on the card -->
                 <div class="portal-box-accent"></div>
 
-                <!-- Card header with icon and title -->
                 <div class="portal-box-header">
                     <i class="bi bi-journal-text portal-box-icon"></i>
                     <h3 class="portal-box-title">View Report</h3>
                 </div>
 
-                <!-- Card body description -->
                 <div class="portal-box-body">
                     <p>
                         View submitted lost item reports and review report details for items
@@ -120,9 +103,51 @@
                 </div>
             </a>
         </section>
+
+        <!-- Section heading for the admin area -->
+        <section class="portal-section-header">
+            <h2 class="portal-section-title">Admin</h2>
+        </section>
+
+        <!-- Two-card grid for admin-related actions -->
+        <section class="portal-card-grid portal-card-grid-two">
+
+            <!-- Card link that sends the user to the customize locations page -->
+            <a href="/admin/locations" class="portal-box-card portal-category-card portal-card-link">
+                <div class="portal-box-accent"></div>
+
+                <div class="portal-box-header">
+                    <i class="bi bi-geo-alt portal-box-icon"></i>
+                    <h3 class="portal-box-title">Customize Locations</h3>
+                </div>
+
+                <div class="portal-box-body">
+                    <p>
+                        View, edit, and delete the saved location options used by the system.
+                    </p>
+                </div>
+            </a>
+
+            <!-- Card link that sends the user to the customize categories page -->
+            <a href="/admin/categories" class="portal-box-card portal-category-card portal-card-link">
+                <div class="portal-box-accent"></div>
+
+                <div class="portal-box-header">
+                    <i class="bi bi-tags portal-box-icon"></i>
+                    <h3 class="portal-box-title">Customize Categories</h3>
+                </div>
+
+                <div class="portal-box-body">
+                    <p>
+                        View, edit, and delete the saved category options used by the system.
+                    </p>
+                </div>
+            </a>
+        </section>
+
     </div>
 </main>
 
 <!-- Include the shared footer layout.
-     Pass in footerText to control the text shown in the footer -->
+     footerText controls the text shown in the footer -->
 <%- include("layouts/footer", { footerText: "University of Regina" }) %>
