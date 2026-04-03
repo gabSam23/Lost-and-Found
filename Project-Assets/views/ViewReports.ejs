@@ -62,6 +62,7 @@
                                         <th>Last Known Location</th>
                                         <th>Date Lost</th>
                                         <th>Status</th>
+                                        <th>Matches</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -122,6 +123,29 @@
                                                 <span class="status-badge status-<%= report.status.toLowerCase() %>">
                                                     <%= report.status %>
                                                 </span>
+                                            </td>
+
+                                            <!-- Potential Matches Indicator -->
+                                            <td>
+                                                <div class="match-indicator" data-report-id="<%= report.id %>">
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info position-relative py-0 px-2"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editReportModal"
+                                                            data-id="<%= report.id %>"
+                                                            data-name="<%= report.missing_item_name %>"
+                                                            data-category="<%= report.category %>"
+                                                            data-location="<%= report.last_known_location %>"
+                                                            data-description="<%= report.description %>"
+                                                            data-status="<%= report.status %>"
+                                                            data-reporter-name="<%= report.reporter_name %>"
+                                                            data-reporter-email="<%= report.reporter_email %>"
+                                                            data-reporter-phone="<%= report.phone_number %>"
+                                                            style="font-size: 0.75rem;">
+                                                        <i class="bi bi-check-all"></i>
+                                                        <span class="ms-1 match-count">...</span>
+                                                    </button>
+                                                </div>
                                             </td>
 
                                             <!-- Action buttons -->
@@ -241,7 +265,7 @@
                         <hr>
                         <!-- Potential Matches Section -->
                         <div class="mt-3">
-                            <h6 class="fw-bold"><i class="bi bi-magic me-2"></i>Potential Matches (Inventory)</h6>
+                            <h6 class="fw-bold"><i class="bi bi-check-all me-2"></i>Potential Matches (Inventory)</h6>
                             <div id="report-matches-container" class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto;">
                                 <div class="p-3 text-center text-muted small">Loading potential matches...</div>
                             </div>
@@ -295,7 +319,7 @@
                                 matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">No potential inventory matches found.</div>';
                             } else {
                                 matchesContainer.innerHTML = matches.map(m => `
-                                    <div class="list-group-item list-group-item-action p-2">
+                                    <a href="/items/${m.id}/edit" class="list-group-item list-group-item-action p-2">
                                         <div class="d-flex align-items-center gap-2">
                                             ${m.image_url ? `<img src="${m.image_url}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">` : '<div class="bg-light rounded text-muted extra-small d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 0.5rem;">No Img</div>'}
                                             <div class="flex-grow-1">
@@ -309,7 +333,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 `).join('');
                             }
                         })
@@ -318,5 +342,24 @@
                         });
                 });
             }
+
+            // Fetch match counts for all reports on the page
+            document.querySelectorAll('.match-indicator').forEach(indicator => {
+                const reportId = indicator.getAttribute('data-report-id');
+                const countBadge = indicator.querySelector('.match-count');
+                
+                fetch(`/api/matches/report/${reportId}`)
+                    .then(res => res.json())
+                    .then(matches => {
+                        countBadge.textContent = matches.length;
+                        if (matches.length > 0) {
+                            indicator.querySelector('button').classList.remove('btn-outline-info');
+                            indicator.querySelector('button').classList.add('btn-info');
+                        }
+                    })
+                    .catch(() => {
+                        countBadge.textContent = '0';
+                    });
+            });
         });
     </script>

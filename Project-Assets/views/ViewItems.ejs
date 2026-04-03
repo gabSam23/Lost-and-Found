@@ -39,6 +39,7 @@
                                         <th scope="col">Location</th>
                                         <th scope="col">Date Logged</th>
                                         <th scope="col">Status</th>
+                                        <th scope="col">Matches</th>
                                         <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
@@ -95,6 +96,26 @@
                                                 <% if (item.claim_notes) { %>
                                                     <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="<%= item.claim_notes %>"></i>
                                                 <% } %>
+                                            </td>
+
+                                            <!-- Potential Matches Indicator -->
+                                            <td>
+                                                <div class="match-indicator" data-item-id="<%= item.id %>">
+                                                    <button type="button" 
+                                                            class="btn btn-sm btn-outline-info position-relative py-0 px-2"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editItemModal"
+                                                            data-id="<%= item.id %>"
+                                                            data-location="<%= item.location %>"
+                                                            data-category="<%= item.category %>"
+                                                            data-description="<%= item.description %>"
+                                                            data-status="<%= item.status %>"
+                                                            data-notes="<%= item.claim_notes %>"
+                                                            style="font-size: 0.75rem;">
+                                                        <i class="bi bi-check-all"></i>
+                                                        <span class="ms-1 match-count">...</span>
+                                                    </button>
+                                                </div>
                                             </td>
 
                                             <!-- Action buttons for editing the item -->
@@ -213,7 +234,7 @@
                         <hr>
                         <!-- Potential Matches Section -->
                         <div class="mt-3">
-                            <h6 class="fw-bold"><i class="bi bi-magic me-2"></i>Potential Matches (Reports)</h6>
+                            <h6 class="fw-bold"><i class="bi bi-check-all me-2"></i>Potential Matches (Reports)</h6>
                             <div id="item-matches-container" class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto;">
                                 <div class="p-3 text-center text-muted small">Loading potential matches...</div>
                             </div>
@@ -283,7 +304,7 @@
                                 matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">No potential report matches found.</div>';
                             } else {
                                 matchesContainer.innerHTML = matches.map(m => `
-                                    <div class="list-group-item list-group-item-action p-2">
+                                    <a href="/reports/${m.id}/edit" class="list-group-item list-group-item-action p-2">
                                         <div class="d-flex w-100 justify-content-between">
                                             <h6 class="mb-1 text-primary small fw-bold">${m.missing_item_name}</h6>
                                             <span class="badge bg-info text-dark" style="font-size: 0.65rem;">${m.score}% Match</span>
@@ -292,7 +313,7 @@
                                         <div class="extra-small text-dark" style="font-size: 0.7rem;">
                                             <i class="bi bi-person me-1"></i>${m.reporter_name} | <i class="bi bi-geo-alt me-1"></i>${m.last_known_location}
                                         </div>
-                                    </div>
+                                    </a>
                                 `).join('');
                             }
                         })
@@ -301,6 +322,25 @@
                         });
                 });
             }
+
+            // Fetch match counts for all items on the page
+            document.querySelectorAll('.match-indicator').forEach(indicator => {
+                const itemId = indicator.getAttribute('data-item-id');
+                const countBadge = indicator.querySelector('.match-count');
+                
+                fetch(`/api/matches/item/${itemId}`)
+                    .then(res => res.json())
+                    .then(matches => {
+                        countBadge.textContent = matches.length;
+                        if (matches.length > 0) {
+                            indicator.querySelector('button').classList.remove('btn-outline-info');
+                            indicator.querySelector('button').classList.add('btn-info');
+                        }
+                    })
+                    .catch(() => {
+                        countBadge.textContent = '0';
+                    });
+            });
 
             // Initialize Bootstrap tooltips for the info icons
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

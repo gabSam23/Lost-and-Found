@@ -893,8 +893,8 @@ app.get("/api/matches/:type/:id", isAuthenticated, async (req, res) => {
         } else if (type === "report") {
             // Get the report details
             const { data: report } = await supabase.from("item_reports").select("*").eq("id", id).single();
-            // Get all available items
-            const { data: items } = await supabase.from("lost_items").select("*").neq("status", "returned");
+            // Get all available items (exclude returned, disposed, etc.)
+            const { data: items } = await supabase.from("lost_items").select("*").in("status", ["available", "pending_pickup"]);
             if (report && items) {
                 matches = items.map(item => ({
                     ...item,
