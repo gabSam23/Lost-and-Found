@@ -129,7 +129,7 @@
                                             <td>
                                                 <div class="match-indicator" data-report-id="<%= report.id %>">
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-outline-info position-relative py-0 px-2"
+                                                            class="btn btn-sm <%= report.matchCount > 0 ? 'btn-info' : 'btn-outline-info' %> position-relative py-0 px-2"
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#editReportModal"
                                                             data-id="<%= report.id %>"
@@ -143,7 +143,7 @@
                                                             data-reporter-phone="<%= report.phone_number %>"
                                                             style="font-size: 0.75rem;">
                                                         <i class="bi bi-check-all"></i>
-                                                        <span class="ms-1 match-count">...</span>
+                                                        <span class="ms-1 match-count"><%= report.matchCount %></span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -342,24 +342,5 @@
                         });
                 });
             }
-
-            // Fetch match counts for all reports on the page
-            document.querySelectorAll('.match-indicator').forEach(indicator => {
-                const reportId = indicator.getAttribute('data-report-id');
-                const countBadge = indicator.querySelector('.match-count');
-                
-                fetch(`/api/matches/report/${reportId}`)
-                    .then(res => res.json())
-                    .then(matches => {
-                        countBadge.textContent = matches.length;
-                        if (matches.length > 0) {
-                            indicator.querySelector('button').classList.remove('btn-outline-info');
-                            indicator.querySelector('button').classList.add('btn-info');
-                        }
-                    })
-                    .catch(() => {
-                        countBadge.textContent = '0';
-                    });
-            });
         });
     </script>

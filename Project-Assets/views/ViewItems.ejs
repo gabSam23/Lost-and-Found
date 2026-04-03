@@ -102,7 +102,7 @@
                                             <td>
                                                 <div class="match-indicator" data-item-id="<%= item.id %>">
                                                     <button type="button" 
-                                                            class="btn btn-sm btn-outline-info position-relative py-0 px-2"
+                                                            class="btn btn-sm <%= item.matchCount > 0 ? 'btn-info' : 'btn-outline-info' %> position-relative py-0 px-2"
                                                             data-bs-toggle="modal" 
                                                             data-bs-target="#editItemModal"
                                                             data-id="<%= item.id %>"
@@ -113,7 +113,7 @@
                                                             data-notes="<%= item.claim_notes %>"
                                                             style="font-size: 0.75rem;">
                                                         <i class="bi bi-check-all"></i>
-                                                        <span class="ms-1 match-count">...</span>
+                                                        <span class="ms-1 match-count"><%= item.matchCount %></span>
                                                     </button>
                                                 </div>
                                             </td>
@@ -322,25 +322,6 @@
                         });
                 });
             }
-
-            // Fetch match counts for all items on the page
-            document.querySelectorAll('.match-indicator').forEach(indicator => {
-                const itemId = indicator.getAttribute('data-item-id');
-                const countBadge = indicator.querySelector('.match-count');
-                
-                fetch(`/api/matches/item/${itemId}`)
-                    .then(res => res.json())
-                    .then(matches => {
-                        countBadge.textContent = matches.length;
-                        if (matches.length > 0) {
-                            indicator.querySelector('button').classList.remove('btn-outline-info');
-                            indicator.querySelector('button').classList.add('btn-info');
-                        }
-                    })
-                    .catch(() => {
-                        countBadge.textContent = '0';
-                    });
-            });
 
             // Initialize Bootstrap tooltips for the info icons
             const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

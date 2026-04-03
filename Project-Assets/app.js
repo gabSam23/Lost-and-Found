@@ -539,37 +539,56 @@ app.get("/home", isAuthenticated, (req, res) => {
     });
 });
 
-//Gets items from Supabase with pagination
+//Gets items from Supabase with pagination and sorting
 app.get("/items", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
-    const end = start + limit - 1;
 
-    // Get total count of items that are NOT returned
-    const { count } = await supabase
-        .from("lost_items")
-        .select("*", { count: 'exact', head: true })
-        .neq("status", "returned");
-
-    // Get paginated data, filtering out 'returned' items
-    const { data: items, error } = await supabase
+    // Get all items that are NOT returned
+    const { data: allItems, error: itemsError } = await supabase
         .from("lost_items")
         .select("*")
-        .neq("status", "returned")
-        .order("created_at", { ascending: false })
-        .range(start, end);
+        .neq("status", "returned");
 
-    if (error) {
-        console.error("Error fetching items:", error.message);
+    // Get all open reports for matching
+    const { data: allOpenReports } = await supabase
+        .from("item_reports")
+        .select("*")
+        .eq("status", "Open");
+
+    if (itemsError) {
+        console.error("Error fetching items:", itemsError.message);
     }
 
-    const totalPages = Math.ceil((count || 0) / limit);
+    let items = allItems || [];
+    
+    if (items.length > 0 && allOpenReports) {
+        // Calculate match counts for sorting
+        items.forEach(item => {
+            item.matchCount = allOpenReports.filter(report => calculateMatchScore(item, report) > 20).length;
+        });
+
+        // Sort: Status (available first), then MatchCount (desc), then Date (desc)
+        items.sort((a, b) => {
+            const statusPriority = { 'available': 0, 'pending_pickup': 1 };
+            const aPrio = statusPriority[a.status] ?? 2;
+            const bPrio = statusPriority[b.status] ?? 2;
+            
+            if (aPrio !== bPrio) return aPrio - bPrio;
+            if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+            return new Date(b.created_at) - new Date(a.created_at);
+        });
+    }
+
+    const totalCount = items.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const paginatedItems = items.slice(start, start + limit);
 
     res.render("ViewItems", {
         pageTitle: "UR Lost & Found - Storage",
         currentUser: req.session.user.username,
-        items: items || [],
+        items: paginatedItems,
         currentPage: page,
         totalPages
     });
@@ -730,34 +749,55 @@ app.post("/items/:id/delete", isAuthenticated, async (req, res) => {
     res.redirect("/items");
 });
 
-//Loads all the data and displays in in ViewReports with pagination
+//Loads all the data and displays in in ViewReports with pagination and sorting
 app.get("/reports", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
-    const end = start + limit - 1;
 
-    // Get total count
-    const { count } = await supabase
+    // Get all reports
+    const { data: allReports, error: reportsError } = await supabase
         .from("item_reports")
-        .select("*", { count: 'exact', head: true });
+        .select("*");
 
-    const { data: reports, error } = await supabase
-        .from("item_reports")
+    // Get all available items for matching
+    const { data: allAvailableItems } = await supabase
+        .from("lost_items")
         .select("*")
-        .order("created_at", { ascending: false })
-        .range(start, end);
+        .in("status", ["available", "pending_pickup"]);
 
-    if (error) {
-        console.error("Error fetching reports:", error.message);
+    if (reportsError) {
+        console.error("Error fetching reports:", reportsError.message);
     }
 
-    const totalPages = Math.ceil((count || 0) / limit);
+    let reports = allReports || [];
+
+    if (reports.length > 0 && allAvailableItems) {
+        // Calculate match counts for sorting
+        reports.forEach(report => {
+            report.matchCount = allAvailableItems.filter(item => calculateMatchScore(item, report) > 20).length;
+        });
+
+        // Sort: Status (Open first), then MatchCount (desc), then Date (desc)
+        reports.sort((a, b) => {
+            const statusPriority = { 'Open': 0, 'Resolved': 1, 'Closed': 2 };
+            const aPrio = statusPriority[a.status] ?? 3;
+            const bPrio = statusPriority[b.status] ?? 3;
+            
+            if (aPrio !== bPrio) return aPrio - bPrio;
+            if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+            return new Date(b.date_lost) - new Date(a.date_lost);
+        });
+    }
+
+    const totalCount = reports.length;
+    const totalPages = Math.ceil(totalCount / limit);
+    const paginatedReports = reports.slice(start, start + limit);
 
     res.render("ViewReports", {
         pageTitle: "UR Lost & Found - Reports",
         currentUser: req.session.user.username,
-        reports: reports || [],
+        reports: paginatedReports,
         currentPage: page,
         totalPages
     });
