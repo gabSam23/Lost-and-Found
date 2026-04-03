@@ -38,6 +38,7 @@
                                         <th scope="col">Description</th>
                                         <th scope="col">Location</th>
                                         <th scope="col">Date Logged</th>
+                                        <th scope="col">Status</th>
                                         <th scope="col">Actions</th>
                                     </tr>
                                 </thead>
@@ -54,7 +55,10 @@
 
                                             <!-- Display the image label, or fallback text if no image exists -->
                                             <td>
-                                                <div class="item-thumbnail-container">
+                                                <div class="item-thumbnail-container" style="cursor: pointer;" 
+                                                     data-bs-toggle="modal" 
+                                                     data-bs-target="#imagePreviewModal" 
+                                                     onclick="document.getElementById('fullSizeImage').src='<%= item.image_url %>'">
                                                     <% if (item.image_url) { %>
                                                         <img src="<%= item.image_url %>" alt="Item Image" class="item-thumbnail" />
                                                     <% } else { %>
@@ -83,19 +87,32 @@
                                                 <%= new Date(item.created_at).toLocaleDateString() %>
                                             </td>
 
-                                            <!-- Action buttons for editing or deleting the item -->
+                                            <!-- Display the item status as a styled badge -->
+                                            <td>
+                                                <span class="badge <%= item.status === 'available' ? 'bg-success' : (item.status === 'pending_pickup' ? 'bg-warning text-dark' : 'bg-secondary') %>">
+                                                    <%= (item.status || 'available').replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) %>
+                                                </span>
+                                                <% if (item.claim_notes) { %>
+                                                    <i class="bi bi-info-circle ms-1" data-bs-toggle="tooltip" title="<%= item.claim_notes %>"></i>
+                                                <% } %>
+                                            </td>
+
+                                            <!-- Action buttons for editing the item -->
                                             <td class="actions-cell">
                                                 <div class="table-actions">
-
-                                                    <!-- Edit button goes to the edit page for this item -->
-                                                    <a href="/items/<%= item.id %>/edit"
-                                                        class="btn btn-outline-primary btn-sm">Edit</a>
-
-                                                    <!-- Delete form submits a POST request to delete this item -->
-                                                    <form action="/items/<%= item.id %>/delete" method="POST">
-                                                        <button type="submit"
-                                                            class="btn btn-outline-danger btn-sm">Delete</button>
-                                                    </form>
+                                                    <!-- Edit button triggers a modal -->
+                                                    <button type="button" 
+                                                            class="btn btn-outline-primary btn-sm"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editItemModal"
+                                                            data-id="<%= item.id %>"
+                                                            data-location="<%= item.location %>"
+                                                            data-category="<%= item.category %>"
+                                                            data-description="<%= item.description %>"
+                                                            data-status="<%= item.status %>"
+                                                            data-notes="<%= item.claim_notes %>">
+                                                        Edit
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -126,5 +143,169 @@
         </div>
     </main>
 
-    <!-- Include the shared footer layout from views/layouts/footer.ejs -->
+    <!-- Include the shared footer layout from views/layouts/header.ejs -->
     <%- include("layouts/footer", { footerText: "University of Regina" }) %>
+
+    <!-- Image Preview Modal -->
+    <div class="modal fade" id="imagePreviewModal" tabindex="-1" aria-labelledby="imagePreviewModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 bg-transparent">
+                <div class="modal-header border-0 p-0">
+                    <button type="button" class="btn-close btn-close-white ms-auto mb-2" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-0 text-center">
+                    <img id="fullSizeImage" src="" alt="Full size preview" class="img-fluid rounded shadow-lg" style="max-height: 85vh;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Item Modal -->
+    <div class="modal fade" id="editItemModal" tabindex="-1" aria-labelledby="editItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editItemModalLabel">Edit Item State</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <!-- Form for updating item details -->
+                <form id="editItemForm" method="POST" action="">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="modal-location" class="form-label">Location</label>
+                            <select id="modal-location" name="location" class="form-select" required>
+                                <% ['Classroom Building', 'Riddell Centre' , 'Library' , 'Residence' , 'Other'
+                                    ].forEach(function(option) { %>
+                                    <option value="<%= option %>">
+                                        <%= option %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modal-category" class="form-label">Category</label>
+                            <select id="modal-category" name="category" class="form-select" required>
+                                <% ['Accessories', 'Electronics' , 'Identification' , 'Clothing' , 'Other'
+                                    ].forEach(function(option) { %>
+                                    <option value="<%= option %>">
+                                        <%= option %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modal-description" class="form-label">Description</label>
+                            <textarea id="modal-description" name="description" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <label for="modal-status" class="form-label">Item Status</label>
+                            <select id="modal-status" name="status" class="form-select">
+                                <option value="available">Available</option>
+                                <option value="pending_pickup">Pending Pickup</option>
+                                <option value="returned">Returned (Archive)</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="modal-claim-notes" class="form-label">Claim Notes</label>
+                            <textarea id="modal-claim-notes" name="claim_notes" class="form-control" rows="2" placeholder="Notes about the claim/return process..."></textarea>
+                        </div>
+                        <hr>
+                        <!-- Potential Matches Section -->
+                        <div class="mt-3">
+                            <h6 class="fw-bold"><i class="bi bi-magic me-2"></i>Potential Matches (Reports)</h6>
+                            <div id="item-matches-container" class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto;">
+                                <div class="p-3 text-center text-muted small">Loading potential matches...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-between">
+                        <!-- Delete button (red/danger) at the bottom of the modal -->
+                        <button type="button" class="btn btn-outline-danger" id="deleteItemBtn">Delete Item</button>
+                        <div>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-brand">Update Item</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- Hidden delete form to be submitted via JS after confirmation -->
+                <form id="deleteItemForm" method="POST" action="" style="display:none;"></form>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript to handle modal population and deletion confirmation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editItemModal = document.getElementById('editItemModal');
+            if (editItemModal) {
+                editItemModal.addEventListener('show.bs.modal', function(event) {
+                    // Button that triggered the modal
+                    const button = event.relatedTarget;
+                    
+                    // Extract info from data-* attributes
+                    const id = button.getAttribute('data-id');
+                    const location = button.getAttribute('data-location');
+                    const category = button.getAttribute('data-category');
+                    const description = button.getAttribute('data-description');
+                    const status = button.getAttribute('data-status');
+                    const notes = button.getAttribute('data-notes');
+
+                    // Update the form action to point to the correct item ID
+                    const form = document.getElementById('editItemForm');
+                    form.action = '/items/' + id;
+
+                    // Fill the modal fields with the current item data
+                    document.getElementById('modal-location').value = location;
+                    document.getElementById('modal-category').value = category;
+                    document.getElementById('modal-description').value = description;
+                    document.getElementById('modal-status').value = status || 'available';
+                    document.getElementById('modal-claim-notes').value = (notes && notes !== 'null') ? notes : '';
+
+                    // Handle the delete button click
+                    const deleteBtn = document.getElementById('deleteItemBtn');
+                    deleteBtn.onclick = function() {
+                        if (confirm('Are you sure you want to permanently delete this item? This action cannot be undone.')) {
+                            const deleteForm = document.getElementById('deleteItemForm');
+                            deleteForm.action = '/items/' + id + '/delete';
+                            deleteForm.submit();
+                        }
+                    };
+
+                    // Fetch Potential Matches
+                    const matchesContainer = document.getElementById('item-matches-container');
+                    matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">Searching for matches...</div>';
+                    
+                    fetch(`/api/matches/item/${id}`)
+                        .then(res => res.json())
+                        .then(matches => {
+                            if (matches.length === 0) {
+                                matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">No potential report matches found.</div>';
+                            } else {
+                                matchesContainer.innerHTML = matches.map(m => `
+                                    <div class="list-group-item list-group-item-action p-2">
+                                        <div class="d-flex w-100 justify-content-between">
+                                            <h6 class="mb-1 text-primary small fw-bold">${m.missing_item_name}</h6>
+                                            <span class="badge bg-info text-dark" style="font-size: 0.65rem;">${m.score}% Match</span>
+                                        </div>
+                                        <p class="mb-1 extra-small text-muted" style="font-size: 0.75rem;">${m.description.substring(0, 60)}...</p>
+                                        <div class="extra-small text-dark" style="font-size: 0.7rem;">
+                                            <i class="bi bi-person me-1"></i>${m.reporter_name} | <i class="bi bi-geo-alt me-1"></i>${m.last_known_location}
+                                        </div>
+                                    </div>
+                                `).join('');
+                            }
+                        })
+                        .catch(err => {
+                            matchesContainer.innerHTML = '<div class="p-3 text-center text-danger small">Error loading matches.</div>';
+                        });
+                });
+            }
+
+            // Initialize Bootstrap tooltips for the info icons
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>

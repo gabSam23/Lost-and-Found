@@ -545,15 +545,17 @@ app.get("/items", isAuthenticated, async (req, res) => {
     const start = (page - 1) * limit;
     const end = start + limit - 1;
 
-    // Get total count
+    // Get total count of items that are NOT returned
     const { count } = await supabase
         .from("lost_items")
-        .select("*", { count: 'exact', head: true });
+        .select("*", { count: 'exact', head: true })
+        .neq("status", "returned");
 
-    // Get paginated data
+    // Get paginated data, filtering out 'returned' items
     const { data: items, error } = await supabase
         .from("lost_items")
         .select("*")
+        .neq("status", "returned")
         .order("created_at", { ascending: false })
         .range(start, end);
 
@@ -692,7 +694,9 @@ const finalCategory = getSubmittedCategory(req);
 const updateData = {
     location: finalLocation,
     category: finalCategory,
-    description: req.body.description
+    description: req.body.description,
+    status: req.body.status || 'available',
+    claim_notes: req.body.claim_notes || ''
 };
 
     if (imageUrl) {
@@ -863,6 +867,45 @@ app.post("/reports/:id/delete", isAuthenticated, async (req, res) => {
     }
 
     res.redirect("/reports");
+});
+
+/**
+ * GET /api/matches/:type/:id
+ * Fetches potential matches for an item or report.
+ */
+app.get("/api/matches/:type/:id", isAuthenticated, async (req, res) => {
+    const { type, id } = req.params;
+    let target, candidates, matches = [];
+
+    try {
+        if (type === "item") {
+            // Get the item details
+            const { data: item } = await supabase.from("lost_items").select("*").eq("id", id).single();
+            // Get all open reports
+            const { data: reports } = await supabase.from("item_reports").select("*").eq("status", "Open");
+            if (item && reports) {
+                matches = reports.map(report => ({
+                    ...report,
+                    score: calculateMatchScore(item, report)
+                })).filter(m => m.score > 20).sort((a, b) => b.score - a.score);
+            }
+        } else if (type === "report") {
+            // Get the report details
+            const { data: report } = await supabase.from("item_reports").select("*").eq("id", id).single();
+            // Get all available items
+            const { data: items } = await supabase.from("lost_items").select("*").neq("status", "returned");
+            if (report && items) {
+                matches = items.map(item => ({
+                    ...item,
+                    score: calculateMatchScore(item, report)
+                })).filter(m => m.score > 20).sort((a, b) => b.score - a.score);
+            }
+        }
+        res.json(matches.slice(0, 5)); // Return top 5 matches
+    } catch (err) {
+        console.error("Match API Error:", err);
+        res.status(500).json({ error: "Failed to fetch matches" });
+    }
 });
 
 

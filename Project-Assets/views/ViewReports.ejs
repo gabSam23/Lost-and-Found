@@ -128,11 +128,19 @@
                                             <td class="actions-cell">
                                                 <div class="table-actions d-flex gap-2">
 
-                                                    <!-- Edit button opens the edit form for this specific report -->
-                                                    <a href="/reports/<%= report.id %>/edit"
-                                                        class="btn btn-outline-primary btn-sm">
+                                                    <!-- Edit button triggers a modal -->
+                                                    <button type="button" 
+                                                            class="btn btn-outline-primary btn-sm"
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#editReportModal"
+                                                            data-id="<%= report.id %>"
+                                                            data-name="<%= report.missing_item_name %>"
+                                                            data-category="<%= report.category %>"
+                                                            data-location="<%= report.last_known_location %>"
+                                                            data-description="<%= report.description %>"
+                                                            data-status="<%= report.status %>">
                                                         Edit
-                                                    </a>
+                                                    </button>
 
                                                     <!-- Delete form sends a POST request to delete this report -->
                                                     <form action="/reports/<%= report.id %>/delete" method="POST"
@@ -177,3 +185,135 @@
     <!-- Include the shared footer layout from views/layouts/footer.ejs.
      footerText changes the text shown on the right side of the footer. -->
     <%- include("layouts/footer", { footerText: "University of Regina interface prototype" }) %>
+
+    <!-- Edit Report Modal -->
+    <div class="modal fade" id="editReportModal" tabindex="-1" aria-labelledby="editReportModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editReportModalLabel">Edit Report Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="editReportForm" method="POST" action="">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="modal-item-name" class="form-label">Item Name</label>
+                                <input type="text" id="modal-item-name" name="itemName" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modal-category" class="form-label">Category</label>
+                                <select id="modal-category" name="category" class="form-select" required>
+                                    <% ['Accessories', 'Electronics' , 'Identification' , 'Clothing' , 'Other'].forEach(function(opt) { %>
+                                        <option value="<%= opt %>"><%= opt %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modal-location" class="form-label">Last Known Location</label>
+                                <input type="text" id="modal-location" name="lostLocation" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="modal-status" class="form-label">Report Status</label>
+                                <select id="modal-status" name="status" class="form-select">
+                                    <option value="Open">Open</option>
+                                    <option value="Resolved">Resolved</option>
+                                    <option value="Closed">Closed</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label for="modal-description" class="form-label">Description</label>
+                                <textarea id="modal-description" name="description" class="form-control" rows="2" required></textarea>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="mt-3">
+                            <h6 class="fw-bold"><i class="bi bi-person me-2"></i>Reporter Info</h6>
+                            <div class="p-2 bg-light rounded small">
+                                <div id="modal-reporter-display"></div>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <!-- Potential Matches Section -->
+                        <div class="mt-3">
+                            <h6 class="fw-bold"><i class="bi bi-magic me-2"></i>Potential Matches (Inventory)</h6>
+                            <div id="report-matches-container" class="list-group list-group-flush border rounded" style="max-height: 200px; overflow-y: auto;">
+                                <div class="p-3 text-center text-muted small">Loading potential matches...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-brand">Update Report</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const editReportModal = document.getElementById('editReportModal');
+            if (editReportModal) {
+                editReportModal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    const id = button.getAttribute('data-id');
+                    
+                    // Update form action
+                    document.getElementById('editReportForm').action = '/reports/' + id;
+
+                    // Populate fields
+                    document.getElementById('modal-item-name').value = button.getAttribute('data-name');
+                    document.getElementById('modal-category').value = button.getAttribute('data-category');
+                    document.getElementById('modal-location').value = button.getAttribute('data-location');
+                    document.getElementById('modal-status').value = button.getAttribute('data-status');
+                    document.getElementById('modal-description').value = button.getAttribute('data-description');
+
+                    // Populate Reporter Info
+                    const repName = button.getAttribute('data-reporter-name');
+                    const repEmail = button.getAttribute('data-reporter-email');
+                    const repPhone = button.getAttribute('data-reporter-phone');
+                    document.getElementById('modal-reporter-display').innerHTML = `
+                        <strong>Name:</strong> ${repName}<br>
+                        <strong>Email:</strong> ${repEmail}<br>
+                        <strong>Phone:</strong> ${repPhone || 'N/A'}
+                    `;
+
+                    // Fetch Matches
+                    const matchesContainer = document.getElementById('report-matches-container');
+                    matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">Searching inventory...</div>';
+                    
+                    fetch(`/api/matches/report/${id}`)
+                        .then(res => res.json())
+                        .then(matches => {
+                            if (matches.length === 0) {
+                                matchesContainer.innerHTML = '<div class="p-3 text-center text-muted small">No potential inventory matches found.</div>';
+                            } else {
+                                matchesContainer.innerHTML = matches.map(m => `
+                                    <div class="list-group-item list-group-item-action p-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            ${m.image_url ? `<img src="${m.image_url}" class="rounded" style="width: 40px; height: 40px; object-fit: cover;">` : '<div class="bg-light rounded text-muted extra-small d-flex align-items-center justify-content-center" style="width: 40px; height: 40px; font-size: 0.5rem;">No Img</div>'}
+                                            <div class="flex-grow-1">
+                                                <div class="d-flex w-100 justify-content-between">
+                                                    <h6 class="mb-0 text-primary small fw-bold">ID: ${m.id} - ${m.category}</h6>
+                                                    <span class="badge bg-info text-dark" style="font-size: 0.65rem;">${m.score}% Match</span>
+                                                </div>
+                                                <p class="mb-0 extra-small text-muted" style="font-size: 0.75rem;">${m.description.substring(0, 50)}...</p>
+                                                <div class="extra-small text-dark" style="font-size: 0.7rem;">
+                                                    <i class="bi bi-geo-alt me-1"></i>${m.location}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `).join('');
+                            }
+                        })
+                        .catch(err => {
+                            matchesContainer.innerHTML = '<div class="p-3 text-center text-danger small">Error loading matches.</div>';
+                        });
+                });
+            }
+        });
+    </script>
