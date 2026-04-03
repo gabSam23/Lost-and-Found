@@ -4,6 +4,7 @@ const path = require("path"); // Helps build file/folder paths safely
 const session = require("express-session"); // For secure session management
 const multer = require("multer"); // For handling file uploads
 const supabase = require("./config/supabaseClient"); // Import Supabase client
+const { calculateMatchScore } = require("./utils/matcher"); // For matching items and reports
 
 const app = express(); // Creates the Express app
 const port = process.env.PORT || 3000; // Uses the environment port if available, otherwise 3000
