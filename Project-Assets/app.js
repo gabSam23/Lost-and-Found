@@ -540,45 +540,72 @@ app.get("/home", isAuthenticated, (req, res) => {
 });
 
 //Gets items from Supabase with pagination and sorting
+// Gets items from Supabase with pagination, sorting, and current/archived tabs
 app.get("/items", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
 
-    // Get all items that are NOT returned
-    const { data: allItems, error: itemsError } = await supabase
-        .from("lost_items")
-        .select("*")
-        .neq("status", "returned");
+    // Decide which tab is open
+    const inventoryView = req.query.view === "archived" ? "archived" : "current";
 
-    // Get all open reports for matching
-    const { data: allOpenReports } = await supabase
-        .from("item_reports")
-        .select("*")
-        .eq("status", "Open");
+    // Build the item query based on the selected tab
+    let itemsQuery = supabase
+        .from("lost_items")
+        .select("*");
+
+    if (inventoryView === "archived") {
+        // Archived tab = only returned items
+        itemsQuery = itemsQuery.eq("status", "returned");
+    } else {
+        // Current Inventory tab = everything except returned items
+        itemsQuery = itemsQuery.neq("status", "returned");
+    }
+
+    const { data: allItems, error: itemsError } = await itemsQuery;
 
     if (itemsError) {
         console.error("Error fetching items:", itemsError.message);
     }
 
     let items = allItems || [];
-    
-    if (items.length > 0 && allOpenReports) {
-        // Calculate match counts for sorting
-        items.forEach(item => {
-            item.matchCount = allOpenReports.filter(report => calculateMatchScore(item, report) > 20).length;
-        });
 
-        // Sort: Status (available first), then MatchCount (desc), then Date (desc)
-        items.sort((a, b) => {
-            const statusPriority = { 'available': 0, 'pending_pickup': 1 };
-            const aPrio = statusPriority[a.status] ?? 2;
-            const bPrio = statusPriority[b.status] ?? 2;
-            
-            if (aPrio !== bPrio) return aPrio - bPrio;
-            if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-            return new Date(b.created_at) - new Date(a.created_at);
-        });
+    // Default every item to 0 matches so the table never shows undefined
+    items.forEach((item) => {
+        item.matchCount = 0;
+    });
+
+    // Only calculate matches for current inventory
+    if (inventoryView === "current" && items.length > 0) {
+        const { data: allOpenReports } = await supabase
+            .from("item_reports")
+            .select("*")
+            .eq("status", "Open");
+
+        if (allOpenReports && allOpenReports.length > 0) {
+            items.forEach((item) => {
+                item.matchCount = allOpenReports.filter(
+                    (report) => calculateMatchScore(item, report) > 20
+                ).length;
+            });
+
+            // Sort: available first, then pending pickup, then newest
+            items.sort((a, b) => {
+                const statusPriority = { available: 0, pending_pickup: 1 };
+                const aPrio = statusPriority[a.status] ?? 2;
+                const bPrio = statusPriority[b.status] ?? 2;
+
+                if (aPrio !== bPrio) return aPrio - bPrio;
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+                return new Date(b.created_at) - new Date(a.created_at);
+            });
+        } else {
+            // If there are no reports, just sort by newest
+            items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        }
+    } else {
+        // Archived view: just sort newest first
+        items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
 
     const totalCount = items.length;
@@ -590,7 +617,8 @@ app.get("/items", isAuthenticated, async (req, res) => {
         currentUser: req.session.user.username,
         items: paginatedItems,
         currentPage: page,
-        totalPages
+        totalPages,
+        inventoryView
     });
 });
 
@@ -655,6 +683,20 @@ const updateData = {
     }
 
     res.redirect("/items");
+});
+
+// Archives an item by setting its status to "returned"
+app.post("/items/:id/archive", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("lost_items")
+        .update({ status: "returned" })
+        .eq("id", req.params.id);
+
+    if (error) {
+        console.error("Error archiving item:", error.message);
+    }
+
+    res.redirect(req.body.redirectTo || "/items?view=current");
 });
 
 /**
@@ -732,7 +774,7 @@ const updateData = {
         console.error("Error updating item:", error.message);
     }
 
-    res.redirect("/items");
+    res.redirect(req.body.redirectTo || "/items?view=current");
 });
 
 //Deletes item from Supabase
@@ -754,11 +796,22 @@ app.get("/reports", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
+    const reportView = req.query.view === "archived" ? "archived" : "current";
+
 
     // Get all reports
-    const { data: allReports, error: reportsError } = await supabase
-        .from("item_reports")
-        .select("*");
+// Get reports based on selected tab
+let reportsQuery = supabase
+    .from("item_reports")
+    .select("*");
+
+if (reportView === "archived") {
+    reportsQuery = reportsQuery.eq("status", "Resolved");
+} else {
+    reportsQuery = reportsQuery.eq("status", "Open");
+}
+
+const { data: allReports, error: reportsError } = await reportsQuery;
 
     // Get all available items for matching
     const { data: allAvailableItems } = await supabase
@@ -772,23 +825,30 @@ app.get("/reports", isAuthenticated, async (req, res) => {
 
     let reports = allReports || [];
 
-    if (reports.length > 0 && allAvailableItems) {
-        // Calculate match counts for sorting
+    if (reports.length > 0) {
+    // Default match count so nothing is undefined
+    reports.forEach(report => {
+        report.matchCount = 0;
+    });
+
+    // Only calculate inventory matches for current reports
+    if (reportView === "current" && allAvailableItems) {
         reports.forEach(report => {
-            report.matchCount = allAvailableItems.filter(item => calculateMatchScore(item, report) > 20).length;
+            report.matchCount = allAvailableItems.filter(
+                item => calculateMatchScore(item, report) > 20
+            ).length;
         });
 
-        // Sort: Status (Open first), then MatchCount (desc), then Date (desc)
+        // Current reports: sort by match count, then newest lost date
         reports.sort((a, b) => {
-            const statusPriority = { 'Open': 0, 'Resolved': 1, 'Closed': 2 };
-            const aPrio = statusPriority[a.status] ?? 3;
-            const bPrio = statusPriority[b.status] ?? 3;
-            
-            if (aPrio !== bPrio) return aPrio - bPrio;
             if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
             return new Date(b.date_lost) - new Date(a.date_lost);
         });
+    } else {
+        // Archived reports: just sort newest first
+        reports.sort((a, b) => new Date(b.date_lost) - new Date(a.date_lost));
     }
+}
 
     const totalCount = reports.length;
     const totalPages = Math.ceil(totalCount / limit);
@@ -799,7 +859,8 @@ app.get("/reports", isAuthenticated, async (req, res) => {
         currentUser: req.session.user.username,
         reports: paginatedReports,
         currentPage: page,
-        totalPages
+        totalPages,
+        reportView
     });
 });
 
@@ -908,6 +969,21 @@ app.post("/reports/:id/delete", isAuthenticated, async (req, res) => {
     }
 
     res.redirect("/reports");
+});
+
+// Archives a report by updating its status in the database
+app.post("/reports/:id/archive", isAuthenticated, async (req, res) => {
+    const { error } = await supabase
+        .from("item_reports")
+        .update({ status: "Resolved" })
+        .eq("id", req.params.id);
+
+    if (error) {
+        console.error("Error archiving report:", error.message);
+        return res.status(500).send(error.message);
+    }
+
+    res.redirect(req.body.redirectTo || "/reports?view=current");
 });
 
 /**

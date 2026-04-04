@@ -1,10 +1,10 @@
-/* =========================================================
+/* 
    University of Regina - UR Lost & Found
    Pruned stylesheet for the current static HTML pages
    Kept only the rules used by:
    Login.html, Home.html, NewItem.html, NewReport.html,
    ViewItems.html, and ViewReport.html
-   ========================================================= */
+    */
 
 :root {
   --ur-green: #00502E;
@@ -659,4 +659,33 @@ body.portal-home-body {
   font-weight: 600;
   margin-bottom: 1rem;
   color: #00502E;
+}
+
+.inventory-tabs {
+  display: flex;
+  gap: 1.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.inventory-tab {
+  display: inline-block;
+  padding: 0 0.9rem 0.7rem;
+  border-bottom: 4px solid #e2e2e2;
+  color: #111111;
+  font-size: 1.05rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.inventory-tab:hover {
+  color: var(--ur-green);
+  border-bottom-color: var(--ur-green);
+  text-decoration: none;
+}
+
+.inventory-tab.active {
+  color: var(--ur-green);
+  border-bottom-color: var(--ur-green);
 }
