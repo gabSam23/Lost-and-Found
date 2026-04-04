@@ -12,19 +12,63 @@
         <div class="container py-4">
 
             <!-- Page heading -->
-            <section class="portal-page-header">
+            <!-- Page heading -->
+            <section class="portal-page-header mb-4">
                 <h1 class="portal-page-title">Lost and Found Storage</h1>
-
-                <div class="inventory-tabs">
+                <p class="text-muted">Manage logged items, track status, and find potential matches.</p>
+                
+                <div class="inventory-tabs mt-3">
                     <a href="/items?view=current"
                         class="inventory-tab <%= inventoryView === 'current' ? 'active' : '' %>">
                         Current Inventory
                     </a>
-
                     <a href="/items?view=archived"
                         class="inventory-tab <%= inventoryView === 'archived' ? 'active' : '' %>">
                         Archived
                     </a>
+                </div>
+            </section>
+
+            <!-- Search and Filter Toolbar -->
+            <section class="mb-4">
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body p-3">
+                        <form action="/items" method="GET" class="row g-3 align-items-end">
+                            <input type="hidden" name="view" value="<%= inventoryView %>">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label small fw-bold">Search</label>
+                                <div class="input-group input-group-sm">
+                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                                    <input type="text" name="search" id="search" class="form-control border-start-0" 
+                                           placeholder="ID, description, category..." value="<%= filters.search %>">
+                                </div>
+                            </div>
+                            <% if (inventoryView === 'current') { %>
+                            <div class="col-md-2">
+                                <label for="status" class="form-label small fw-bold">Status</label>
+                                <select name="status" id="status" class="form-select form-select-sm">
+                                    <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All (Active)</option>
+                                    <option value="available" <%= filters.status === 'available' ? 'selected' : '' %>>Available</option>
+                                    <option value="pending_pickup" <%= filters.status === 'pending_pickup' ? 'selected' : '' %>>Pending Pickup</option>
+                                </select>
+                            </div>
+                            <% } %>
+                            <div class="col-md-2">
+                                <label for="sortBy" class="form-label small fw-bold">Sort By</label>
+                                <select name="sortBy" id="sortBy" class="form-select form-select-sm">
+                                    <option value="top" <%= filters.sortBy === 'top' ? 'selected' : '' %>>Top Results</option>
+                                    <option value="matches" <%= filters.sortBy === 'matches' ? 'selected' : '' %>>Most Matches</option>
+                                    <option value="newest" <%= filters.sortBy === 'newest' ? 'selected' : '' %>>Date (Newest)</option>
+                                    <option value="oldest" <%= filters.sortBy === 'oldest' ? 'selected' : '' %>>Date (Oldest)</option>
+                                    <option value="category" <%= filters.sortBy === 'category' ? 'selected' : '' %>>Category (A-Z)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-<%= inventoryView === 'current' ? '4' : '6' %> d-flex gap-2">
+                                <button type="submit" class="btn btn-brand btn-sm flex-grow-1">Apply Filters</button>
+                                <a href="/items?view=<%= inventoryView %>" class="btn btn-outline-secondary btn-sm px-3">Reset</a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </section>
 
@@ -33,8 +77,9 @@
 
                 <!-- If there are no items in the array, show a message instead of the table -->
                 <% if (items.length===0) { %>
-                    <div class="empty-state">
-                        <%= inventoryView==="archived" ? "No archived items yet." : "No items have been logged yet." %>
+                    <div class="empty-state p-5 text-center">
+                        <i class="bi bi-inbox text-muted display-4 d-block mb-3"></i>
+                        No items found matching your criteria.
                     </div>
 
                     <!-- Otherwise, show the table of items -->
@@ -164,7 +209,7 @@
                                         <% for(let i=1; i <=totalPages; i++) { %>
                                             <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                                                 <a class="page-link"
-                                                    href="/items?view=<%= inventoryView %>&page=<%= i %>">
+                                                    href="/items?page=<%= i %>&view=<%= inventoryView %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>">
                                                     <%= i %>
                                                 </a>
                                             </li>
@@ -211,7 +256,7 @@
                     <!-- Form for updating item details -->
                     <form id="editItemForm" method="POST" action="">
                         <input type="hidden" name="redirectTo"
-                            value="/items?view=<%= inventoryView %>&page=<%= currentPage %>">
+                            value="/items?page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>">
                         <div class="modal-body">
                             <div class="mb-3">
                                 <label for="modal-location" class="form-label">Location</label>

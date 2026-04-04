@@ -539,30 +539,37 @@ app.get("/home", isAuthenticated, (req, res) => {
     });
 });
 
-//Gets items from Supabase with pagination and sorting
-// Gets items from Supabase with pagination, sorting, and current/archived tabs
+//Gets items from Supabase with search, filtering, sorting, and pagination
 app.get("/items", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
 
-    // Decide which tab is open
     const inventoryView = req.query.view === "archived" ? "archived" : "current";
+    const searchQuery = (req.query.search || "").toLowerCase().trim();
+    const statusFilter = req.query.status || "all";
+    const sortBy = req.query.sortBy || "top";
 
-    // Build the item query based on the selected tab
-    let itemsQuery = supabase
-        .from("lost_items")
-        .select("*");
-
+    // Build the item query
+    let query = supabase.from("lost_items").select("*");
+    
     if (inventoryView === "archived") {
-        // Archived tab = only returned items
-        itemsQuery = itemsQuery.eq("status", "returned");
+        query = query.eq("status", "returned");
     } else {
-        // Current Inventory tab = everything except returned items
-        itemsQuery = itemsQuery.neq("status", "returned");
+        if (statusFilter === "all") {
+            query = query.neq("status", "returned");
+        } else {
+            query = query.eq("status", statusFilter);
+        }
     }
 
-    const { data: allItems, error: itemsError } = await itemsQuery;
+    const { data: allItems, error: itemsError } = await query;
+
+    // Get all open reports for matching
+    const { data: allOpenReports } = await supabase
+        .from("item_reports")
+        .select("*")
+        .eq("status", "Open");
 
     if (itemsError) {
         console.error("Error fetching items:", itemsError.message);
@@ -570,43 +577,47 @@ app.get("/items", isAuthenticated, async (req, res) => {
 
     let items = allItems || [];
 
-    // Default every item to 0 matches so the table never shows undefined
-    items.forEach((item) => {
+    // 1. Calculate matches
+    items.forEach(item => {
         item.matchCount = 0;
+        if (inventoryView === "current" && allOpenReports && allOpenReports.length > 0) {
+            item.matchCount = allOpenReports.filter(report => calculateMatchScore(item, report) > 20).length;
+        }
     });
 
-    // Only calculate matches for current inventory
-    if (inventoryView === "current" && items.length > 0) {
-        const { data: allOpenReports } = await supabase
-            .from("item_reports")
-            .select("*")
-            .eq("status", "Open");
+    // 2. Apply Search Filter
+    if (searchQuery) {
+        items = items.filter(item => 
+            item.id.toString().includes(searchQuery) ||
+            (item.description || "").toLowerCase().includes(searchQuery) ||
+            (item.category || "").toLowerCase().includes(searchQuery) ||
+            (item.location || "").toLowerCase().includes(searchQuery)
+        );
+    }
 
-        if (allOpenReports && allOpenReports.length > 0) {
-            items.forEach((item) => {
-                item.matchCount = allOpenReports.filter(
-                    (report) => calculateMatchScore(item, report) > 20
-                ).length;
-            });
-
-            // Sort: available first, then pending pickup, then newest
-            items.sort((a, b) => {
-                const statusPriority = { available: 0, pending_pickup: 1 };
+    // 3. Apply Sorting
+    items.sort((a, b) => {
+        if (sortBy === "top") {
+            if (inventoryView === "current") {
+                const statusPriority = { 'available': 0, 'pending_pickup': 1 };
                 const aPrio = statusPriority[a.status] ?? 2;
                 const bPrio = statusPriority[b.status] ?? 2;
-
                 if (aPrio !== bPrio) return aPrio - bPrio;
                 if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-                return new Date(b.created_at) - new Date(a.created_at);
-            });
-        } else {
-            // If there are no reports, just sort by newest
-            items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+            }
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (sortBy === "matches") {
+            if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (sortBy === "newest") {
+            return new Date(b.created_at) - new Date(a.created_at);
+        } else if (sortBy === "oldest") {
+            return new Date(a.created_at) - new Date(b.created_at);
+        } else if (sortBy === "category") {
+            return (a.category || "").localeCompare(b.category || "");
         }
-    } else {
-        // Archived view: just sort newest first
-        items.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-    }
+        return 0;
+    });
 
     const totalCount = items.length;
     const totalPages = Math.ceil(totalCount / limit);
@@ -618,7 +629,8 @@ app.get("/items", isAuthenticated, async (req, res) => {
         items: paginatedItems,
         currentPage: page,
         totalPages,
-        inventoryView
+        inventoryView,
+        filters: { search: searchQuery, status: statusFilter, sortBy }
     });
 });
 
@@ -791,27 +803,31 @@ app.post("/items/:id/delete", isAuthenticated, async (req, res) => {
     res.redirect("/items");
 });
 
-//Loads all the data and displays in in ViewReports with pagination and sorting
+//Gets reports from Supabase with search, filtering, sorting, and pagination
 app.get("/reports", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
     const start = (page - 1) * limit;
+
     const reportView = req.query.view === "archived" ? "archived" : "current";
+    const searchQuery = (req.query.search || "").toLowerCase().trim();
+    const statusFilter = req.query.status || "all";
+    const sortBy = req.query.sortBy || "top";
 
+    // Build the query
+    let query = supabase.from("item_reports").select("*");
+    
+    if (reportView === "archived") {
+        query = query.eq("status", "Resolved");
+    } else {
+        if (statusFilter === "all") {
+            query = query.eq("status", "Open");
+        } else {
+            query = query.eq("status", statusFilter);
+        }
+    }
 
-    // Get all reports
-// Get reports based on selected tab
-let reportsQuery = supabase
-    .from("item_reports")
-    .select("*");
-
-if (reportView === "archived") {
-    reportsQuery = reportsQuery.eq("status", "Resolved");
-} else {
-    reportsQuery = reportsQuery.eq("status", "Open");
-}
-
-const { data: allReports, error: reportsError } = await reportsQuery;
+    const { data: allReports, error: reportsError } = await query;
 
     // Get all available items for matching
     const { data: allAvailableItems } = await supabase
@@ -825,30 +841,45 @@ const { data: allReports, error: reportsError } = await reportsQuery;
 
     let reports = allReports || [];
 
-    if (reports.length > 0) {
-    // Default match count so nothing is undefined
+    // 1. Calculate matches
     reports.forEach(report => {
         report.matchCount = 0;
+        if (reportView === "current" && allAvailableItems && allAvailableItems.length > 0) {
+            report.matchCount = allAvailableItems.filter(item => calculateMatchScore(item, report) > 20).length;
+        }
     });
 
-    // Only calculate inventory matches for current reports
-    if (reportView === "current" && allAvailableItems) {
-        reports.forEach(report => {
-            report.matchCount = allAvailableItems.filter(
-                item => calculateMatchScore(item, report) > 20
-            ).length;
-        });
+    // 2. Apply Search Filter
+    if (searchQuery) {
+        reports = reports.filter(r => 
+            r.id.toString().includes(searchQuery) ||
+            (r.missing_item_name || "").toLowerCase().includes(searchQuery) ||
+            (r.reporter_name || "").toLowerCase().includes(searchQuery) ||
+            (r.reporter_email || "").toLowerCase().includes(searchQuery) ||
+            (r.description || "").toLowerCase().includes(searchQuery) ||
+            (r.last_known_location || "").toLowerCase().includes(searchQuery)
+        );
+    }
 
-        // Current reports: sort by match count, then newest lost date
-        reports.sort((a, b) => {
+    // 3. Apply Sorting
+    reports.sort((a, b) => {
+        if (sortBy === "top") {
+            if (reportView === "current") {
+                if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+            }
+            return new Date(b.date_lost) - new Date(a.date_lost);
+        } else if (sortBy === "matches") {
             if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
             return new Date(b.date_lost) - new Date(a.date_lost);
-        });
-    } else {
-        // Archived reports: just sort newest first
-        reports.sort((a, b) => new Date(b.date_lost) - new Date(a.date_lost));
-    }
-}
+        } else if (sortBy === "newest") {
+            return new Date(b.date_lost) - new Date(a.date_lost);
+        } else if (sortBy === "oldest") {
+            return new Date(a.date_lost) - b.date_lost;
+        } else if (sortBy === "category") {
+            return (a.category || "").localeCompare(b.category || "");
+        }
+        return 0;
+    });
 
     const totalCount = reports.length;
     const totalPages = Math.ceil(totalCount / limit);
@@ -860,7 +891,8 @@ const { data: allReports, error: reportsError } = await reportsQuery;
         reports: paginatedReports,
         currentPage: page,
         totalPages,
-        reportView
+        reportView,
+        filters: { search: searchQuery, status: statusFilter, sortBy }
     });
 });
 
