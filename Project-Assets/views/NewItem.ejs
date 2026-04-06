@@ -100,8 +100,9 @@
                                 <!-- Optional image upload -->
                                 <div class="col-12">
                                     <label for="itemImage" class="form-label">Upload Image</label>
+                                    <!-- Opens the camera on many mobile browsers -->
                                     <input type="file" id="itemImage" name="itemImage" class="form-control"
-                                        accept="image/*" />
+                                        accept="image/*" capture="environment" />
 
                                     <% if (isEdit && item.image_url) { %>
                                         <div class="mt-2">

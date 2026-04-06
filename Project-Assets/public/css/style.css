@@ -427,10 +427,6 @@ body.portal-home-body {
     padding: 1.25rem;
   }
 
-  .portal-topbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
 
   .portal-topbar-right {
     justify-content: flex-end;
@@ -688,4 +684,119 @@ body.portal-home-body {
 .inventory-tab.active {
   color: var(--ur-green);
   border-bottom-color: var(--ur-green);
+}
+
+@media (max-width: 768px) {
+  .form-card,
+  .login-card,
+  .section-card {
+    padding: 1.25rem;
+  }
+
+  /* Keep the header on one horizontal row */
+  .portal-topbar {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    min-height: 48px;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  /* Left side = menu + logo */
+  .portal-topbar-left {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-start;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* Right side = gear + user */
+  .portal-topbar-right {
+    display: flex;
+    align-items: stretch;
+    justify-content: flex-end;
+    flex: 0 0 auto;
+    min-width: 0;
+    margin-left: auto;
+  }
+
+  /* Smaller square buttons on mobile */
+  .portal-icon-btn {
+    width: 44px;
+    min-width: 44px;
+    height: 48px;
+    font-size: 1.1rem;
+  }
+
+  /* Logo sizing */
+  .portal-brand {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    min-width: 0;
+    flex: 0 1 auto;
+  }
+
+  .portal-brand-logo {
+    height: 24px;
+    max-width: 95px;
+    width: auto;
+    display: block;
+  }
+
+  /* User dropdown stays inline */
+  .portal-user-dropdown {
+    display: flex;
+    align-items: stretch;
+    flex: 0 0 auto;
+  }
+
+  .portal-user-chip,
+  .portal-user-chip-toggle {
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.12);
+    color: #ffffff;
+    white-space: nowrap;
+    max-width: none;
+  }
+
+  .portal-user-avatar {
+    width: 44px;
+    min-width: 44px;
+    height: 48px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .portal-user-name {
+    display: inline-flex;
+    align-items: center;
+    height: 48px;
+    padding: 0 10px;
+    font-size: 0.85rem;
+    color: #ffffff;
+    max-width: 70px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .portal-page-shell {
+    width: min(100%, calc(100% - 28px));
+  }
+
+  .portal-card-grid {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
 }

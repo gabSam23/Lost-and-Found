@@ -623,15 +623,17 @@ app.get("/items", isAuthenticated, async (req, res) => {
     const totalPages = Math.ceil(totalCount / limit);
     const paginatedItems = items.slice(start, start + limit);
 
-    res.render("ViewItems", {
-        pageTitle: "UR Lost & Found - Storage",
-        currentUser: req.session.user.username,
-        items: paginatedItems,
-        currentPage: page,
-        totalPages,
-        inventoryView,
-        filters: { search: searchQuery, status: statusFilter, sortBy }
-    });
+res.render("ViewItems", {
+    pageTitle: "UR Lost & Found - Storage",
+    currentUser: req.session.user.username,
+    items: paginatedItems,
+    currentPage: page,
+    totalPages,
+    inventoryView,
+    filters: { search: searchQuery, status: statusFilter, sortBy },
+    locationOptions: getLocationOptions(),
+    categoryOptions: getCategoryOptions()
+});
 });
 
 //Shows form for creating a new item
@@ -885,15 +887,17 @@ app.get("/reports", isAuthenticated, async (req, res) => {
     const totalPages = Math.ceil(totalCount / limit);
     const paginatedReports = reports.slice(start, start + limit);
 
-    res.render("ViewReports", {
-        pageTitle: "UR Lost & Found - Reports",
-        currentUser: req.session.user.username,
-        reports: paginatedReports,
-        currentPage: page,
-        totalPages,
-        reportView,
-        filters: { search: searchQuery, status: statusFilter, sortBy }
-    });
+res.render("ViewReports", {
+    pageTitle: "UR Lost & Found - Reports",
+    currentUser: req.session.user.username,
+    reports: paginatedReports,
+    currentPage: page,
+    totalPages,
+    reportView,
+    filters: { search: searchQuery, status: statusFilter, sortBy },
+    locationOptions: getLocationOptions(),
+    categoryOptions: getCategoryOptions()
+});
 });
 
 //Shows form for creating new report
@@ -961,32 +965,51 @@ app.get("/reports/:id/edit", isAuthenticated, async (req, res) => {
     });
 });
 
-//Updates existing report in Supabase after form submission
+// Updates existing report in Supabase after form submission
 app.post("/reports/:id", isAuthenticated, async (req, res) => {
-    const finalCategory = getSubmittedCategory(req);
-    const finalLocation = getSubmittedLocation(req);
+    // Read the existing report first so fields not included in the popup
+    // do not get overwritten with undefined or empty values
+    const { data: existingReport, error: fetchError } = await supabase
+        .from("item_reports")
+        .select("*")
+        .eq("id", req.params.id)
+        .single();
+
+    if (fetchError || !existingReport) {
+        console.error("Error fetching existing report before update:", fetchError ? fetchError.message : "Not found");
+        return res.redirect(req.body.redirectTo || "/reports");
+    }
+
+    const submittedCategory = getSubmittedCategory(req);
+    const submittedLocation = getSubmittedLocation(req);
+
+    // Keep the old DB value if the popup did not send a replacement
+    const finalCategory = submittedCategory || existingReport.category;
+    const finalLocation = submittedLocation || existingReport.last_known_location;
+
+    const updateData = {
+        reporter_name: req.body.reporterName || existingReport.reporter_name,
+        reporter_email: req.body.reporterEmail || existingReport.reporter_email,
+        phone_number: req.body.reporterPhone || existingReport.phone_number,
+        missing_item_name: req.body.itemName || existingReport.missing_item_name,
+        category: finalCategory,
+        date_lost: req.body.dateLost || existingReport.date_lost,
+        last_known_location: finalLocation,
+        description: req.body.description || existingReport.description,
+        distinguishing_features: req.body.distinguishingFeatures || existingReport.distinguishing_features,
+        status: req.body.status || existingReport.status || "Open"
+    };
 
     const { error } = await supabase
         .from("item_reports")
-        .update({
-            reporter_name: req.body.reporterName,
-            reporter_email: req.body.reporterEmail,
-            phone_number: req.body.reporterPhone,
-            missing_item_name: req.body.itemName,
-            category: finalCategory,
-            date_lost: req.body.dateLost,
-            last_known_location: finalLocation,
-            description: req.body.description,
-            distinguishing_features: req.body.distinguishingFeatures,
-            status: req.body.status || "Open"
-        })
+        .update(updateData)
         .eq("id", req.params.id);
 
     if (error) {
         console.error("Error updating report:", error.message);
     }
 
-    res.redirect("/reports");
+    res.redirect(req.body.redirectTo || "/reports");
 });
 
 //Deletes report from Supabase
@@ -1034,9 +1057,9 @@ app.get("/api/matches/:type/:id", isAuthenticated, async (req, res) => {
             const { data: reports } = await supabase.from("item_reports").select("*").eq("status", "Open");
             if (item && reports) {
                 matches = reports.map(report => ({
-                    ...report,
-                    score: calculateMatchScore(item, report)
-                })).filter(m => m.score > 20).sort((a, b) => b.score - a.score);
+    ...report,
+    score: calculateMatchScore(item, report)
+})).filter(m => m.score > 20).sort((a, b) => b.score - a.score);
             }
         } else if (type === "report") {
             // Get the report details
