@@ -95,6 +95,9 @@ This project is being developed as part of **ENSE 281 – Software Engineering P
 - UMLs
 - MVP iterations
 - GitHub workflow
+- Kanban Board
+- Acceptance Test-driven Development (ATDD)
+- Refactoring
 
 ---
 
