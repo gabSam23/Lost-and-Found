@@ -45,10 +45,58 @@
     <!-- Left side of the top bar -->
     <div class="portal-topbar-left">
 
-      <!-- Button/icon that links back to the home page -->
-      <a href="/home" class="portal-icon-btn" aria-label="Open menu">
-        <i class="bi bi-grid-3x3-gap-fill"></i>
-      </a>
+      <!-- Navigation Dropdown Menu -->
+      <div class="dropdown portal-nav-dropdown">
+        <!-- Button/icon that triggers the menu -->
+        <button class="portal-icon-btn portal-nav-toggle" type="button" aria-label="Open navigation menu">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+        </button>
+        
+        <!-- Hoverable dropdown content -->
+        <ul class="dropdown-menu portal-nav-menu">
+          <li>
+            <a class="dropdown-item" href="/home">
+              <i class="bi bi-house-door me-2"></i>Home
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li class="dropdown-header fw-bold text-uppercase small pb-1">Inventory</li>
+          <li>
+            <a class="dropdown-item" href="/items/new">
+              <i class="bi bi-box-seam me-2"></i>Add Item
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/items">
+              <i class="bi bi-clipboard-data me-2"></i>View Inventory
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li class="dropdown-header fw-bold text-uppercase small pb-1">Reports</li>
+          <li>
+            <a class="dropdown-item" href="/reports/new">
+              <i class="bi bi-file-earmark-text me-2"></i>New Report
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/reports">
+              <i class="bi bi-journal-text me-2"></i>View Reports
+            </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li class="dropdown-header fw-bold text-uppercase small pb-1">Admin</li>
+          <li>
+            <a class="dropdown-item" href="/admin/locations">
+              <i class="bi bi-geo-alt me-2"></i>Customize Locations
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="/admin/categories">
+              <i class="bi bi-tags me-2"></i>Customize Categories
+            </a>
+          </li>
+        </ul>
+      </div>
 
       <!-- University logo, also links back to the home page -->
       <a href="/home" class="portal-brand" aria-label="University of Regina Home">

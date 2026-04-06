@@ -63,7 +63,6 @@
                                 <select name="status" id="status" class="form-select form-select-sm">
                                     <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Archived</option>
                                     <option value="Resolved" <%= filters.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
-                                    <option value="Closed" <%= filters.status === 'Closed' ? 'selected' : '' %>>Closed</option>
                                 </select>
                             </div>
                             <% } %>
@@ -285,7 +284,7 @@
                 <input
                     type="hidden"
                     name="redirectTo"
-                    value="/reports?page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
+                    value="/reports?view=<%= reportView %>&page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
                 >
 
                 <div class="modal-body">
@@ -416,7 +415,7 @@
                 <input
                     type="hidden"
                     name="redirectTo"
-                    value="/reports?page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
+                    value="/reports?view=<%= reportView %>&page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
                 >
             </form>
         </div>

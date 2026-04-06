@@ -238,6 +238,43 @@ textarea.form-control:focus {
   position: relative;
 }
 
+/* --- Navigation Menu (Hoverable) --- */
+.portal-nav-dropdown {
+  position: relative;
+}
+
+/* Shows menu when hovering over the parent container */
+.portal-nav-dropdown:hover .portal-nav-menu {
+  display: block;
+}
+
+.portal-nav-toggle {
+  cursor: default;
+}
+
+.portal-nav-menu {
+  margin: 0;
+  border-radius: 0;
+  border: 1px solid var(--ur-yellow);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 220px;
+}
+
+.portal-nav-menu .dropdown-item {
+  padding: 0.75rem 1.25rem;
+  font-weight: 500;
+  color: var(--text-dark);
+}
+
+.portal-nav-menu .dropdown-item:hover {
+  background-color: #f4f4f4;
+  color: var(--ur-green);
+}
+
+.portal-nav-menu .dropdown-item i {
+  color: var(--ur-green);
+}
+
 .portal-user-chip-toggle {
   border: none;
   padding: 0;
