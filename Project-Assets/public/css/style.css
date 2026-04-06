@@ -694,16 +694,18 @@ body.portal-home-body {
   }
 
   /* Keep the header on one horizontal row */
-  .portal-topbar {
-    display: flex;
-    flex-direction: row;
-    align-items: stretch;
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    min-height: 48px;
-    padding: 0;
-    overflow: hidden;
-  }
+.portal-topbar {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  min-height: 48px;
+  padding: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 1000;
+}
 
   /* Left side = menu + logo */
   .portal-topbar-left {
@@ -749,11 +751,17 @@ body.portal-home-body {
   }
 
   /* User dropdown stays inline */
-  .portal-user-dropdown {
-    display: flex;
-    align-items: stretch;
-    flex: 0 0 auto;
-  }
+.portal-user-dropdown {
+  display: flex;
+  align-items: stretch;
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 1100;
+}
+
+.portal-signout-menu {
+  z-index: 1200;
+}
 
   .portal-user-chip,
   .portal-user-chip-toggle {
