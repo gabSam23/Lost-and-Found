@@ -5,15 +5,12 @@ const { isAuthenticated } = require("../middleware/auth");
 const {
     getLocationOptions,
     getCategoryOptions,
-    addOption,
-    editOption,
-    deleteOption,
-    locationsPath,
-    categoriesPath,
-    DEFAULT_LOCATIONS,
-    DEFAULT_CATEGORIES,
-    legacyCustomLocationsPath,
-    legacyCustomCategoriesPath
+    addLocationOption,
+    addCategoryOption,
+    editLocationOption,
+    editCategoryOption,
+    deleteLocationOption,
+    deleteCategoryOption
 } = require("../utils/optionHelpers");
 
 // Build a small message object for the customize pages
@@ -74,36 +71,36 @@ async function countCategoryUsage(value) {
 }
 
 // Shows the page for managing saved locations
-router.get("/locations", isAuthenticated, (req, res) => {
+router.get("/locations", isAuthenticated, async (req, res) => {
     res.render("CustomizeLocations", {
         pageTitle: "UR Lost & Found - Customize Locations",
         currentUser: req.session.user.username,
-        locationOptions: getLocationOptions(),
+        locationOptions: await getLocationOptions(),
         pageMessage: buildPageMessage(req.query)
     });
 });
 
 // Shows the page for managing saved categories
-router.get("/categories", isAuthenticated, (req, res) => {
+router.get("/categories", isAuthenticated, async (req, res) => {
     res.render("CustomizeCategories", {
         pageTitle: "UR Lost & Found - Customize Categories",
         currentUser: req.session.user.username,
-        categoryOptions: getCategoryOptions(),
+        categoryOptions: await getCategoryOptions(),
         pageMessage: buildPageMessage(req.query)
     });
 });
 
 // Adds a new saved location
-router.post("/locations/add", isAuthenticated, (req, res) => {
+router.post("/locations/add", isAuthenticated, async (req, res) => {
     const newLocation = String(req.body.newLocation || "").trim();
-    addOption(locationsPath, DEFAULT_LOCATIONS, legacyCustomLocationsPath, newLocation);
+    await addLocationOption(newLocation);
     res.redirect("/admin/locations");
 });
 
 // Adds a new saved category
-router.post("/categories/add", isAuthenticated, (req, res) => {
+router.post("/categories/add", isAuthenticated, async (req, res) => {
     const newCategory = String(req.body.newCategory || "").trim();
-    addOption(categoriesPath, DEFAULT_CATEGORIES, legacyCustomCategoriesPath, newCategory);
+    await addCategoryOption(newCategory);
     res.redirect("/admin/categories");
 });
 
@@ -112,13 +109,7 @@ router.post("/options/location/edit", isAuthenticated, async (req, res) => {
     const oldValue = String(req.body.oldValue || "").trim();
     const newValue = String(req.body.newValue || "").trim();
 
-    const changed = editOption(
-        locationsPath,
-        DEFAULT_LOCATIONS,
-        legacyCustomLocationsPath,
-        oldValue,
-        newValue
-    );
+    const changed = await editLocationOption(oldValue, newValue);
 
     // If the location label changed, update matching item/report records too
     if (changed && oldValue.toLowerCase() !== newValue.toLowerCase()) {
@@ -126,7 +117,7 @@ router.post("/options/location/edit", isAuthenticated, async (req, res) => {
         await supabase.from("item_reports").update({ last_known_location: newValue }).eq("last_known_location", oldValue);
     }
 
-    res.redirect(req.body.redirectTo || "/items/new");
+    res.redirect(req.body.redirectTo || "/admin/locations");
 });
 
 // Deletes a saved location option only if no items or reports still use it
@@ -156,7 +147,7 @@ router.post("/options/location/delete", isAuthenticated, async (req, res) => {
         );
     }
 
-    deleteOption(locationsPath, DEFAULT_LOCATIONS, legacyCustomLocationsPath, value);
+    await deleteLocationOption(value);
     res.redirect("/admin/locations");
 });
 
@@ -165,13 +156,7 @@ router.post("/options/category/edit", isAuthenticated, async (req, res) => {
     const oldValue = String(req.body.oldValue || "").trim();
     const newValue = String(req.body.newValue || "").trim();
 
-    const changed = editOption(
-        categoriesPath,
-        DEFAULT_CATEGORIES,
-        legacyCustomCategoriesPath,
-        oldValue,
-        newValue
-    );
+    const changed = await editCategoryOption(oldValue, newValue);
 
     // If the category label changed, update matching item/report records too
     if (changed && oldValue.toLowerCase() !== newValue.toLowerCase()) {
@@ -179,7 +164,7 @@ router.post("/options/category/edit", isAuthenticated, async (req, res) => {
         await supabase.from("item_reports").update({ category: newValue }).eq("category", oldValue);
     }
 
-    res.redirect(req.body.redirectTo || "/items/new");
+    res.redirect(req.body.redirectTo || "/admin/categories");
 });
 
 // Deletes a saved category option only if no items or reports still use it
@@ -209,7 +194,7 @@ router.post("/options/category/delete", isAuthenticated, async (req, res) => {
         );
     }
 
-    deleteOption(categoriesPath, DEFAULT_CATEGORIES, legacyCustomCategoriesPath, value);
+    await deleteCategoryOption(value);
     res.redirect("/admin/categories");
 });
 

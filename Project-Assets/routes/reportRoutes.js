@@ -158,20 +158,20 @@ router.get("/", isAuthenticated, async (req, res) => {
             selectedLocations,
             selectedCategories
         },
-        locationOptions: getLocationOptions(),
-        categoryOptions: getCategoryOptions()
+        locationOptions: await getLocationOptions(),
+        categoryOptions: await getCategoryOptions()
     });
 });
 
 // Shows form for creating new report
-router.get("/new", isAuthenticated, (req, res) => {
+router.get("/new", isAuthenticated, async (req, res) => {
     res.render("NewReport", {
         pageTitle: "UR Lost & Found - New Report",
         currentUser: req.session.user.username,
         isEdit: false,
         report: {},
-        locationOptions: getLocationOptions(),
-        categoryOptions: getCategoryOptions()
+        locationOptions: await getLocationOptions(),
+        categoryOptions: await getCategoryOptions()
     });
 });
 
@@ -223,8 +223,8 @@ router.get("/:id/edit", isAuthenticated, async (req, res) => {
         currentUser: req.session.user.username,
         isEdit: true,
         report,
-        locationOptions: getLocationOptions(),
-        categoryOptions: getCategoryOptions()
+        locationOptions: await getLocationOptions(),
+        categoryOptions: await getCategoryOptions()
     });
 });
 

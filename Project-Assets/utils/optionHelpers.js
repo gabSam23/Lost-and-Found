@@ -1,12 +1,4 @@
-const fs = require("fs");
-const path = require("path");
-
-// Build absolute paths to important folders/files in the project
-const dataPath = path.join(__dirname, "..", "data");
-const legacyCustomLocationsPath = path.join(dataPath, "customLocations.json");
-const legacyCustomCategoriesPath = path.join(dataPath, "customCategories.json");
-const locationsPath = path.join(dataPath, "locations.json");
-const categoriesPath = path.join(dataPath, "categories.json");
+const supabase = require("../config/supabaseClient");
 
 const DEFAULT_LOCATIONS = [
     "Classroom Building",
@@ -21,13 +13,6 @@ const DEFAULT_CATEGORIES = [
     "Identification",
     "Clothing"
 ];
-
-// Make sure the /data folder exists before reading or writing JSON files
-function ensureDataDirectory() {
-    if (!fs.existsSync(dataPath)) {
-        fs.mkdirSync(dataPath, { recursive: true });
-    }
-}
 
 // Sort options alphabetically in a case-insensitive way
 function sortOptionList(values) {
@@ -57,155 +42,46 @@ function normalizeOptionList(values) {
     return sortOptionList(cleaned);
 }
 
-// Read an old legacy JSON file if it exists
-function readLegacyArray(filePath) {
-    ensureDataDirectory();
-
-    if (!fs.existsSync(filePath)) {
-        return [];
-    }
-
-    try {
-        const fileData = fs.readFileSync(filePath, "utf8");
-        return normalizeOptionList(JSON.parse(fileData));
-    } catch (error) {
-        return [];
-    }
-}
-
-// Make sure the option file exists and contains valid JSON
-function ensureOptionFile(filePath, defaultValues, legacyPath) {
-    ensureDataDirectory();
-
-    if (!fs.existsSync(filePath)) {
-        const seededValues = normalizeOptionList([
-            ...defaultValues,
-            ...readLegacyArray(legacyPath)
-        ]);
-
-        fs.writeFileSync(filePath, JSON.stringify(seededValues, null, 2), "utf8");
-        return;
-    }
-
-    try {
-        const fileData = fs.readFileSync(filePath, "utf8");
-        const parsedData = JSON.parse(fileData);
-
-        if (!Array.isArray(parsedData)) {
-            throw new Error("Invalid option file format");
-        }
-
-        const normalizedValues = normalizeOptionList(parsedData);
-
-        if (JSON.stringify(parsedData) !== JSON.stringify(normalizedValues)) {
-            fs.writeFileSync(filePath, JSON.stringify(normalizedValues, null, 2), "utf8");
-        }
-    } catch (error) {
-        fs.writeFileSync(
-            filePath,
-            JSON.stringify(normalizeOptionList(defaultValues), null, 2),
-            "utf8"
-        );
-    }
-}
-
-// Read one saved option file safely
-function readOptionFile(filePath, defaultValues, legacyPath) {
-    ensureOptionFile(filePath, defaultValues, legacyPath);
-
-    try {
-        const rawData = fs.readFileSync(filePath, "utf8");
-        return normalizeOptionList(JSON.parse(rawData));
-    } catch (error) {
-        return normalizeOptionList(defaultValues);
-    }
-}
-
-// Write one saved option file safely
-function writeOptionFile(filePath, values) {
-    ensureDataDirectory();
-    fs.writeFileSync(filePath, JSON.stringify(normalizeOptionList(values), null, 2), "utf8");
-}
-
-// Add a new option if it does not already exist
-function addOption(filePath, defaultValues, legacyPath, value) {
-    const cleanedValue = String(value || "").trim();
-
-    if (!cleanedValue) {
-        return;
-    }
-
-    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
-
-    if (existingValues.some((existingValue) => existingValue.toLowerCase() === cleanedValue.toLowerCase())) {
-        return;
-    }
-
-    existingValues.push(cleanedValue);
-    writeOptionFile(filePath, existingValues);
-}
-
-// Edit an existing option and keep the final list alphabetized
-function editOption(filePath, defaultValues, legacyPath, oldValue, newValue) {
-    const cleanedOldValue = String(oldValue || "").trim();
-    const cleanedNewValue = String(newValue || "").trim();
-
-    if (!cleanedOldValue || !cleanedNewValue) {
-        return false;
-    }
-
-    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
-    const oldIndex = existingValues.findIndex(
-        (existingValue) => existingValue.toLowerCase() === cleanedOldValue.toLowerCase()
-    );
-
-    if (oldIndex === -1) {
-        return false;
-    }
-
-    const duplicateExists = existingValues.some(
-        (existingValue, index) =>
-            index !== oldIndex && existingValue.toLowerCase() === cleanedNewValue.toLowerCase()
-    );
-
-    if (duplicateExists) {
-        return false;
-    }
-
-    existingValues[oldIndex] = cleanedNewValue;
-    writeOptionFile(filePath, existingValues);
-    return true;
-}
-
-// Delete one option from the saved list
-function deleteOption(filePath, defaultValues, legacyPath, value) {
-    const cleanedValue = String(value || "").trim();
-
-    if (!cleanedValue) {
-        return false;
-    }
-
-    const existingValues = readOptionFile(filePath, defaultValues, legacyPath);
-    const filteredValues = existingValues.filter(
-        (existingValue) => existingValue.toLowerCase() !== cleanedValue.toLowerCase()
-    );
-
-    if (filteredValues.length === existingValues.length) {
-        return false;
-    }
-
-    writeOptionFile(filePath, filteredValues);
-    return true;
-}
-
 // Return saved locations in alphabetical order
-function getLocationOptions() {
-    return readOptionFile(locationsPath, DEFAULT_LOCATIONS, legacyCustomLocationsPath);
+async function getLocationOptions() {
+    try {
+        const { data, error } = await supabase.from('locations').select('name');
+        if (error) {
+            console.error("Supabase Error (getLocationOptions):", error.message);
+            return normalizeOptionList(DEFAULT_LOCATIONS);
+        }
+        if (!data || data.length === 0) {
+            return normalizeOptionList(DEFAULT_LOCATIONS);
+        }
+        return normalizeOptionList(data.map(loc => loc.name));
+    } catch (err) {
+        console.error("Fetch Error (getLocationOptions):", err);
+        return normalizeOptionList(DEFAULT_LOCATIONS);
+    }
 }
 
 // Return saved categories in alphabetical order
-function getCategoryOptions() {
-    return readOptionFile(categoriesPath, DEFAULT_CATEGORIES, legacyCustomCategoriesPath);
+async function getCategoryOptions() {
+    try {
+        // Trying 'Categories' (capital C) first based on your schema image
+        const { data, error } = await supabase.from('Categories').select('name');
+        if (error) {
+            // If capital C fails, try lowercase
+            const { data: dataLow, error: errorLow } = await supabase.from('categories').select('name');
+            if (errorLow) {
+                console.error("Supabase Error (getCategoryOptions):", errorLow.message);
+                return normalizeOptionList(DEFAULT_CATEGORIES);
+            }
+            return normalizeOptionList(dataLow.map(cat => cat.name));
+        }
+        if (!data || data.length === 0) {
+            return normalizeOptionList(DEFAULT_CATEGORIES);
+        }
+        return normalizeOptionList(data.map(cat => cat.name));
+    } catch (err) {
+        console.error("Fetch Error (getCategoryOptions):", err);
+        return normalizeOptionList(DEFAULT_CATEGORIES);
+    }
 }
 
 // Build the final submitted location string
@@ -232,18 +108,125 @@ function getSubmittedCategory(req) {
     return selectedCategory;
 }
 
+// Add a new option if it does not already exist
+async function addLocationOption(value) {
+    const cleanedValue = String(value || "").trim();
+    if (!cleanedValue) return;
+
+    const { data, error: fetchError } = await supabase.from('locations').select('name').ilike('name', cleanedValue);
+    if (fetchError) {
+        console.error("Error checking existing location:", fetchError.message);
+        return;
+    }
+    
+    if (data && data.length > 0) {
+        console.log(`Location "${cleanedValue}" already exists.`);
+        return; 
+    }
+
+    const { error: insertError } = await supabase.from('locations').insert([{ name: cleanedValue }]);
+    if (insertError) {
+        console.error("Error inserting new location:", insertError.message);
+        console.error("Check if RLS is enabled or if the table name is correct.");
+    }
+}
+
+async function addCategoryOption(value) {
+    const cleanedValue = String(value || "").trim();
+    if (!cleanedValue) return;
+
+    // Determine the correct table name by checking which one exists
+    let tableName = 'Categories';
+    const { error: testError } = await supabase.from(tableName).select('name').limit(1);
+    if (testError && testError.message.includes("relation") && testError.message.includes("does not exist")) {
+        tableName = 'categories';
+    }
+
+    const { data, error: fetchError } = await supabase.from(tableName).select('name').ilike('name', cleanedValue);
+    if (fetchError) {
+        console.error("Error checking existing category:", fetchError.message);
+        return;
+    }
+
+    if (data && data.length > 0) return; 
+
+    const { error: insertError } = await supabase.from(tableName).insert([{ name: cleanedValue }]);
+    if (insertError) {
+        console.error("Error inserting new category:", insertError.message);
+    }
+}
+
+// Edit an existing option
+async function editLocationOption(oldValue, newValue) {
+    const cleanedOldValue = String(oldValue || "").trim();
+    const cleanedNewValue = String(newValue || "").trim();
+
+    if (!cleanedOldValue || !cleanedNewValue) return false;
+
+    const { data } = await supabase.from('locations').select('name').ilike('name', cleanedNewValue);
+    if (data && data.length > 0 && data[0].name.toLowerCase() !== cleanedOldValue.toLowerCase()) {
+        return false; 
+    }
+
+    const { error } = await supabase.from('locations').update({ name: cleanedNewValue }).ilike('name', cleanedOldValue);
+    if (error) console.error("Error updating location:", error.message);
+    return !error;
+}
+
+async function editCategoryOption(oldValue, newValue) {
+    const cleanedOldValue = String(oldValue || "").trim();
+    const cleanedNewValue = String(newValue || "").trim();
+
+    if (!cleanedOldValue || !cleanedNewValue) return false;
+
+    let tableName = 'Categories';
+    const { error: testError } = await supabase.from(tableName).select('name').limit(1);
+    if (testError) tableName = 'categories';
+
+    const { data } = await supabase.from(tableName).select('name').ilike('name', cleanedNewValue);
+    if (data && data.length > 0 && data[0].name.toLowerCase() !== cleanedOldValue.toLowerCase()) {
+        return false; 
+    }
+
+    const { error } = await supabase.from(tableName).update({ name: cleanedNewValue }).ilike('name', cleanedOldValue);
+    if (error) console.error("Error updating category:", error.message);
+    return !error;
+}
+
+// Delete one option
+async function deleteLocationOption(value) {
+    const cleanedValue = String(value || "").trim();
+    if (!cleanedValue) return false;
+
+    const { error } = await supabase.from('locations').delete().ilike('name', cleanedValue);
+    if (error) console.error("Error deleting location:", error.message);
+    return !error;
+}
+
+async function deleteCategoryOption(value) {
+    const cleanedValue = String(value || "").trim();
+    if (!cleanedValue) return false;
+
+    let tableName = 'Categories';
+    const { error: testError } = await supabase.from(tableName).select('name').limit(1);
+    if (testError) tableName = 'categories';
+
+    const { error } = await supabase.from(tableName).delete().ilike('name', cleanedValue);
+    if (error) console.error("Error deleting category:", error.message);
+    return !error;
+}
+
 module.exports = {
     getLocationOptions,
     getCategoryOptions,
     getSubmittedLocation,
     getSubmittedCategory,
-    addOption,
-    editOption,
-    deleteOption,
-    locationsPath,
-    categoriesPath,
+    addLocationOption,
+    addCategoryOption,
+    editLocationOption,
+    editCategoryOption,
+    deleteLocationOption,
+    deleteCategoryOption,
     DEFAULT_LOCATIONS,
-    DEFAULT_CATEGORIES,
-    legacyCustomLocationsPath,
-    legacyCustomCategoriesPath
+    DEFAULT_CATEGORIES
 };
