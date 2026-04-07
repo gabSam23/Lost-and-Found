@@ -3,12 +3,28 @@ const router = express.Router();
 const supabase = require("../config/supabaseClient");
 const { isAuthenticated } = require("../middleware/auth");
 const { calculateMatchScore } = require("../utils/matcher");
-const { 
-    getLocationOptions, 
-    getCategoryOptions, 
-    getSubmittedLocation, 
-    getSubmittedCategory 
+const {
+    getLocationOptions,
+    getCategoryOptions,
+    getSubmittedLocation,
+    getSubmittedCategory
 } = require("../utils/optionHelpers");
+
+// Normalize checkbox query values into a clean array.
+// Express gives us either a string, an array, or undefined.
+function normalizeCheckboxValues(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map((entry) => String(entry || "").trim())
+            .filter((entry) => entry.length > 0);
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return [value.trim()];
+    }
+
+    return [];
+}
 
 // Gets reports from Supabase with search, filtering, sorting, and pagination
 router.get("/", isAuthenticated, async (req, res) => {
@@ -21,8 +37,12 @@ router.get("/", isAuthenticated, async (req, res) => {
     const statusFilter = req.query.status || "all";
     const sortBy = req.query.sortBy || "top";
 
+    // Read selected checkbox filters for locations and categories.
+    const selectedLocations = normalizeCheckboxValues(req.query.location);
+    const selectedCategories = normalizeCheckboxValues(req.query.category);
+
     let query = supabase.from("item_reports").select("*");
-    
+
     if (reportView === "archived") {
         query = query.eq("status", "Resolved");
     } else {
@@ -53,8 +73,9 @@ router.get("/", isAuthenticated, async (req, res) => {
         }
     });
 
+    // Apply the text search first.
     if (searchQuery) {
-        reports = reports.filter(r => 
+        reports = reports.filter(r =>
             r.id.toString().includes(searchQuery) ||
             (r.missing_item_name || "").toLowerCase().includes(searchQuery) ||
             (r.reporter_name || "").toLowerCase().includes(searchQuery) ||
@@ -62,6 +83,42 @@ router.get("/", isAuthenticated, async (req, res) => {
             (r.description || "").toLowerCase().includes(searchQuery) ||
             (r.last_known_location || "").toLowerCase().includes(searchQuery)
         );
+    }
+
+    // Filter by any checked locations.
+    // If "Other" is selected, match values like "Other - Something".
+    if (selectedLocations.length > 0) {
+        const normalizedLocations = selectedLocations.map((location) => location.toLowerCase());
+        const includesOtherLocation = normalizedLocations.includes("other");
+
+        reports = reports.filter((report) => {
+            const reportLocation = String(report.last_known_location || "").trim();
+            const normalizedReportLocation = reportLocation.toLowerCase();
+
+            const matchesNormalLocation = normalizedLocations.includes(normalizedReportLocation);
+            const matchesOtherLocation =
+                includesOtherLocation && normalizedReportLocation.startsWith("other -");
+
+            return matchesNormalLocation || matchesOtherLocation;
+        });
+    }
+
+    // Filter by any checked categories.
+    // If "Other" is selected, match values like "Other - Something".
+    if (selectedCategories.length > 0) {
+        const normalizedCategories = selectedCategories.map((category) => category.toLowerCase());
+        const includesOtherCategory = normalizedCategories.includes("other");
+
+        reports = reports.filter((report) => {
+            const reportCategory = String(report.category || "").trim();
+            const normalizedReportCategory = reportCategory.toLowerCase();
+
+            const matchesNormalCategory = normalizedCategories.includes(normalizedReportCategory);
+            const matchesOtherCategory =
+                includesOtherCategory && normalizedReportCategory.startsWith("other -");
+
+            return matchesNormalCategory || matchesOtherCategory;
+        });
     }
 
     reports.sort((a, b) => {
@@ -76,7 +133,7 @@ router.get("/", isAuthenticated, async (req, res) => {
         } else if (sortBy === "newest") {
             return new Date(b.date_lost) - new Date(a.date_lost);
         } else if (sortBy === "oldest") {
-            return new Date(a.date_lost) - b.date_lost;
+            return new Date(a.date_lost) - new Date(b.date_lost);
         } else if (sortBy === "category") {
             return (a.category || "").localeCompare(b.category || "");
         }
@@ -94,7 +151,13 @@ router.get("/", isAuthenticated, async (req, res) => {
         currentPage: page,
         totalPages,
         reportView,
-        filters: { search: searchQuery, status: statusFilter, sortBy },
+        filters: {
+            search: searchQuery,
+            status: statusFilter,
+            sortBy,
+            selectedLocations,
+            selectedCategories
+        },
         locationOptions: getLocationOptions(),
         categoryOptions: getCategoryOptions()
     });

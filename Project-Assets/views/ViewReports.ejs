@@ -10,6 +10,47 @@
 <%
     const safeLocationOptions = Array.isArray(locationOptions) ? locationOptions : [];
     const safeCategoryOptions = Array.isArray(categoryOptions) ? categoryOptions : [];
+    const safeSelectedLocations = Array.isArray(filters.selectedLocations) ? filters.selectedLocations : [];
+    const safeSelectedCategories = Array.isArray(filters.selectedCategories) ? filters.selectedCategories : [];
+
+    // Add a visible "Other" option to the filter dropdowns
+    // without duplicating it if it already exists.
+    const locationFilterOptions = safeLocationOptions.includes("Other")
+        ? safeLocationOptions
+        : ["Other", ...safeLocationOptions];
+
+    const categoryFilterOptions = safeCategoryOptions.includes("Other")
+        ? safeCategoryOptions
+        : ["Other", ...safeCategoryOptions];
+
+    // Keep all filters when changing pages or doing edit/delete actions.
+    function buildReportsFilterQuery(pageNumber) {
+        const params = [];
+
+        params.push("view=" + encodeURIComponent(reportView));
+
+        if (pageNumber) {
+            params.push("page=" + encodeURIComponent(pageNumber));
+        }
+
+        if (filters.search) {
+            params.push("search=" + encodeURIComponent(filters.search));
+        }
+
+        if (filters.sortBy) {
+            params.push("sortBy=" + encodeURIComponent(filters.sortBy));
+        }
+
+        safeSelectedLocations.forEach(function(location) {
+            params.push("location=" + encodeURIComponent(location));
+        });
+
+        safeSelectedCategories.forEach(function(category) {
+            params.push("category=" + encodeURIComponent(category));
+        });
+
+        return params.join("&");
+    }
 %>
 
     <!-- Main content area for the reports list page -->
@@ -35,55 +76,181 @@
                 </div>
             </section>
 
-            <!-- Search and Filter Toolbar -->
-            <section class="mb-4">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-body p-3">
-                        <form action="/reports" method="GET" class="row g-3 align-items-end">
-                            <input type="hidden" name="view" value="<%= reportView %>">
-                            <div class="col-md-4">
-                                <label for="search" class="form-label small fw-bold">Search</label>
-                                <div class="input-group input-group-sm">
-                                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
-                                    <input type="text" name="search" id="search" class="form-control border-start-0" 
-                                           placeholder="ID, item name, reporter..." value="<%= filters.search %>">
-                                </div>
+<!-- Search and Filter Toolbar -->
+<section class="mb-4">
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-3">
+            <form action="/reports" method="GET">
+                <input type="hidden" name="view" value="<%= reportView %>">
+
+                <!-- First row: search, sort, locations, categories -->
+                <div class="row g-3 align-items-end">
+                    <!-- Search textbox -->
+                    <div class="col-xl-4 col-lg-6">
+                        <label for="search" class="form-label small fw-bold">Search</label>
+
+                        <!-- One normal input so it matches the other boxes better -->
+                        <div class="position-relative">
+                            <i
+                                class="bi bi-search position-absolute top-50 translate-middle-y text-muted"
+                                style="left: 14px; z-index: 2;"
+                            ></i>
+
+                            <input
+                                type="text"
+                                name="search"
+                                id="search"
+                                class="form-control form-control-sm ps-5"
+                                placeholder="ID, item name, reporter..."
+                                value="<%= filters.search %>"
+                                style="height: 44px;"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Sort dropdown -->
+                    <div class="col-xl-2 col-lg-3 col-md-6">
+                        <label for="sortBy" class="form-label small fw-bold">Sort By</label>
+
+                        <select
+                            name="sortBy"
+                            id="sortBy"
+                            class="form-select form-select-sm"
+                            style="height: 44px;"
+                        >
+                            <option value="top" <%= filters.sortBy === 'top' ? 'selected' : '' %>>Top Results</option>
+                            <option value="matches" <%= filters.sortBy === 'matches' ? 'selected' : '' %>>Most Matches</option>
+                            <option value="newest" <%= filters.sortBy === 'newest' ? 'selected' : '' %>>Date (Newest)</option>
+                            <option value="oldest" <%= filters.sortBy === 'oldest' ? 'selected' : '' %>>Date (Oldest)</option>
+                            <option value="category" <%= filters.sortBy === 'category' ? 'selected' : '' %>>Category (A-Z)</option>
+                        </select>
+                    </div>
+
+                    <!-- Locations dropdown -->
+                    <div class="col-xl-3 col-lg-3 col-md-6">
+                        <label class="form-label small fw-bold d-block">Locations</label>
+
+                        <div class="dropdown w-100" data-bs-auto-close="outside">
+                            <button
+                                type="button"
+                                class="form-select form-select-sm text-start"
+                                id="reportLocationDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                style="height: 44px; cursor: pointer;"
+                            >
+                                <%= safeSelectedLocations.length > 0
+                                    ? "Selected (" + safeSelectedLocations.length + ")"
+                                    : "All" %>
+                            </button>
+
+                            <div
+                                class="dropdown-menu w-100 p-2 shadow-sm"
+                                aria-labelledby="reportLocationDropdown"
+                                style="max-height: 220px; overflow-y: auto;"
+                            >
+                                <% if (locationFilterOptions.length === 0) { %>
+                                    <div class="small text-muted px-1">No locations available.</div>
+                                <% } else { %>
+                                    <% locationFilterOptions.forEach(function(option, index) { %>
+                                        <div class="form-check mb-1">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="location"
+                                                id="report-location-filter-<%= index %>"
+                                                value="<%= option %>"
+                                                <%= safeSelectedLocations.includes(option) ? 'checked' : '' %>
+                                            >
+                                            <label
+                                                class="form-check-label small"
+                                                for="report-location-filter-<%= index %>"
+                                            >
+                                                <%= option %>
+                                            </label>
+                                        </div>
+                                    <% }) %>
+                                <% } %>
                             </div>
-                            <% if (reportView === 'current') { %>
-                            <div class="col-md-2">
-                                <label for="status" class="form-label small fw-bold">Status</label>
-                                <select name="status" id="status" class="form-select form-select-sm">
-                                    <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>Open (Default)</option>
-                                    <option value="Open" <%= filters.status === 'Open' ? 'selected' : '' %>>Open</option>
-                                </select>
+                        </div>
+                    </div>
+
+                    <!-- Categories dropdown -->
+                    <div class="col-xl-3 col-lg-3 col-md-6">
+                        <label class="form-label small fw-bold d-block">Categories</label>
+
+                        <div class="dropdown w-100" data-bs-auto-close="outside">
+                            <button
+                                type="button"
+                                class="form-select form-select-sm text-start"
+                                id="reportCategoryDropdown"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                                style="height: 44px; cursor: pointer;"
+                            >
+                                <%= safeSelectedCategories.length > 0
+                                    ? "Selected (" + safeSelectedCategories.length + ")"
+                                    : "All" %>
+                            </button>
+
+                            <div
+                                class="dropdown-menu w-100 p-2 shadow-sm"
+                                aria-labelledby="reportCategoryDropdown"
+                                style="max-height: 220px; overflow-y: auto;"
+                            >
+                                <% if (categoryFilterOptions.length === 0) { %>
+                                    <div class="small text-muted px-1">No categories available.</div>
+                                <% } else { %>
+                                    <% categoryFilterOptions.forEach(function(option, index) { %>
+                                        <div class="form-check mb-1">
+                                            <input
+                                                class="form-check-input"
+                                                type="checkbox"
+                                                name="category"
+                                                id="report-category-filter-<%= index %>"
+                                                value="<%= option %>"
+                                                <%= safeSelectedCategories.includes(option) ? 'checked' : '' %>
+                                            >
+                                            <label
+                                                class="form-check-label small"
+                                                for="report-category-filter-<%= index %>"
+                                            >
+                                                <%= option %>
+                                            </label>
+                                        </div>
+                                    <% }) %>
+                                <% } %>
                             </div>
-                            <% } else { %>
-                            <div class="col-md-2">
-                                <label for="status" class="form-label small fw-bold">Status</label>
-                                <select name="status" id="status" class="form-select form-select-sm">
-                                    <option value="all" <%= filters.status === 'all' ? 'selected' : '' %>>All Archived</option>
-                                    <option value="Resolved" <%= filters.status === 'Resolved' ? 'selected' : '' %>>Resolved</option>
-                                </select>
-                            </div>
-                            <% } %>
-                            <div class="col-md-2">
-                                <label for="sortBy" class="form-label small fw-bold">Sort By</label>
-                                <select name="sortBy" id="sortBy" class="form-select form-select-sm">
-                                    <option value="top" <%= filters.sortBy === 'top' ? 'selected' : '' %>>Top Results</option>
-                                    <option value="matches" <%= filters.sortBy === 'matches' ? 'selected' : '' %>>Most Matches</option>
-                                    <option value="newest" <%= filters.sortBy === 'newest' ? 'selected' : '' %>>Date (Newest)</option>
-                                    <option value="oldest" <%= filters.sortBy === 'oldest' ? 'selected' : '' %>>Date (Oldest)</option>
-                                    <option value="category" <%= filters.sortBy === 'category' ? 'selected' : '' %>>Category (A-Z)</option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 d-flex gap-2">
-                                <button type="submit" class="btn btn-brand btn-sm flex-grow-1">Apply Filters</button>
-                                <a href="/reports?view=<%= reportView %>" class="btn btn-outline-secondary btn-sm px-3">Reset</a>
-                            </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
-            </section>
+
+                <!-- Second row: buttons pushed to the right -->
+                <div class="row mt-3">
+                    <div class="offset-xl-8 col-xl-4 offset-lg-6 col-lg-6">
+                        <div class="d-flex gap-2 justify-content-end">
+                            <button
+                                type="submit"
+                                class="btn btn-brand btn-sm px-4"
+                                style="height: 44px; min-width: 120px;"
+                            >
+                                Apply
+                            </button>
+
+                            <a
+                                href="/reports?view=<%= reportView %>"
+                                class="btn btn-outline-secondary btn-sm px-4 d-flex align-items-center justify-content-center"
+                                style="height: 44px; min-width: 120px;"
+                            >
+                                Reset
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
 
             <!-- Card container that holds the report list -->
             <div class="list-card">
@@ -251,7 +418,7 @@
                                         <% for(let i=1; i <=totalPages; i++) { %>
                                             <li class="page-item <%= currentPage === i ? 'active' : '' %>">
                                                 <a class="page-link"
-                                                    href="/reports?page=<%= i %>&view=<%= reportView %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>">
+                                                    href="/reports?<%= buildReportsFilterQuery(i) %>"
                                                     <%= i %>
                                                 </a>
                                             </li>
@@ -284,7 +451,7 @@
                 <input
                     type="hidden"
                     name="redirectTo"
-                    value="/reports?view=<%= reportView %>&page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
+                    value="/reports?<%= buildReportsFilterQuery(currentPage) %>"
                 >
 
                 <div class="modal-body">
@@ -415,7 +582,7 @@
                 <input
                     type="hidden"
                     name="redirectTo"
-                    value="/reports?view=<%= reportView %>&page=<%= currentPage %>&search=<%= filters.search %>&status=<%= filters.status %>&sortBy=<%= filters.sortBy %>"
+                    value="/reports?<%= buildReportsFilterQuery(currentPage) %>"
                 >
             </form>
         </div>
@@ -424,6 +591,32 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+
+        // Update the chevron icon when a filter dropdown opens or closes
+        document.querySelectorAll('.filter-collapse').forEach(function (collapseElement) {
+            collapseElement.addEventListener('show.bs.collapse', function () {
+                const button = document.querySelector('[data-bs-target="#' + collapseElement.id + '"]');
+                if (!button) return;
+
+                const icon = button.querySelector('.filter-chevron');
+                if (!icon) return;
+
+                icon.classList.remove('bi-chevron-down');
+                icon.classList.add('bi-chevron-up');
+            });
+
+            collapseElement.addEventListener('hide.bs.collapse', function () {
+                const button = document.querySelector('[data-bs-target="#' + collapseElement.id + '"]');
+                if (!button) return;
+
+                const icon = button.querySelector('.filter-chevron');
+                if (!icon) return;
+
+                icon.classList.remove('bi-chevron-up');
+                icon.classList.add('bi-chevron-down');
+            });
+        });
+
         const editReportModal = document.getElementById('editReportModal');
 
         if (!editReportModal) {

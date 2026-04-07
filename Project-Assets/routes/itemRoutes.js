@@ -14,6 +14,22 @@ const {
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+// Normalize checkbox query values into a clean array.
+// Express gives us either a string, an array, or undefined.
+function normalizeCheckboxValues(value) {
+    if (Array.isArray(value)) {
+        return value
+            .map((entry) => String(entry || "").trim())
+            .filter((entry) => entry.length > 0);
+    }
+
+    if (typeof value === "string" && value.trim()) {
+        return [value.trim()];
+    }
+
+    return [];
+}
+
 // Gets items from Supabase with search, filtering, sorting, and pagination
 router.get("/", isAuthenticated, async (req, res) => {
     const page = parseInt(req.query.page) || 1;
@@ -24,6 +40,10 @@ router.get("/", isAuthenticated, async (req, res) => {
     const searchQuery = (req.query.search || "").toLowerCase().trim();
     const statusFilter = req.query.status || "all";
     const sortBy = req.query.sortBy || "top";
+
+    // Read selected checkbox filters for locations and categories.
+    const selectedLocations = normalizeCheckboxValues(req.query.location);
+    const selectedCategories = normalizeCheckboxValues(req.query.category);
 
     let query = supabase.from("lost_items").select("*");
     
@@ -57,12 +77,31 @@ router.get("/", isAuthenticated, async (req, res) => {
         }
     });
 
+    // Apply the text search first.
     if (searchQuery) {
         items = items.filter(item => 
             item.id.toString().includes(searchQuery) ||
             (item.description || "").toLowerCase().includes(searchQuery) ||
             (item.category || "").toLowerCase().includes(searchQuery) ||
             (item.location || "").toLowerCase().includes(searchQuery)
+        );
+    }
+
+    // Filter by any checked locations.
+    if (selectedLocations.length > 0) {
+        const normalizedLocations = selectedLocations.map((location) => location.toLowerCase());
+
+        items = items.filter((item) =>
+            normalizedLocations.includes(String(item.location || "").toLowerCase())
+        );
+    }
+
+    // Filter by any checked categories.
+    if (selectedCategories.length > 0) {
+        const normalizedCategories = selectedCategories.map((category) => category.toLowerCase());
+
+        items = items.filter((item) =>
+            normalizedCategories.includes(String(item.category || "").toLowerCase())
         );
     }
 
@@ -100,7 +139,13 @@ router.get("/", isAuthenticated, async (req, res) => {
         currentPage: page,
         totalPages,
         inventoryView,
-        filters: { search: searchQuery, status: statusFilter, sortBy },
+        filters: {
+            search: searchQuery,
+            status: statusFilter,
+            sortBy,
+            selectedLocations,
+            selectedCategories
+        },
         locationOptions: getLocationOptions(),
         categoryOptions: getCategoryOptions()
     });
