@@ -578,12 +578,65 @@ body.portal-home-body {
   color: var(--ur-green);
   border-radius: 8px;
   margin: 0 2px;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
 }
 
 .pagination .page-item.active .page-link {
   background-color: var(--ur-green);
   border-color: var(--ur-green);
   color: #fff;
+}
+
+.pagination .page-item.disabled .page-link {
+  color: var(--text-muted);
+  background-color: #f8f9fa;
+  border-color: var(--border);
+}
+
+/* Fix for Bootstrap modal jitter and flickering */
+.modal {
+  background-color: rgba(0, 0, 0, 0.4); /* Custom backdrop if needed, but usually BS handles it */
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal.fade .modal-dialog {
+  transform: translateZ(0); /* Force hardware acceleration */
+  backface-visibility: hidden;
+  perspective: 1000;
+}
+
+/* Stable backdrop to reduce flickering during scroll */
+.modal-backdrop {
+  background-color: #000 !important;
+}
+
+.modal-backdrop.show {
+  opacity: 0.5 !important;
+}
+
+/* Ensure match containers scroll smoothly and don't bubble scroll events */
+#item-matches-container, 
+#report-matches-container {
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ur-green) #f0f0f0;
+}
+
+#item-matches-container::-webkit-scrollbar,
+#report-matches-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+#item-matches-container::-webkit-scrollbar-track,
+#report-matches-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+
+#item-matches-container::-webkit-scrollbar-thumb,
+#report-matches-container::-webkit-scrollbar-thumb {
+  background-color: var(--ur-green);
+  border-radius: 10px;
 }
 
 /* Status Badge Styles */

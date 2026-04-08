@@ -411,22 +411,36 @@
                         </div>
 
                         <!-- Pagination Controls -->
-                        <% if (totalPages> 1) { %>
+                        <% if (totalPages > 1) { %>
                             <div class="pagination-container">
                                 <nav aria-label="Page navigation">
                                     <ul class="pagination">
-                                        <% for(let i=1; i <=totalPages; i++) { %>
+                                        <!-- Previous Button -->
+                                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/reports?<%= buildReportsFilterQuery(currentPage - 1) %>" aria-label="Previous">
+                                                <span aria-hidden="true">&laquo; Previous</span>
+                                            </a>
+                                        </li>
+
+                                        <!-- Page Numbers -->
+                                        <% for(let i = 1; i <= totalPages; i++) { %>
                                             <li class="page-item <%= currentPage === i ? 'active' : '' %>">
-                                                <a class="page-link"
-                                                    href="/reports?<%= buildReportsFilterQuery(i) %>"
+                                                <a class="page-link" href="/reports?<%= buildReportsFilterQuery(i) %>">
                                                     <%= i %>
                                                 </a>
                                             </li>
-                                            <% } %>
+                                        <% } %>
+
+                                        <!-- Next Button -->
+                                        <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                            <a class="page-link" href="/reports?<%= buildReportsFilterQuery(currentPage + 1) %>" aria-label="Next">
+                                                <span aria-hidden="true">Next &raquo;</span>
+                                            </a>
+                                        </li>
                                     </ul>
                                 </nav>
                             </div>
-                            <% } %>
+                        <% } %>
 
                                 <% } %>
             </div>
