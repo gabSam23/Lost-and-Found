@@ -120,3 +120,77 @@ Key activities in this phase include:
 - Preparing and practicing the final presentation and system demo
 
 These efforts ensure the system is fully functional, polished, and ready for demonstration, marking the successful completion of the project's development phase.
+
+---
+
+## How to Run the Project
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/gabSam23/Lost-and-Found.git
+cd Lost-and-Found/Project-Assets
+```
+
+### 2. Install dependencies
+
+```bash
+npm i
+npm install
+```
+
+### 3. Create a `.env` file inside `Project-Assets`
+
+Add the following values:
+
+```env
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_PUBLISHABLE_KEY=your_supabase_anon_or_publishable_key
+SESSION_SECRET=your_custom_session_secret
+PORT=3000
+```
+
+### 4. Set up Supabase
+
+This project depends on Supabase for authentication, database access, and image storage.
+
+Make sure you already have:
+
+- A Supabase project
+- A user in **Supabase Auth** that can log into the app
+- A matching row in the `profiles` table for that user
+- The required tables used by the app, including:
+  - `profiles`
+  - `lost_items`
+  - `item_reports`
+  - `locations`
+  - `Categories` or `categories`
+- A storage bucket named `item-images` if you want image uploads to work
+
+### 5. Start the server
+
+```bash
+node app.js
+```
+
+### 6. Open the app
+
+Go to:
+
+```text
+http://localhost:3000
+```
+
+### 7. Optional: Test the database connection
+
+After starting the server, you can check whether Supabase is connected by visiting:
+
+```text
+http://localhost:3000/api/test-db
+```
+
+### Notes
+
+- Run the project from inside the `Project-Assets` folder, because that is where `app.js` and `package.json` are located.
+- The current `package.json` does **not** include an `npm start` script, so use `node app.js`.
+- If login does not work, first verify your Supabase Auth user, `profiles` table entry, and `.env` values.
