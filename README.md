@@ -17,6 +17,12 @@ Click below to watch our early prototype demo video:
 
 https://github.com/user-attachments/assets/a037a91d-3bcc-4f86-8cb5-5792a118ac0c
 
+---
+## 🎥 UR Lost & Found Product Commercial
+Click below to watch our early prototype demo video:
+---
+
+https://www.youtube.com/watch?v=XFXS6lTApFU
 
 
 ## Project Purpose (The “Why”)
@@ -82,7 +88,7 @@ These users currently rely on physical visits, phone calls, or email inquiries. 
 
 ## Course Context
 
-This project is being developed as part of **ENSE 281 – Software Engineering Project Management** at the University of Regina. It includes:
+This project was developed as part of **ENSE 281 – Software Engineering Project Management** at the University of Regina. It includes:
 
 - Business case development  
 - Project charter documentation  
@@ -111,15 +117,15 @@ The prototype system is being developed using the following technologies:
 
 ## Project Status
 
-🟡 **Currently in the final implementation and MVP delivery**  
-At this stage of the project, the team has completed the core system design and is focused on finalizing, refining, and delivering a functional MVP of the UR Lost & Found system. This phase emphasizes demonstrating a working product, documenting the development journey, and preparing final deliverables.
+🟢 **Completed all MVPs Successfully**  
+At this stage of the project, the team has successfully completed and delivered all Minimum Viable Products (MVPs) for the UR Lost & Found system. The focus shifted toward refining the system and ensuring stability of the web application.
 
 Key activities in this phase include:
 
-- Finalizing and testing the MVP features 
-- Debugging and improving system functionality
-- Preparing final project documentation and final report
+- Completing all core MVP features
+- Testing, debugging, and improving overall system performance
+- Finalizing project documentation and compiling the final report
 - Organizing GitHub repository (README, Kanban updates)
-- Preparing and practicing the final presentation and demo  
+- Preparing and practicing the final presentation and system demo
 
-These activities provide the groundwork necessary for the upcoming development phases, where the system prototype will be implemented and tested.
+These efforts ensure the system is fully functional, polished, and ready for demonstration, marking the successful completion of the project's development phase.
