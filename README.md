@@ -13,17 +13,16 @@ The system aims to improve service efficiency, reduce in-person inquiries, and e
 ## 🎥 Prototype Demonstration
 
 Click below to watch our early prototype demo video:
----
 
 https://github.com/user-attachments/assets/a037a91d-3bcc-4f86-8cb5-5792a118ac0c
 
 ---
-## 🎥 UR Lost & Found Product Commercial
+## 🎥 UR Lost & Found Product Commercial  
+
 Click below to watch our early prototype demo video:
+
+[![Watch the demo](https://img.youtube.com/vi/XFXS6lTApFU/0.jpg)](https://www.youtube.com/watch?v=XFXS6lTApFU)
 ---
-
-https://www.youtube.com/watch?v=XFXS6lTApFU
-
 
 ## Project Purpose (The “Why”)
 
