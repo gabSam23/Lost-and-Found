@@ -9,14 +9,6 @@
 The system aims to improve service efficiency, reduce in-person inquiries, and enhance transparency in the lost and found process across campus.
 
 ---
-
-## 🎥 Prototype Demonstration
-
-Click below to watch our early prototype demo video:
-
-https://github.com/user-attachments/assets/a037a91d-3bcc-4f86-8cb5-5792a118ac0c
-
----
 ## 🎥 UR Lost & Found Product Commercial  
 
 Click below to watch our early prototype demo video:
